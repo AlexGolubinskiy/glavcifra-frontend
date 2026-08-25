@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Сетей</title>
     
-    <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ БЕЗ КОНФЛИКТОВ С WWW -->
+    <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ -->
     <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
     
     <style>
@@ -73,14 +73,14 @@
 
         ymaps.ready(init);
         function init(){
-            // Инициализация карты с центром в Москве
+            // Инициализация карты [Широта, Долгота]
             var myMap = new ymaps.Map("yandex-map", {
-                center: [55.755200, 37.622500],
+                center: [55.755814, 37.622500],
                 zoom: 15,
                 controls: ['zoomControl', 'typeSelector']
             });
 
-            // --- 1. КРАСНАЯ ТЕПЛОТРАССА (ФИЗИЧЕСКИЙ ГЕО-ОБЪЕКТ С АВТО-МАСШТАБИРОВАНИЕМ) ---
+            // --- 1. КРАСНАЯ ТЕПЛОТРАССА (СТАБИЛЬНЫЕ СИНХРОННЫЕ ПОЛИЛАЙНЫ ЯНДЕКСА) ---
             var heatingRoute = [
                 [55.757312, 37.615024], [55.756855, 37.616654], [55.756314, 37.617935], 
                 [55.755814, 37.619535], [55.755255, 37.621245], [55.754712, 37.623101], 
@@ -89,20 +89,25 @@
                 [55.755450, 37.629250], [55.758100, 37.627800], [55.759450, 37.626350]
             ];
 
-            var heatingLine = new ymaps.GeoObject({
-                geometry: { type: "LineString", coordinates: heatingRoute },
-                properties: { hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>Диаметр: 400мм<br>Давление: 1.2 МПа" }
-            }, { strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.85 });
+            var heatingLine = new ymaps.Polyline(heatingRoute, {
+                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>Диаметр: 400мм<br>Давление: 1.2 МПа"
+            }, { 
+                strokeColor: "#ff4a4a", 
+                strokeWidth: 5, 
+                strokeOpacity: 0.85,
+                // ЖЕСТКАЯ ГЕО-ПРИВЯЗКА К ПОВЕРХНОСТИ ДЛЯ ИДЕАЛЬНОГО МАСШТАБИРОВАНИЯ
+                coordRendering: "short" 
+            });
             myMap.geoObjects.add(heatingLine);
 
             // АВАРИЙНЫЙ ПУНКТИР НА ТЕПЛОСЕТИ (Между ТК-11 и ТК-12)
-            var leakHeatingLine = new ymaps.GeoObject({
-                geometry: { type: "LineString", coordinates: [[55.756314, 37.617935], [55.755814, 37.619535]] }
-            }, { strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash' });
+            var leakHeatingLine = new ymaps.Polyline([[55.756314, 37.617935], [55.755814, 37.619535]], {}, {
+                strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash', coordRendering: "short"
+            });
             myMap.geoObjects.add(leakHeatingLine);
 
 
-            // --- 2. СИНЯЯ СЕТЬ ВОДОКАНАЛА (ФИЗИЧЕСКИЙ ГЕО-ОБЪЕКТ С АВТО-МАСШТАБИРОВАНИЕМ) ---
+            // --- 2. СИНЯЯ СЕТЬ ВОДОКАНАЛА (СТАБИЛЬНЫЕ СИНХРОННЫЕ ПОЛИЛАЙНЫ ЯНДЕКСА) ---
             var waterRoute = [
                 [55.755124, 37.614212], [55.754412, 37.616345], [55.753245, 37.618101], 
                 [55.752101, 37.619845], [55.751512, 37.621512], [55.751101, 37.623401], 
@@ -110,14 +115,18 @@
                 [55.748101, 37.624101], [55.751890, 37.622650], [55.751430, 37.624750], [55.750950, 37.626900]
             ];
 
-            var waterLine = new ymaps.GeoObject({
-                geometry: { type: "LineString", coordinates: waterRoute },
-                properties: { hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>Диаметр: 600мм<br>Давление: 0.6 МПа" }
-            }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.85 });
+            var waterLine = new ymaps.Polyline(waterRoute, {
+                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>Диаметр: 600мм<br>Давление: 0.6 МПа"
+            }, { 
+                strokeColor: "#3388ff", 
+                strokeWidth: 5, 
+                strokeOpacity: 0.85,
+                coordRendering: "short"
+            });
             myMap.geoObjects.add(waterLine);
 
 
-            // --- 3. АСИНХРОННЫЙ FETCH-ДВИЖОК ДЛЯ СВЯЗИ С СЕРВЕРОМ ---
+            // --- 3. АСИНХРОННЫЙ FETCH-ДВИЖОК ---
             async function loadDynamicMarkers() {
                 try {
                     const response = await fetch(`${API_SERVER_URL}/v1/gis/markers`);
@@ -140,7 +149,7 @@
                         myMap.geoObjects.add(placemark);
                     });
                 } catch (error) {
-                    console.log("🔒 Запущена автономная ГИС-система ГлавЦифры.");
+                    console.log("🔒 Запущена стабильная гео-информационная витрина ГлавЦифры.");
                     loadFallbackDemoMarkers(myMap);
                 }
             }
@@ -148,7 +157,7 @@
             loadDynamicMarkers();
         }
 
-        // РЕЗЕРВНЫЕ КОЛОДЦЫ (ЖЕСТКАЯ ГЕО-ПРИВЯЗКА)
+        // РЕЗЕРВНЫЕ КОЛОДЦЫ (РОДНАЯ СИНХРОННАЯ ПРИВЯЗКА)
         function loadFallbackDemoMarkers(mapInstance) {
             // Теплосеть (Красные)
             var hNodes = [
@@ -180,6 +189,3 @@
             var leak = new ymaps.Placemark([55.755814, 37.619535], {
                 hintContent: "<b>⚠️ ВНИМАНИЕ: ТОЧКА СКРЫТОЙ УТЕЧКИ</b><br>Объект: ТК-12<br>Расстояние: 18.4м от ТК-11",
                 balloonContent: "Точность ИИ локализации: ±0.5м"
-            }, { preset: 'islands#blackDotIcon', iconColor: '#000000' });
-            mapInstance.geoObjects.add(leak);
-        }
