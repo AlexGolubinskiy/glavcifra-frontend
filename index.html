@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГЛАВЦИФРА — Цифровой Двойник Сетей</title>
+    
+    <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ -->
+    <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    
+    <style>
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
+        }
+        #header { 
+            height: 60px; padding: 0 20px; background: #2a2a2a; 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 20px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box;
+        }
+        .partner-link { 
+            font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
+            padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
+        }
+        .partner-link:hover { background: #ff4a4a; color: #fff; }
+        #map-container { width: 100%; height: calc(100% - 60px); position: relative; background-color: #1a1a1a; }
+        #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        
+        #info-panel {
+            position: absolute; top: 20px; right: 20px; width: 320px; 
+            background: rgba(255, 255, 255, 0.95); color: #333; padding: 20px; 
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+            font-size: 13px; line-height: 1.6; z-index: 9999; border-left: 5px solid #000000; box-sizing: border-box;
+        }
+        .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+        .metric-bold { font-weight: bold; color: #111; }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <span>🖥 ГИС-Панель диспетчера «ГЛАВЦИФРА» — Цифровой Двойник</span>
+        <a href="mailto:partner@glavcifra.ru?subject=Запрос документации API ГлавЦифра" class="partner-link">🔌 Получить доступ к API</a>
+    </div>
+    
+    <div id="map-container">
+        <div id="yandex-map"></div>
+        
+        <div id="info-panel">
+            <div class="alert-title">🚨 СИСТЕМА ПРЕДИКТИВНОГО МОНИТОРИНГА</div>
+            <span class="metric-bold">Статус сети:</span> Обнаружена скрытая аномалия<br>
+            📐 <span class="metric-bold">Локализация свища:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от ТК-11 по ул. Ильинка<br>
+            🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ (Усталость 84%)<br>
+            ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов<br>
+            <span style="font-size: 11px; color: #666;">* Наведите на трубы и колодцы для просмотра телеметрии</span>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        ymaps.ready(init);
+        function init(){
+            var myMap = new ymaps.Map("yandex-map", {
+                center: [55.755200, 37.622500],
+                zoom: 15,
+                controls: ['zoomControl', 'typeSelector']
+            });
+
+            // --- 1. КРАСНАЯ ТЕПЛОТРАССА (11 ОТРЕЗКОВ ПО УЛИЦАМ) ---
+            var heatingRoute = [
+                [55.757312, 37.615024], [55.756855, 37.616654], // Отрезок 1: Манежная ул.
+                [55.756314, 37.617935], [55.755814, 37.619535], // Отрезки 2-3: Начало ул. Ильинка (Зона аномалии)
+                [55.755255, 37.621245], [55.754712, 37.623101], // Отрезки 4-5: Ильинка мимо Гостиного двора
+                [55.754124, 37.625345], [55.753512, 37.627612], // Отрезки 6-7: Конец Ильинки до Новой площади
+                [55.752312, 37.626101], [55.751124, 37.624845], // Отрезки 8-9: Спуск по Китайгородскому проезду
+                [55.750245, 37.623512], [55.749512, 37.622101]  // Отрезки 10-11: Выход на Москворецкую наб.
+            ];
+
+            var heatingLine = new ymaps.Polyline(heatingRoute, {
+                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>Диаметр: 400мм<br>Давление: 1.2 МПа<br>Текущий КПД: 94%"
+            }, { strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.85 });
+            myMap.geoObjects.add(heatingLine);
+
+            // АВАРИЙНЫЙ ПУНКТИР НА ТЕПЛОСЕТИ (Между ТК-11 и ТК-12)
+            var leakHeatingLine = new ymaps.Polyline([[55.756314, 37.617935], [55.755814, 37.619535]], {}, {
+                strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash'
+            });
+            myMap.geoObjects.add(leakHeatingLine);
+
+
+            // --- 2. СИНЯЯ СЕТЬ ВОДОКАНАЛА (10 ОТРЕЗКОВ ПО УЛИЦАМ) ---
+            var waterRoute = [
+                [55.755124, 37.614212], [55.754412, 37.616345], // Отрезок 1-2: Кремлевский проезд
+                [55.753245, 37.618101], [55.752101, 37.619845], // Отрезок 3-4: Бывший Варварский переулок
+                [55.751512, 37.621512], [55.751101, 37.623401], // Отрезок 5-6: Улица Варварка
+                [55.750512, 37.625612], [55.749912, 37.627101], // Отрезок 7-8: Выход к Китайгородской стене
+                [55.748845, 37.625845], [55.748101, 37.624101]  // Отрезок 9-10: Москворецкая набережная ХВС
+            ];
+
+            var waterLine = new ymaps.Polyline(waterRoute, {
+                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>Диаметр: 600мм<br>Давление: 0.6 МПа<br>Состояние: Стабильное"
+            }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.85 });
+            myMap.geoObjects.add(waterLine);
+
+
+            // --- 3. ИНТЕРАКТИВНЫЕ КОЛОДЦЫ (УЗЛЫ С ТЕЛЕМЕТРИЕЙ) ---
+            var nodes = [
+                { coords: [55.757312, 37.615024], hint: "<b>Технический колодец ТК-10 (Теплосеть)</b><br>Температура: 95°C<br>Вибрация насоса: 1.2 мм/с (Норма)" },
+                { coords: [55.756314, 37.617935], hint: "<b>Технический колодец ТК-11 (Теплосеть)</b><br>Температура: 94°C<br>Акустический шум: Повышен (+12 дБ)<br>Счетчик Nonce: 10452" },
+                { coords: [55.755255, 37.621245], hint: "<b>Технический колодец ТК-13 (Теплосеть)</b><br>Температура: 91°C<br>Состояние: В пределах допуска" },
+                { coords: [55.754124, 37.625345], hint: "<b>Технический колодец ТК-15 (Теплосеть)</b><br>Давление: 1.15 МПа<br>Датчик влажности: Сухо" },
+                { coords: [55.754412, 37.616345], hint: "<b>Узел учета ХВС-04 (Водоканал)</b><br>Расход: 140 м³/ч<br>Потери на участке: 0%" },
+                { coords: [55.751512, 37.621512], hint: "<b>Узел учета ХВС-07 (Водоканал)</b><br>Расход: 138 м³/ч<br>Давление: 0.58 МПа" }
+            ];
+
+            nodes.forEach(function (node) {
+                var placemark = new ymaps.Placemark(node.coords, { hintContent: node.hint }, {
+                    preset: 'islands#blueCircleDotIcon', // Голубые технологические узлы
+                    iconColor: '#2a2a2a'
+                });
+                myMap.geoObjects.add(placemark);
+            });
+
+            // --- 4. ТОЧКА АВАРИИ (ЧЕРНЫЙ СВИЩ ТК-12) ---
+            var leakPlacemark = new ymaps.Placemark([55.755814, 37.619535], {
+                hintContent: "<b>⚠️ ВНИМАНИЕ: ТОЧКА СКРЫТОЙ УТЕЧКИ</b><br>Объект: ТК-12 (Ильинка, 4)<br>Расстояние: 18.4м от ТК-11<br>Акустический свищ зафиксирован!",
+                balloonContent: "Рекомендуется немедленная раскопка (Точность ИИ: ±0.5м)"
+            }, {
+                preset: 'islands#blackDotIcon', // Черный маркер по вашему стандарту
+                icon駛olor: '#000000'
+            });
+            myMap.geoObjects.add(leakPlacemark);
+        }
+    </script>
+</body>
+</html>
