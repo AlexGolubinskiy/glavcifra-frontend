@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГЛАВЦИФРА — Мониторинг Коммунальных Сетей</title>
+    <title>ГЛАВЦИФРА — Цифровой Двойник Нефтегазовых Комплексов</title>
     
     <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ -->
     <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
@@ -13,59 +13,71 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
         }
+        .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
+        
         #header { 
-            height: 60px; padding: 0 20px; background: #2a2a2a; 
+            height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; 
             display: flex; justify-content: space-between; align-items: center; 
-            font-size: 20px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box;
+            font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
         }
         .partner-link { 
             font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
             padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
         }
         .partner-link:hover { background: #ff4a4a; color: #fff; }
-        #map-container { width: 100%; height: calc(100% - 60px); position: relative; background-color: #1a1a1a; }
+        
+        #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
         #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
-        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ ДИСПЕТЧЕРА С ПРЕДИКТИВНЫМИ МЕТРИКАМИ */
+        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ ДИСПЕТЧЕРА С ЮРИДИЧЕСКИМ АЛИБИ */
         #info-panel {
-            position: absolute; top: 20px; right: 20px; width: 320px; 
-            background: rgba(255, 255, 255, 0.95); color: #333; padding: 20px; 
+            position: absolute; top: 20px; right: 20px; width: 340px; 
+            background: rgba(255, 255, 255, 0.96); color: #333; padding: 20px; 
             border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
             font-size: 13px; line-height: 1.6; z-index: 9999; border-left: 5px solid #000000; box-sizing: border-box;
         }
-        .alert-title { color: #000000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+        .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
         .metric-bold { font-weight: bold; color: #111; }
-        
-        .contacts-block {
-            margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px;
-        }
-        .email-link {
-            color: #ff4a4a; text-decoration: none; font-weight: bold; transition: color 0.3s;
-        }
+        .contacts-block { margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px; }
+        .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; transition: color 0.3s; }
         .email-link:hover { color: #bd1313; }
+
+        #log-terminal {
+            height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333;
+            box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace;
+            font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000;
+        }
+        .log-warn { color: #ffcc00; }
+        .log-crit { color: #ff4a4a; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="header">
-        <span>🖥 ГИС-Панель диспетчера «ГЛАВЦИФРА» — Цифровой Двойник</span>
-        <a href="https://github.com" target="_blank" class="partner-link">📂 Открытый код и API (GitHub)</a>
-    </div>
-    
-    <div id="map-container">
-        <div id="yandex-map"></div>
+    <div class="app-container">
+        <div id="header">
+            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Мониторинг Объектов КИИ ТН</span>
+            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API КИИ (GitHub)</a>
+        </div>
         
-        <div id="info-panel">
-            <div class="alert-title">🚨 LINE-02: КРИТИЧЕСКАЯ УТЕЧКА (СВИЩ)</div>
-            📍 <span class="metric-bold">Адрес:</span> г. Москва, ул. Ильинка, д. 4<br>
-            📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Технического колодца №11 в сторону колодца №12<br>
-            🛠 <span class="metric-bold">Состояние трубы:</span> Размытие грунта (Усталость 84%)<br>
-            ⏱ <span class="metric-bold">До аварийного разрушения:</span> 4 дня 12 часов<br>
-            🛑 <span class="metric-bold">Рекомендация:</span> Срочный планово-предупредительный ремонт!
+        <div id="map-area">
+            <div id="yandex-map"></div>
             
-            <div class="contacts-block">
-                📬 <span class="metric-bold">По вопросам OEM-интеграции:</span><br>
-                <a href="mailto:ceo@glavcifra.ru?subject=Запрос документации API ГлавЦифра" class="email-link">ceo@glavcifra.ru</a>
+            <div id="info-panel">
+                <div class="alert-title">🚨 ПРЕДИКТИВНАЯ ТРЕВОГА: АНОМАЛИЯ РОТОРА</div>
+                <span class="metric-bold">Узел КИИ:</span> Промышленный сектор «Грушевая балка»<br>
+                📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Камеры Задвижек №11 по ходу магистрали<br>
+                🛠 <span class="metric-bold">Дефект ИИ:</span> Скрытая разгерметизация (Свищ LINE-02)<br>
+                ⏱ <span class="metric-bold">RUL (Остаточный ресурс):</span> 4 дня 12 часов до разрушения<br>
+                🔒 <span class="metric-bold">Статус Алиби:</span> Непрерывный крипто-лог активен (Запись HMAC)<br>
+                
+                <div class="contacts-block">
+                    📬 <span class="metric-bold">Запрос OEM-интеграции (CEO ООО «ГлавЦифра»):</span><br>
+                    <a href="mailto:ceo@glavcifra.ru?subject=Запрос интеграции API КИИ Транснефть" class="email-link">ceo@glavcifra.ru</a>
+                </div>
             </div>
+        </div>
+
+        <div id="log-terminal">
+            [ КИБЕРЗАЩИТА КИИ ИНИЦИАЛИЗИРОВАНА. ЭНЕРГОНЕЗАВИСИМЫЙ ЧЕРНЫЙ ЯЩИК АКТИВЕН. ]<br>
         </div>
     </div>
 
@@ -78,71 +90,90 @@
                 controls: ['zoomControl', 'typeSelector']
             });
 
-            // --- 1. СЕТЬ ВОДОКАНАЛА (Синяя трасса ХВС с информацией) ---
-            var waterLine = new ymaps.Polyline([
-                [55.756500, 37.616000],
-                [55.756000, 37.617500],
-                [55.755500, 37.619000]
-            ], {
-                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>🔩 Материал: Чугун<br>📏 Диаметр: 600 мм<br>⏳ Срок службы: 24 года (Остаток 36%)"
-            }, {
-                strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.8
-            });
-            myMap.geoObjects.add(waterLine);
+            var waterCollection = new ymaps.GeoObjectCollection();
+            var heatingCollection = new ymaps.GeoObjectCollection();
 
-            // СИНИЕ КОЛОДЦЫ НА ВОДОПРОВОДЕ
+            // --- 1. ТЕХНОЛОГИЧЕСКИЙ ВОДОВОД ПЕНОТУШЕНИЯ ---
+            var waterLine = new ymaps.Polyline([
+                [55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]
+            ], {
+                hintContent: "<b>Водовод противопожарного тушения</b><br>🔩 Сталь | 📏 600 мм<br>Давление кольца: 1.6 МПа"
+            }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.8 });
+            waterCollection.add(waterLine);
+
             var waterNodes = [
-                { c: [55.756500, 37.616000], h: "<b>Узел учета ХВС-04 (Водоканал)</b><br>Давление: 0.6 МПа<br>Расход: 140 м³/ч" },
-                { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b><br>Состояние: Стабильное" },
-                { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b><br>Датчик влажности: В норме" }
+                { c: [55.756500, 37.616000], h: "<b>Пожарный гидрант ПГ-04</b>" },
+                { c: [55.756000, 37.617500], h: "<b>Узел задвижек автоматики тушения</b>" }
             ];
             waterNodes.forEach(function(n) {
-                myMap.geoObjects.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
+                waterCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
             });
 
-
-            // --- 2. СЕТЬ ТЕПЛОСЕТИ (Красная трасса ГВС с информацией) ---
+            // --- 2. МАГИСТРАЛЬНЫЙ НЕФТЕПРОВОД ---
             var heatingLine = new ymaps.Polyline([
-                [55.756800, 37.616500], // Колодец №10
-                [55.756314, 37.617935], // Колодец №11
-                [55.755814, 37.619535], // Колодец №12 (Точка свища)
-                [55.755300, 37.621000]  // Колодец №13
+                [55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]
             ], {
-                hintContent: "<b>Магистральный трубопровод Теплосети</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм<br>⏳ Срок службы: 12 лет (Критический износ на участке LINE-02)"
-            }, {
-                strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.8
-            });
-            myMap.geoObjects.add(heatingLine);
+                hintContent: "<b>Магистральный Нефтепровод ТН</b><br>🔩 Сталь Х70 | 📏 1200 мм<br>Давление прокачки: 6.4 МПа"
+            }, { strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.8 });
+            heatingCollection.add(heatingLine);
 
-            // АВАРИЙНЫЙ КРАСНЫЙ ПУНКТИР ДО ТОЧКИ СВИЩА
             var leakHeatingLine = new ymaps.Polyline([
-                [55.756314, 37.617935],
-                [55.755814, 37.619535]
-            ], {}, {
-                strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash'
-            });
-            myMap.geoObjects.add(leakHeatingLine);
+                [55.756314, 37.617935], [55.755814, 37.619535]
+            ], {}, { strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash' });
+            heatingCollection.add(leakHeatingLine);
 
-            // КРАСНЫЕ КОЛОДЦЫ НА ТЕПЛОСЕТИ
             var heatingNodes = [
-                { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10 (Теплосеть)</b><br>Температура: 95°C<br>Давление: 1.2 МПа" },
-                { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Теплосеть)</b><br>Температура: 94°C<br>⚠️ Акустический шум: Повышен" },
-                { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13 (Теплосеть)</b><br>Температура: 89°C<br>Состояние: Норма" }
+                { c: [55.756800, 37.616500], h: "<b>Камера пуска скребка КП-10</b>" },
+                { c: [55.756314, 37.617935], h: "<b>Камера Задвижек КЗ-11 (Предиктивный логгер LOGGER-01)</b>" }
             ];
             heatingNodes.forEach(function(n) {
-                myMap.geoObjects.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
+                heatingCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
             });
 
+            var leak = new ymaps.Placemark([55.755814, 37.619535], {
+                hintContent: '<b>🚨 КРИТИЧЕСКИЙ СВИЩ ТРАССЫ</b>',
+                balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от КЗ-11<br><b>Телеметрия ИИ:</b> Размытие грунта под трубой!'
+            }, { preset: 'islands#blackDotIcon' });
+            heatingCollection.add(leak);
 
-            // --- 3. ЧЕРНЫЙ СВИЩ С ИНФОРМАЦИЕЙ О РАССТОЯНИИ ---
-            var myPlacemark = new ymaps.Placemark([55.755814, 37.619535], {
-                hintContent: '<b>🚨 КРИТИЧЕСКАЯ АНОМАЛИЯ (СВИЩ)</b>',
-                balloonContent: '<b>Объект:</b> Технический колодец №12 (Ильинка, 4)<br><b>Дистанция:</b> 18.4 метров от ТК-11<br><b>Рекомендация:</b> Срочная локальная раскопка!'
-            }, {
-                preset: 'islands#blackDotIcon'
-            });
-            myMap.geoObjects.add(myPlacemark);
-        }
-    </script>
-</body>
-</html>
+            myMap.geoObjects.add(waterCollection);
+            myMap.geoObjects.add(heatingCollection);
+
+            var waterToggle = new ymaps.control.Button({ data: { content: "💧 Пенотушение" }, options: { selectOnClick: true } });
+            waterToggle.select();
+            waterToggle.events.add('select', function () { myMap.geoObjects.add(waterCollection); });
+            waterToggle.events.add('deselect', function () { myMap.geoObjects.remove(waterCollection); });
+
+            var heatingToggle = new ymaps.control.Button({ data: { content: "🛢 Нефтепровод" }, options: { selectOnClick: true } });
+            heatingToggle.select();
+            heatingToggle.events.add('select', function () { myMap.geoObjects.add(heatingCollection); });
+            heatingToggle.events.add('deselect', function () { myMap.geoObjects.remove(heatingCollection); });
+
+            myMap.controls.add(waterToggle, { float: 'left' });
+            myMap.controls.add(heatingToggle, { float: 'left' });
+
+            // --- СИМУЛЯТОР АСИНХРОННОЙ ЛЕНТЫ ЧЕРНОГО ЯЩИКА КИИ ---
+            const logs = [
+                "Проверка шифрования mTLS для LOGGER-01 (Грушевая): Успешно. Подмена данных исключена. [PDF: 0.1.2]",
+                "Сверка монотонного Nonce: Пакет #40891 принят. Защита от атак повтора активна. [PDF: 0.1.2]",
+                "Ядро Python: Фильтрация Баттерворта выделила частоту утечки нефти 3.2 кГц. [PDF: 0.1.2]",
+                "ESA-анализ ШУН-02: Искажения спектра токов отсутствуют. Магистральный насос в норме. [PDF: 0.1.2]",
+                "⚠️ ТРЕВОГА КИИ: Датчик КЗ-11 зафиксировал акустический свищ под давлением 6.4 МПа! [PDF: 0.1.2]",
+                "🚨 ПРЕДИКТИВНЫЙ РАСЧЕТ: Локализация точки прорыва — 18.4 метров по ходу трубы. [PDF: 0.1.6]",
+                "Лог верифицирован и сохранен в main_platform.db. Юридическое алиби диспетчера сформировано. [PDF: 0.1.2, 0.1.6]",
+                "Система Anti-Tamper: Попыток вскрытия логгеров или JTAG-взлома на Грушевой балке не обнаружено. [PDF: 0.1.2]"
+            ];
+            
+            let logIndex = 0;
+            const terminal = document.getElementById("log-terminal");
+            
+            setInterval(() => {
+                const now = new Date().toLocaleTimeString();
+                let currentLog = logs[logIndex % logs.length];
+                let logClass = "";
+                
+                if (currentLog.includes("⚠️")) logClass = "class='log-warn'";
+                if (currentLog.includes("🚨")) logClass = "class='log-crit'";
+                
+                terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
+terminal.scrollTop = terminal.scrollHeight;logIndex++;}, 4000);}
