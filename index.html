@@ -3,45 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГЛАВЦИФРА — Цифровой Двойник Сетей</title>
+    <title>ГЛАВЦИФРА — Мониторинг Коммунальных Сетей</title>
     
     <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ -->
     <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
     
     <style>
         html, body { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            font-family: Arial, sans-serif; 
+            background-color: #1a1a1a; 
+            color: #fff; 
+            overflow: hidden; 
         }
         #header { 
-            height: 60px; padding: 0 20px; background: #2a2a2a; 
-            display: flex; justify-content: space-between; align-items: center; 
-            font-size: 20px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box;
+            height: 60px;
+            padding: 0 20px; 
+            background: #2a2a2a; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 20px; 
+            font-weight: bold; 
+            border-bottom: 3px solid #ff4a4a; 
+            box-sizing: border-box;
         }
         .partner-link { 
-            font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
-            padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
+            font-size: 14px; 
+            color: #ff4a4a; 
+            text-decoration: none; 
+            border: 1px solid #ff4a4a; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            transition: all 0.3s;
+            font-weight: bold;
         }
-        .partner-link:hover { background: #ff4a4a; color: #fff; }
-        #map-container { width: 100%; height: calc(100% - 60px); position: relative; background-color: #1a1a1a; }
-        #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .partner-link:hover { 
+            background: #ff4a4a; 
+            color: #fff; 
+        }
+        #map-container { 
+            width: 100%; 
+            height: calc(100% - 60px); 
+            position: relative; 
+            background-color: #1a1a1a; 
+        }
+        #yandex-map { 
+            width: 100%; 
+            height: 100%; 
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
         
+        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ ДИСПЕТЧЕРА С ПРЕДИКТИВНЫМИ МЕТРИКАМИ */
         #info-panel {
-            position: absolute; top: 20px; right: 20px; width: 320px; 
-            background: rgba(255, 255, 255, 0.95); color: #333; padding: 20px; 
-            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
-            font-size: 13px; line-height: 1.6; z-index: 9999; border-left: 5px solid #000000; box-sizing: border-box;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            font-size: 13px;
+            line-height: 1.6;
+            z-index: 9999;
+            border-left: 5px solid #000000;
+            box-sizing: border-box;
         }
-        .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+        .alert-title { color: #000000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
         .metric-bold { font-weight: bold; color: #111; }
         
         .contacts-block {
-            margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
         }
         .email-link {
-            color: #ff4a4a; text-decoration: none; font-weight: bold; transition: color 0.3s;
+            color: #ff4a4a;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
         }
-        .email-link:hover { color: #bd1313; }
+        .email-link:hover {
+            color: #bd1313;
+        }
     </style>
 </head>
 <body>
@@ -51,15 +103,17 @@
     </div>
     
     <div id="map-container">
+        <!-- БЛОК ДЛЯ ИНИЦИАЛИЗАЦИИ КАРТЫ -->
         <div id="yandex-map"></div>
         
+        <!-- СТАЦИОНАРНЫЙ ВИДЖЕТ АВАРИИ ДЛЯ ЗАКАЗЧИКОВ -->
         <div id="info-panel">
-            <div class="alert-title">🚨 СИСТЕМА ПРЕДИКТИВНОГО МОНИТОРИНГА</div>
-            <span class="metric-bold">Статус сети:</span> Автоматическое обновление активно<br>
-            📐 <span class="metric-bold">Локализация свища:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от ТК-11 по ул. Ильинка<br>
-            🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ (Усталость 84%)<br>
-            ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов<br>
-            <span style="font-size: 11px; color: #666;">* Наведите на трубы и колодцы для просмотра телеметрии</span>
+            <div class="alert-title">🚨 LINE-02: КРИТИЧЕСКАЯ УТЕЧКА (СВИЩ)</div>
+            📍 <span class="metric-bold">Адрес:</span> г. Москва, ул. Ильинка, д. 4<br>
+            📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Технического колодца №11 в сторону колодца №12<br>
+            🛠 <span class="metric-bold">Состояние трубы:</span> Размытие грунта (Усталость 84%)<br>
+            ⏱ <span class="metric-bold">До аварийного разрушения:</span> 4 дня 12 часов<br>
+            🛑 <span class="metric-bold">Рекомендация:</span> Срочный планово-предупредительный ремонт!
             
             <div class="contacts-block">
                 📬 <span class="metric-bold">По вопросам OEM-интеграции:</span><br>
@@ -69,123 +123,60 @@
     </div>
 
     <script type="text/javascript">
-        const API_SERVER_URL = "https://glavcifra.ru"; 
-
         ymaps.ready(init);
         function init(){
-            // Инициализация карты [Широта, Долгота]
             var myMap = new ymaps.Map("yandex-map", {
-                center: [55.755814, 37.622500],
-                zoom: 15,
+                center: [55.755814, 37.619535],
+                zoom: 16,
                 controls: ['zoomControl', 'typeSelector']
             });
 
-            // --- 1. КРАСНАЯ ТЕПЛОТРАССА (СТАБИЛЬНЫЕ СИНХРОННЫЕ ПОЛИЛАЙНЫ ЯНДЕКСА) ---
-            var heatingRoute = [
-                [55.757312, 37.615024], [55.756855, 37.616654], [55.756314, 37.617935], 
-                [55.755814, 37.619535], [55.755255, 37.621245], [55.754712, 37.623101], 
-                [55.754124, 37.625345], [55.753512, 37.627612], [55.752312, 37.626101], 
-                [55.751124, 37.624845], [55.750245, 37.623512], [55.749512, 37.622101],
-                [55.755450, 37.629250], [55.758100, 37.627800], [55.759450, 37.626350]
-            ];
-
-            var heatingLine = new ymaps.Polyline(heatingRoute, {
-                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>Диаметр: 400мм<br>Давление: 1.2 МПа"
-            }, { 
-                strokeColor: "#ff4a4a", 
-                strokeWidth: 5, 
-                strokeOpacity: 0.85,
-                // ЖЕСТКАЯ ГЕО-ПРИВЯЗКА К ПОВЕРХНОСТИ ДЛЯ ИДЕАЛЬНОГО МАСШТАБИРОВАНИЯ
-                coordRendering: "short" 
-            });
-            myMap.geoObjects.add(heatingLine);
-
-            // АВАРИЙНЫЙ ПУНКТИР НА ТЕПЛОСЕТИ (Между ТК-11 и ТК-12)
-            var leakHeatingLine = new ymaps.Polyline([[55.756314, 37.617935], [55.755814, 37.619535]], {}, {
-                strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash', coordRendering: "short"
-            });
-            myMap.geoObjects.add(leakHeatingLine);
-
-
-            // --- 2. СИНЯЯ СЕТЬ ВОДОКАНАЛА (СТАБИЛЬНЫЕ СИНХРОННЫЕ ПОЛИЛАЙНЫ ЯНДЕКСА) ---
-            var waterRoute = [
-                [55.755124, 37.614212], [55.754412, 37.616345], [55.753245, 37.618101], 
-                [55.752101, 37.619845], [55.751512, 37.621512], [55.751101, 37.623401], 
-                [55.750512, 37.625612], [55.749912, 37.627101], [55.748845, 37.625845], 
-                [55.748101, 37.624101], [55.751890, 37.622650], [55.751430, 37.624750], [55.750950, 37.626900]
-            ];
-
-            var waterLine = new ymaps.Polyline(waterRoute, {
-                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>Диаметр: 600мм<br>Давление: 0.6 МПа"
-            }, { 
-                strokeColor: "#3388ff", 
-                strokeWidth: 5, 
-                strokeOpacity: 0.85,
-                coordRendering: "short"
+            // 1. ЛИНИЯ ВОДОКАНАЛА (Синяя трасса ХВС)
+            var waterLine = new ymaps.Polyline([
+                [55.756500, 37.616000],
+                [55.756000, 37.617500],
+                [55.755500, 37.619000]
+            ], {}, {
+                strokeColor: "#3388ff",
+                strokeWidth: 5,
+                strokeOpacity: 0.8
             });
             myMap.geoObjects.add(waterLine);
 
+            // 2. ЛИНИЯ ТЕПЛОСЕТИ (Красная трасса ГВС/Отопления)
+            var heatingLine = new ymaps.Polyline([
+                [55.756800, 37.616500], // Колодец №10
+                [55.756314, 37.617935], // Колодец №11
+                [55.755814, 37.619535], // Колодец №12 (Точка свища)
+                [55.755300, 37.621000]  // Колодец №13
+            ], {}, {
+                strokeColor: "#ff4a4a",
+                strokeWidth: 5,
+                strokeOpacity: 0.8
+            });
+            myMap.geoObjects.add(heatingLine);
 
-            // --- 3. АСИНХРОННЫЙ FETCH-ДВИЖОК ---
-            async function loadDynamicMarkers() {
-                try {
-                    const response = await fetch(`${API_SERVER_URL}/v1/gis/markers`);
-                    if (!response.ok) throw new Error("Ошибка бэкенда");
-                    const markersData = await response.json();
+            // 3. АВАРИЙНЫЙ УЧАСТОК ТЕПЛОСЕТИ ДО СВИЩА (Жирный красный пунктир)
+            var leakHeatingLine = new ymaps.Polyline([
+                [55.756314, 37.617935],
+                [55.755814, 37.619535]
+            ], {}, {
+                strokeColor: "#ff4a4a",
+                strokeWidth: 8,
+                strokeOpacity: 0.9,
+                strokeStyle: 'dash'
+            });
+            myMap.geoObjects.add(leakHeatingLine);
 
-                    markersData.forEach(function (node) {
-                        let presetColor = 'islands#blueCircleDotIcon';
-                        if (node.status === 'BLOCKED_BY_SECURITY' || node.status === 'PIPE_LEAK') {
-                            presetColor = 'islands#blackDotIcon';
-                        } else if (node.network_type === 'heating') {
-                            presetColor = 'islands#redCircleDotIcon';
-                        }
-                        
-                        var placemark = new ymaps.Placemark(node.coords, { 
-                            hintContent: node.hint,
-                            balloonContent: `ID устройства: ${node.device_id}`
-                        }, { preset: presetColor });
-                        
-                        myMap.geoObjects.add(placemark);
-                    });
-                } catch (error) {
-                    console.log("🔒 Запущена стабильная гео-информационная витрина ГлавЦифры.");
-                    loadFallbackDemoMarkers(myMap);
-                }
-            }
-
-            loadDynamicMarkers();
+            // 4. МАРКЕР СВИЩА ЧЕРНОГО ЦВЕТА
+            var myPlacemark = new ymaps.Placemark([55.755814, 37.619535], {
+                hintContent: 'ГЛАВЦИФРА: Локализация свища LINE-02',
+                balloonContent: 'Технический колодец №12'
+            }, {
+                preset: 'islands#blackDotIcon'
+            });
+            myMap.geoObjects.add(myPlacemark);
         }
-
-        // РЕЗЕРВНЫЕ КОЛОДЦЫ (РОДНАЯ СИНХРОННАЯ ПРИВЯЗКА)
-        function loadFallbackDemoMarkers(mapInstance) {
-            // Теплосеть (Красные)
-            var hNodes = [
-                { c: [55.757312, 37.615024], h: "<b>ТК-10 (Теплосеть)</b><br>Температура: 95°C" },
-                { c: [55.756314, 37.617935], h: "<b>ТК-11 (Теплосеть)</b><br>Акустический шум: Повышен" },
-                { c: [55.755255, 37.621245], h: "<b>ТК-13 (Теплосеть)</b><br>Статус: В норме" },
-                { c: [55.754124, 37.625345], h: "<b>ТК-15 (Теплосеть)</b><br>Давление: 1.15 МПа" },
-                { c: [55.759450, 37.626350], h: "<b>Технический колодец ТК-16 (Теплосеть)</b><br>Локация: Б. Лубянка" },
-                { c: [55.758100, 37.627800], h: "<b>Технический колодец ТК-17 (Теплосеть)</b><br>Локация: Новая площадь" },
-                { c: [55.755450, 37.629250], h: "<b>Технический колодец ТК-18 (Теплосеть)</b><br>Локация: Старая площадь" }
-            ];
-            hNodes.forEach(function(n){
-                mapInstance.geoObjects.add(new ymaps.Placemark(n.c, {hintContent: n.h}, {preset: 'islands#redCircleDotIcon'}));
-            });
-
-            // Водоканал (Синие)
-            var wNodes = [
-                { c: [55.754412, 37.616345], h: "<b>Узел ХВС-04</b><br>Расход: 140 м³/ч" },
-                { c: [55.751512, 37.621512], h: "<b>Узел ХВС-07</b><br>Давление: 0.58 МПа" },
-                { c: [55.751890, 37.622650], h: "<b>Узел ХВС-08</b><br>Локация: ул. Варварка" },
-                { c: [55.751430, 37.624750], h: "<b>Узел ХВС-09</b><br>Локация: ул. Варварка" },
-                { c: [55.750950, 37.626900], h: "<b>Узел ХВС-10</b><br>Локация: Китайгородский проезд" }
-            ];
-            wNodes.forEach(function(n){
-                mapInstance.geoObjects.add(new ymaps.Placemark(n.c, {hintContent: n.h}, {preset: 'islands#blueCircleDotIcon'}));
-            });
-
-            // Свищ (Черный маркер)
-            var leak = new ymaps.Placemark([55.755814, 37.619535], {
-                hintContent: "<b>⚠️ ВНИМАНИЕ: ТОЧКА СКРЫТОЙ УТЕЧКИ</b><br>Объект: ТК-12<br>Расстояние: 18.4м от ТК-11",
-                balloonContent: "Точность ИИ локализации: ±0.5м"
+    </script>
+</body>
+</html>
