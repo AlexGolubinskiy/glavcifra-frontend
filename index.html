@@ -10,90 +10,39 @@
     
     <style>
         html, body { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            font-family: Arial, sans-serif; 
-            background-color: #1a1a1a; 
-            color: #fff; 
-            overflow: hidden; 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
         }
         #header { 
-            height: 60px;
-            padding: 0 20px; 
-            background: #2a2a2a; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            font-size: 20px; 
-            font-weight: bold; 
-            border-bottom: 3px solid #ff4a4a; 
-            box-sizing: border-box;
+            height: 60px; padding: 0 20px; background: #2a2a2a; 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 20px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box;
         }
         .partner-link { 
-            font-size: 14px; 
-            color: #ff4a4a; 
-            text-decoration: none; 
-            border: 1px solid #ff4a4a; 
-            padding: 5px 10px; 
-            border-radius: 4px; 
-            transition: all 0.3s;
-            font-weight: bold;
+            font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
+            padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
         }
-        .partner-link:hover { 
-            background: #ff4a4a; 
-            color: #fff; 
-        }
-        #map-container { 
-            width: 100%; 
-            height: calc(100% - 60px); 
-            position: relative; 
-            background-color: #1a1a1a; 
-        }
-        #yandex-map { 
-            width: 100%; 
-            height: 100%; 
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+        .partner-link:hover { background: #ff4a4a; color: #fff; }
+        #map-container { width: 100%; height: calc(100% - 60px); position: relative; background-color: #1a1a1a; }
+        #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
         /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ ДИСПЕТЧЕРА С ПРЕДИКТИВНЫМИ МЕТРИКАМИ */
         #info-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 320px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            font-size: 13px;
-            line-height: 1.6;
-            z-index: 9999;
-            border-left: 5px solid #000000;
-            box-sizing: border-box;
+            position: absolute; top: 20px; right: 20px; width: 320px; 
+            background: rgba(255, 255, 255, 0.95); color: #333; padding: 20px; 
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+            font-size: 13px; line-height: 1.6; z-index: 9999; border-left: 5px solid #000000; box-sizing: border-box;
         }
         .alert-title { color: #000000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
         .metric-bold { font-weight: bold; color: #111; }
         
         .contacts-block {
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
+            margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px;
         }
         .email-link {
-            color: #ff4a4a;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
+            color: #ff4a4a; text-decoration: none; font-weight: bold; transition: color 0.3s;
         }
-        .email-link:hover {
-            color: #bd1313;
-        }
+        .email-link:hover { color: #bd1313; }
     </style>
 </head>
 <body>
@@ -103,10 +52,8 @@
     </div>
     
     <div id="map-container">
-        <!-- БЛОК ДЛЯ ИНИЦИАЛИЗАЦИИ КАРТЫ -->
         <div id="yandex-map"></div>
         
-        <!-- СТАЦИОНАРНЫЙ ВИДЖЕТ АВАРИИ ДЛЯ ЗАКАЗЧИКОВ -->
         <div id="info-panel">
             <div class="alert-title">🚨 LINE-02: КРИТИЧЕСКАЯ УТЕЧКА (СВИЩ)</div>
             📍 <span class="metric-bold">Адрес:</span> г. Москва, ул. Ильинка, д. 4<br>
@@ -131,47 +78,66 @@
                 controls: ['zoomControl', 'typeSelector']
             });
 
-            // 1. ЛИНИЯ ВОДОКАНАЛА (Синяя трасса ХВС)
+            // --- 1. СЕТЬ ВОДОКАНАЛА (Синяя трасса ХВС с информацией) ---
             var waterLine = new ymaps.Polyline([
                 [55.756500, 37.616000],
                 [55.756000, 37.617500],
                 [55.755500, 37.619000]
-            ], {}, {
-                strokeColor: "#3388ff",
-                strokeWidth: 5,
-                strokeOpacity: 0.8
+            ], {
+                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>🔩 Материал: Чугун<br>📏 Диаметр: 600 мм<br>⏳ Срок службы: 24 года (Остаток 36%)"
+            }, {
+                strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.8
             });
             myMap.geoObjects.add(waterLine);
 
-            // 2. ЛИНИЯ ТЕПЛОСЕТИ (Красная трасса ГВС/Отопления)
+            // СИНИЕ КОЛОДЦЫ НА ВОДОПРОВОДЕ
+            var waterNodes = [
+                { c: [55.756500, 37.616000], h: "<b>Узел учета ХВС-04 (Водоканал)</b><br>Давление: 0.6 МПа<br>Расход: 140 м³/ч" },
+                { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b><br>Состояние: Стабильное" },
+                { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b><br>Датчик влажности: В норме" }
+            ];
+            waterNodes.forEach(function(n) {
+                myMap.geoObjects.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
+            });
+
+
+            // --- 2. СЕТЬ ТЕПЛОСЕТИ (Красная трасса ГВС с информацией) ---
             var heatingLine = new ymaps.Polyline([
                 [55.756800, 37.616500], // Колодец №10
                 [55.756314, 37.617935], // Колодец №11
                 [55.755814, 37.619535], // Колодец №12 (Точка свища)
                 [55.755300, 37.621000]  // Колодец №13
-            ], {}, {
-                strokeColor: "#ff4a4a",
-                strokeWidth: 5,
-                strokeOpacity: 0.8
+            ], {
+                hintContent: "<b>Магистральный трубопровод Теплосети</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм<br>⏳ Срок службы: 12 лет (Критический износ на участке LINE-02)"
+            }, {
+                strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.8
             });
             myMap.geoObjects.add(heatingLine);
 
-            // 3. АВАРИЙНЫЙ УЧАСТОК ТЕПЛОСЕТИ ДО СВИЩА (Жирный красный пунктир)
+            // АВАРИЙНЫЙ КРАСНЫЙ ПУНКТИР ДО ТОЧКИ СВИЩА
             var leakHeatingLine = new ymaps.Polyline([
                 [55.756314, 37.617935],
                 [55.755814, 37.619535]
             ], {}, {
-                strokeColor: "#ff4a4a",
-                strokeWidth: 8,
-                strokeOpacity: 0.9,
-                strokeStyle: 'dash'
+                strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash'
             });
             myMap.geoObjects.add(leakHeatingLine);
 
-            // 4. МАРКЕР СВИЩА ЧЕРНОГО ЦВЕТА
+            // КРАСНЫЕ КОЛОДЦЫ НА ТЕПЛОСЕТИ
+            var heatingNodes = [
+                { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10 (Теплосеть)</b><br>Температура: 95°C<br>Давление: 1.2 МПа" },
+                { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Теплосеть)</b><br>Температура: 94°C<br>⚠️ Акустический шум: Повышен" },
+                { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13 (Теплосеть)</b><br>Температура: 89°C<br>Состояние: Норма" }
+            ];
+            heatingNodes.forEach(function(n) {
+                myMap.geoObjects.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
+            });
+
+
+            // --- 3. ЧЕРНЫЙ СВИЩ С ИНФОРМАЦИЕЙ О РАССТОЯНИИ ---
             var myPlacemark = new ymaps.Placemark([55.755814, 37.619535], {
-                hintContent: 'ГЛАВЦИФРА: Локализация свища LINE-02',
-                balloonContent: 'Технический колодец №12'
+                hintContent: '<b>🚨 КРИТИЧЕСКАЯ АНОМАЛИЯ (СВИЩ)</b>',
+                balloonContent: '<b>Объект:</b> Технический колодец №12 (Ильинка, 4)<br><b>Дистанция:</b> 18.4 метров от ТК-11<br><b>Рекомендация:</b> Срочная локальная раскопка!'
             }, {
                 preset: 'islands#blackDotIcon'
             });
