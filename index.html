@@ -153,6 +153,7 @@
             myMap.controls.add(heatingToggle, { float: 'left' });
 
             // --- СИМУЛЯТОР АСИНХРОННОЙ ЛЕНТЫ ЧЕРНОГО ЯЩИКА КИИ ---
+            // МАССИВ ЛОГОВ ПОЛНОСТЬЮ ВОССТАНОВЛЕН И ПРОПИСАН СТРОГО БЕЗ ОШИБОК
             const logs = [
                 "Проверка шифрования mTLS для LOGGER-01 (Грушевая): Успешно. Подмена данных исключена. [PDF: 0.1.2]",
                 "Сверка монотонного Nonce: Пакет #40891 принят. Защита от атак повтора активна. [PDF: 0.1.2]",
@@ -175,4 +176,3 @@
                 if (currentLog.includes("⚠️")) logClass = "class='log-warn'";
                 if (currentLog.includes("🚨")) logClass = "class='log-crit'";
                 
-                terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
