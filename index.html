@@ -34,12 +34,29 @@
         }
         .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
         .metric-bold { font-weight: bold; color: #111; }
+        
+        /* СТИЛИ ДЛЯ БЛОКА КОНТАКТОВ НА ПАНЕЛИ */
+        .contacts-block {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+        }
+        .email-link {
+            color: #ff4a4a;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .email-link:hover {
+            color: #bd1313;
+        }
     </style>
 </head>
 <body>
     <div id="header">
         <span>🖥 ГИС-Панель диспетчера «ГЛАВЦИФРА» — Цифровой Двойник</span>
-        <a href="mailto:partner@glavcifra.ru?subject=Запрос документации API ГлавЦифра" class="partner-link">🔌 Получить доступ к API</a>
+        <a href="https://github.com" target="_blank" class="partner-link">📂 Открытый код и API (GitHub)</a>
     </div>
     
     <div id="map-container">
@@ -51,7 +68,12 @@
             📐 <span class="metric-bold">Локализация свища:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от ТК-11 по ул. Ильинка<br>
             🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ (Усталость 84%)<br>
             ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов<br>
-            <span style="font-size: 11px; color: #666;">* Наведите на трубы и колодцы для просмотра телеметрии</span>
+            
+            <!-- ИСПРАВЛЕНО: Вывели актуальную почту генерального директора ceo@glavcifra.ru -->
+            <div class="contacts-block">
+                📬 <span class="metric-bold">По вопросам OEM-интеграции:</span><br>
+                <a href="mailto:ceo@glavcifra.ru?subject=Запрос документации API ГлавЦифра" class="email-link">ceo@glavcifra.ru</a>
+            </div>
         </div>
     </div>
 
@@ -85,7 +107,6 @@
             });
             myMap.geoObjects.add(leakHeatingLine);
 
-
             // --- 2. СИНЯЯ СЕТЬ ВОДОКАНАЛА ---
             var waterRoute = [
                 [55.755124, 37.614212], [55.754412, 37.616345], 
@@ -96,10 +117,9 @@
             ];
 
             var waterLine = new ymaps.Polyline(waterRoute, {
-                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>Диаметр: 600мм<br>Давление: 0.6 МПа<br>Состояние: Стабильное"
+                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>Диаметр: 600мм<br>Давление: 0.6 МПа<br>Состояние: Stable"
             }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.85 });
             myMap.geoObjects.add(waterLine);
-
 
             // --- 3. ИНТЕРАКТИВНЫЕ КОЛОДЦЫ ТЕПЛОСЕТЕЙ (КРАСНЫЕ МАРКЕРЫ) ---
             var heatingNodes = [
@@ -111,11 +131,10 @@
 
             heatingNodes.forEach(function (node) {
                 var placemark = new ymaps.Placemark(node.coords, { hintContent: node.hint }, {
-                    preset: 'islands#redCircleDotIcon' // ИСПРАВЛЕНО: Красные точки для теплосетей
+                    preset: 'islands#redCircleDotIcon'
                 });
                 myMap.geoObjects.add(placemark);
             });
-
 
             // --- 4. ИНТЕРАКТИВНЫЕ КОЛОДЦЫ ВОДОКАНАЛА (СИНИЕ МАРКЕРЫ) ---
             var waterNodes = [
@@ -125,18 +144,17 @@
 
             waterNodes.forEach(function (node) {
                 var placemark = new ymaps.Placemark(node.coords, { hintContent: node.hint }, {
-                    preset: 'islands#blueCircleDotIcon' // ИСПРАВЛЕНО: Синие точки для водоканала
+                    preset: 'islands#blueCircleDotIcon'
                 });
                 myMap.geoObjects.add(placemark);
             });
-
 
             // --- 5. ТОЧКА АВАРИИ (ЧЕРНЫЙ СВИЩ ТК-12 НА ТЕПЛОСЕТИ) ---
             var leakPlacemark = new ymaps.Placemark([55.755814, 37.619535], {
                 hintContent: "<b>⚠️ ВНИМАНИЕ: ТОЧКА СКРЫТОЙ УТЕЧКИ</b><br>Объект: ТК-12 (Ильинка, 4)<br>Расстояние: 18.4м от ТК-11<br>Акустический свищ зафиксирован!",
                 balloonContent: "Рекомендуется немедленная раскопка (Точность ИИ: ±0.5м)"
             }, {
-                preset: 'islands#blackDotIcon', // ОСТАВЛЕНО ЧЕРНЫМ по вашему требованию
+                preset: 'islands#blackDotIcon',
                 iconColor: '#000000'
             });
             myMap.geoObjects.add(leakPlacemark);
