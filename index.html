@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Промышленных Объектов КИИ</title>
-    <link rel="stylesheet" href="https://cloudflare.com" />
-    <script src="https://cloudflare.com"></script>
+    
+    <!-- ПОДКЛЮЧАЕМ НАДЕЖНЫЙ ОФИЦИАЛЬНЫЙ СКРИПТ ЯНДЕКС КАРТ (БЕЗ ВНЕШНИХ ЗАВИСИМОСТЕЙ И CORS ОШИБОК) -->
+    <script src="https://yandex.ru" type="text/javascript"></script>
+    
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
@@ -13,7 +15,7 @@
         .partner-link { font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold; }
         .partner-link:hover { background: #ff4a4a; color: #fff; }
         #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
-        #map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         #info-panel { position: absolute; top: 20px; right: 20px; width: 350px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-size: 13px; line-height: 1.4; z-index: 9999; border-left: 5px solid #ff4a4a; box-sizing: border-box; max-height: 90%; overflow-y: auto; }
         .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
         .metric-bold { font-weight: bold; color: #111; }
@@ -25,6 +27,8 @@
         .form-group { margin-bottom: 8px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 3px; color: #444; font-size: 10px; }
         .form-group select, .form-group input { width: 100%; padding: 5px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
+        .file-row { display: flex; gap: 5px; margin-bottom: 5px; }
+        .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 10px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
         .calc-btn:hover { background: #bd1313; }
         #log-terminal { height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333; box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000; }
@@ -36,10 +40,10 @@
     <div class="app-container">
         <div id="header">
             <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник Объектов КИИ ТЭК</span>
-            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API КИИ (GitHub)</a>
+            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
         </div>
         <div id="map-area">
-            <div id="map"></div>
+            <div id="yandex-map"></div>
             <div id="info-panel">
                 <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
                 <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
@@ -111,16 +115,20 @@
     </div>
 
     <script type="text/javascript">
-        // Изолированные глобальные переменные ГИС
-        var map, jkhLayerGroup, pumpLayerGroup, oilLayerGroup;
+        // АБСОЛЮТНО ГЛОБАЛЬНЫЕ И СВОБОДНЫЕ ОТ КЭША ФУНКЦИИ УПРАВЛЕНИЯ ТАБАМИ ЯНДЕКСА
+        var myMap, jkhCollection, pumpCollection, oilCollection;
 
-        // ВЫНОСИМ ОДЕЛЬНЫЕ НЕЗАВИСИМЫЕ ФУНКЦИИ ДЛЯ КАЖДОГО ТАБА НАВЕЧНО
         function showPipeTab() {
             resetTabs();
             document.getElementById('tab-pipe').classList.add('active');
             document.getElementById('section-pipe').style.display = 'block';
             document.getElementById('live-sector').innerText = "Городские сети (Москва)";
-            if(map) { map.removeLayer(pumpLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(jkhLayerGroup); map.flyTo([55.755814, 37.619535], 16); }
+            if(myMap) {
+                myMap.geoObjects.remove(pumpCollection);
+                myMap.geoObjects.remove(oilCollection);
+                myMap.geoObjects.add(jkhCollection);
+                myMap.panTo([55.755814, 37.619535], {flying: true});
+            }
         }
 
         function showPumpTab() {
@@ -128,7 +136,12 @@
             document.getElementById('tab-pump').classList.add('active');
             document.getElementById('section-pump').style.display = 'block';
             document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
-            if(map) { map.removeLayer(jkhLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(pumpLayerGroup); map.flyTo([47.245000, 39.720000], 16); }
+            if(myMap) {
+                myMap.geoObjects.remove(jkhCollection);
+                myMap.geoObjects.remove(oilCollection);
+                myMap.geoObjects.add(pumpCollection);
+                myMap.panTo([47.245000, 39.720000], {flying: true});
+            }
         }
 
         function showOilTab() {
@@ -136,12 +149,5 @@
             document.getElementById('tab-oil').classList.add('active');
             document.getElementById('section-oil').style.display = 'block';
             document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
-            if(map) { map.removeLayer(jkhLayerGroup); map.removeLayer(pumpLayerGroup); map.addLayer(oilLayerGroup); map.flyTo([44.733000, 37.818000], 15); }
-        }
-
-        function resetTabs() {
-            document.getElementById('tab-pipe').classList.remove('active');
-            document.getElementById('tab-pump').classList.remove('active');
-            document.getElementById('tab-oil').classList.remove('active');
-            document.getElementById('section-pipe').style.display = 'none';
-            document.getElementById('section-pump').style.display = 'none';
+            if(myMap) {
+                myMap.geoObjects.remove(jkhCollection);
