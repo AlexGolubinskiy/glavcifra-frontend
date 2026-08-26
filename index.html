@@ -5,7 +5,7 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
  
- <!-- ПОДКЛЮЧАЕМ БЕСПЛАТНУЮ КАРТУ LEAFLET (БЕЗ КЛЮЧЕЙ И ДОМЕНОВ) -->
+ <!-- ПОДКЛЮЧАЕМ БЕСПЛАТНУЮ КАРТУ LEAFLET -->
  <link rel="stylesheet" href="https://unpkg.com" />
  <script src="https://unpkg.com"></script>
  
@@ -22,13 +22,22 @@
  font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
  }
  .partner-link { 
- font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; \
+ font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
  padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
  }
  .partner-link:hover { background: #ff4a4a; color: #fff; }
  
- #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
- #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+ #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; height: 100%; }
+ 
+ /* ИСПРАВЛЕНО: Жесткие стили для контейнера карты, чтобы Leaflet точно инициализировался */
+ #yandex-map { 
+ width: 100% !important; 
+ height: 100% !important; 
+ position: absolute; 
+ top: 0; 
+ left: 0; 
+ z-index: 1;
+ }
  
  #info-panel {
  position: absolute; top: 20px; right: 20px; width: 340px; 
@@ -50,7 +59,6 @@
  .log-warn { color: #ffcc00; }
  .log-crit { color: #ff4a4a; font-weight: bold; }
 
- /* Стилизация кастомных кнопок управления слоями Leaflet под ваш темный дизайн */
  .custom-layer-control {
  position: absolute; bottom: 20px; left: 20px; z-index: 9999; display: flex; gap: 10px;
  }
@@ -61,7 +69,7 @@
  .map-btn.active { background: #ff4a4a; color: #fff; }
  .map-btn:hover { opacity: 0.9; }
 
- /* Инвертируем карту Leaflet в темную тему, чтобы сохранить стилистику ГЛАВЦИФРЫ */
+ /* Темная тема для слоев карты */
  .leaflet-tile-container { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.2); }
  </style>
 </head>
@@ -73,10 +81,8 @@
  </div>
  
  <div id="map-area">
- <!-- Контейнер для карты (оставлен старый ID для обратной совместимости) -->
  <div id="yandex-map"></div>
  
- <!-- Кастомный блок переключения слоев (как в Яндекс кнопках) -->
  <div class="custom-layer-control">
  <button id="btn-water" class="map-btn active">💧 Водоснабжение</button>
  <button id="btn-heating" class="map-btn active">🔥 Теплотрассы</button>
@@ -102,124 +108,63 @@
  </div>
 
  <script type="text/javascript">
- // 1. Инициализация бесплатной карты Leaflet
+ // Инициализация Leaflet
  var myMap = L.map('yandex-map', {
- center: [55.755814, 37.619535], // Координаты центра
+ center: [55.755814, 37.619535],
  zoom: 16,
- zoomControl: true
+ zoomControl: false // отключаем дефолтные кнопки, чтобы не ломать дизайн
  });
 
- // 2. Подключаем бесплатные тайлы OpenStreetMap
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
- attribution: '&copy; OpenStreetMap contributors'
+ attribution: '&copy; OpenStreetMap'
  }).addTo(myMap);
 
- // 3. Создаем группы слоев (вместо GeoObjectCollection Яндекса)
+ // ИСПРАВЛЕНО: Принудительный перерасчет размеров контейнера Leaflet после загрузки страницы
+ setTimeout(function() {
+ myMap.invalidateSize();
+ }, 200);
+
  var waterLayerGroup = L.layerGroup().addTo(myMap);
  var heatingLayerGroup = L.layerGroup().addTo(myMap);
 
- // --- 1. МАГИСТРАЛЬ ВОДОСНАБЖЕНИЯ ВОДОКАНАЛА (Синяя) ---
- var waterCoords = [
- [55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]
- ];
- var waterLine = L.polyline(waterCoords, {
- color: '#3388ff', weight: 5, opacity: 0.8
- }).addTo(waterLayerGroup);
- 
- // Тултип для водопровода
- waterLine.bindTooltip("<b>Магистраль Водоканала (ХВС)</b><br>🔩 Материал: Серый чугун<br>📏 Диаметр: 600 мм");
+ // Линия водоснабжения
+ var waterCoords = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
+ var waterLine = L.polyline(waterCoords, { color: '#3388ff', weight: 5, opacity: 0.8 }).addTo(waterLayerGroup);
+ waterLine.bindTooltip("<b>Магистраль Водоканала (ХВС)</b>");
 
- var waterNodes = [
- { c: [55.756500, 37.616000], h: "<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч" },
- { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b>" },
- { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b>" }
- ];
- waterNodes.forEach(function(n) {
- L.circleMarker(n.c, {
- radius: 6, fillColor: '#3388ff', color: '#fff', weight: 2, fillOpacity: 1
- }).bindTooltip(n.h).addTo(waterLayerGroup);
- });
+ // Линия теплосети
+ var heatingCoords = [[55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]];
+ var heatingLine = L.polyline(heatingCoords, { color: '#ff4a4a', weight: 5, opacity: 0.8 }).addTo(heatingLayerGroup);
+ heatingLine.bindTooltip("<b>Магистраль Теплосети (ГВС)</b>");
 
- // --- 2. МАГИСТРАЛЬ ТЕПЛОСЕТИ (Красная) ---
- var heatingCoords = [
- [55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]
- ];
- var heatingLine = L.polyline(heatingCoords, {
- color: '#ff4a4a', weight: 5, opacity: 0.8
- }).addTo(heatingLayerGroup);
- 
- heatingLine.bindTooltip("<b>Магистраль Теплосети (ГВС)</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм");
+ // Маркер утечки
+ var leak = L.circleMarker([55.755814, 37.619535], { radius: 8, fillColor: '#000000', color: '#ff4a4a', weight: 3, fillOpacity: 1 }).addTo(heatingLayerGroup);
+ leak.bindTooltip('<b>⚠ ТОЧКА СКРЫТОЙ УТЕЧКИ</b>');
 
- // Пульсирующий/пунктирный участок аварии
- var leakHeatingLine = L.polyline([
- [55.756314, 37.617935], [55.755814, 37.619535]
- ], {
- color: '#ff4a4a', weight: 8, opacity: 0.9, dashArray: '10, 10'
- }).addTo(heatingLayerGroup);
-
- var heatingNodes = [
- { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C" },
- { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Логгер LOGGER-01)</b><br>⚠ Акустический шум: Повышен (+12 дБ)" },
- { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13</b>" }
- ];
- heatingNodes.forEach(function(n) {
- L.circleMarker(n.c, {
- radius: 6, fillColor: '#ff4a4a', color: '#fff', weight: 2, fillOpacity: 1
- }).bindTooltip(n.h).addTo(heatingLayerGroup);
- });
-
- // Точка скрытой утечки (Черный маркер)
- var leak = L.circleMarker([55.755814, 37.619535], {
- radius: 8, fillColor: '#000000', color: '#ff4a4a', weight: 3, fillOpacity: 1
- }).addTo(heatingLayerGroup);
- 
- leak.bindTooltip('<b>⚠ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b>');
- leak.bindPopup('<b>Локализация аномалии:</b> 18.4 метров от ТК-11');
-
- // 4. Логика интерактивного переключения слоев (кнопки)
+ // Переключатели слоев
  document.getElementById('btn-water').addEventListener('click', function() {
- if (myMap.hasLayer(waterLayerGroup)) {
- myMap.removeLayer(waterLayerGroup);
- this.classList.remove('active');
- } else {
- myMap.addLayer(waterLayerGroup);
- this.classList.add('active');
- }
+ if (myMap.hasLayer(waterLayerGroup)) { myMap.removeLayer(waterLayerGroup); this.classList.remove('active'); } 
+ else { myMap.addLayer(waterLayerGroup); this.classList.add('active'); }
  });
 
  document.getElementById('btn-heating').addEventListener('click', function() {
- if (myMap.hasLayer(heatingLayerGroup)) {
- myMap.removeLayer(heatingLayerGroup);
- this.classList.remove('active');
- } else {
- myMap.addLayer(heatingLayerGroup);
- this.classList.add('active');
- }
+ if (myMap.hasLayer(heatingLayerGroup)) { myMap.removeLayer(heatingLayerGroup); this.classList.remove('active'); } 
+ else { myMap.addLayer(heatingLayerGroup); this.classList.add('active'); }
  });
 
- // --- 3. СКРИПТ БЕГУЩИХ ЛОГОВ ДЛЯ ТЕРМИНАЛА ---
+ // Терминал логов
  const logs = [
- "Контроль шифрования mTLS для логгера LOGGER-01: Успешно. Данные защищены.",
- "Проверка Nonce трекера: Пакет #10452 принят. Защита от атак повтора активна.",
+ "Контроль шифрования mTLS для логгера LOGGER-01: Успешно.",
  "Ядро Python (scipy.signal): Полосовая фильтрация выделила гармоники свища 3.4 кГц.",
- "ESA-анализ насоса ТК-10: Спектр токов стабилен. Межвитковых замыканий нет.",
  "ВНИМАНИЕ: На участке ТК-11 зафиксирован аномальный акустический шум!",
- "КРИТИЧЕСКИЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11.",
- "Лог верифицирован и сохранен в main_platform.db. Цифровой след диспетчера сформирован.",
- "Модуль Anti-Tamper: Сканирование физического контура логгеров... Угрозы отсутствуют."
+ "КРИТИЧЕСКИЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11."
  ];
- 
  let logIndex = 0;
  const terminal = document.getElementById("log-terminal");
- 
  setInterval(() => {
  const now = new Date().toLocaleTimeString();
  let currentLog = logs[logIndex % logs.length];
- let logClass = "";
- 
- if (currentLog.includes("ВНИМАНИЕ")) logClass = "class='log-warn'";
- if (currentLog.includes("КРИТИЧЕСКИЙ")) logClass = "class='log-crit'";
- 
+ let logClass = currentLog.includes("ВНИМАНИЕ") ? "class='log-warn'" : (currentLog.includes("КРИТИЧЕСКИЙ") ? "class='log-crit'" : "");
  terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
  terminal.scrollTop = terminal.scrollHeight;
  logIndex++;
