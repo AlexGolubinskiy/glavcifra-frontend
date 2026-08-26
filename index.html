@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Промышленных Объектов КИИ</title>
     
-    <!-- ПОДКЛЮЧАЕМ НАДЕЖНЫЙ ОФИЦИАЛЬНЫЙ СКРИПТ ЯНДЕКС КАРТ (БЕЗ ВНЕШНИХ ЗАВИСИМОСТЕЙ И CORS ОШИБОК) -->
+    <!-- СТАБИЛЬНЫЙ СКРИПТ ЯНДЕКС КАРТ БЕЗ ВНЕШНИХ ШРИФТОВ И CORS ОШИБОК -->
     <script src="https://yandex.ru" type="text/javascript"></script>
     
     <style>
@@ -27,20 +27,16 @@
         .form-group { margin-bottom: 8px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 3px; color: #444; font-size: 10px; }
         .form-group select, .form-group input { width: 100%; padding: 5px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
-        .file-row { display: flex; gap: 5px; margin-bottom: 5px; }
-        .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 10px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
         .calc-btn:hover { background: #bd1313; }
         #log-terminal { height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333; box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000; }
-        .log-warn { color: #ffcc00; }
-        .log-crit { color: #ff4a4a; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div id="header">
             <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник Объектов КИИ ТЭК</span>
-            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
+            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API КИИ (GitHub)</a>
         </div>
         <div id="map-area">
             <div id="yandex-map"></div>
@@ -49,10 +45,11 @@
                 <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
                 <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
                 
+                <!-- АВТОНОМНЫЕ ONCLICK-ТАБЫ: ПОЛНОСТЬЮ ИСКЛЮЧАЮТ ОШИБКИ REFERENCEERROR -->
                 <div class="tab-container">
-                    <div id="tab-pipe" class="tab-btn active" onclick="showPipeTab()">   СВИЩИ ЖКХ</div>
-                    <div id="tab-pump" class="tab-btn" onclick="showPumpTab()">⚡️ НАСОСЫ ESA</div>
-                    <div id="tab-oil" class="tab-btn" onclick="showOilTab()">🛢 НЕФТЬ КИИ</div>
+                    <div id="tab-pipe" class="tab-btn active" onclick="document.getElementById('tab-pipe').classList.add('active'); document.getElementById('tab-pump').classList.remove('active'); document.getElementById('tab-oil').classList.remove('active'); document.getElementById('section-pipe').style.display='block'; document.getElementById('section-pump').style.display='none'; document.getElementById('section-oil').style.display='none'; document.getElementById('live-sector').innerText='Городские сети (Москва)'; if(myMap){myMap.geoObjects.remove(pumpCollection); myMap.geoObjects.remove(oilCollection); myMap.geoObjects.add(jkhCollection); myMap.panTo([55.755814, 37.619535], {flying:true});}">   СВИЩИ ЖКХ</div>
+                    <div id="tab-pump" class="tab-btn" onclick="document.getElementById('tab-pump').classList.add('active'); document.getElementById('tab-pipe').classList.remove('active'); document.getElementById('tab-oil').classList.remove('active'); document.getElementById('section-pump').style.display='block'; document.getElementById('section-pipe').style.display='none'; document.getElementById('section-oil').style.display='none'; document.getElementById('live-sector').innerText='ГНС Суходольная (Энергоузел)'; if(myMap){myMap.geoObjects.remove(jkhCollection); myMap.geoObjects.remove(oilCollection); myMap.geoObjects.add(pumpCollection); myMap.panTo([47.245000, 39.720000], {flying:true});}">⚡️ НАСОСЫ ESA</div>
+                    <div id="tab-oil" class="tab-btn" onclick="document.getElementById('tab-oil').classList.add('active'); document.getElementById('tab-pipe').classList.remove('active'); document.getElementById('tab-pump').classList.remove('active'); document.getElementById('section-oil').style.display='block'; document.getElementById('section-pipe').style.display='none'; document.getElementById('section-pump').style.display='none'; document.getElementById('live-sector').innerText='ПБ «Шесхарис» (Новороссийск)'; if(myMap){myMap.geoObjects.remove(jkhCollection); myMap.geoObjects.remove(pumpCollection); myMap.geoObjects.add(oilCollection); myMap.panTo([44.733000, 37.818000], {flying:true});}">🛢 НЕФТЬ КИИ</div>
                 </div>
                 
                 <!-- БЛОК 1: ТРУБЫ ЖКХ -->
@@ -115,39 +112,6 @@
     </div>
 
     <script type="text/javascript">
-        // АБСОЛЮТНО ГЛОБАЛЬНЫЕ И СВОБОДНЫЕ ОТ КЭША ФУНКЦИИ УПРАВЛЕНИЯ ТАБАМИ ЯНДЕКСА
         var myMap, jkhCollection, pumpCollection, oilCollection;
 
-        function showPipeTab() {
-            resetTabs();
-            document.getElementById('tab-pipe').classList.add('active');
-            document.getElementById('section-pipe').style.display = 'block';
-            document.getElementById('live-sector').innerText = "Городские сети (Москва)";
-            if(myMap) {
-                myMap.geoObjects.remove(pumpCollection);
-                myMap.geoObjects.remove(oilCollection);
-                myMap.geoObjects.add(jkhCollection);
-                myMap.panTo([55.755814, 37.619535], {flying: true});
-            }
-        }
-
-        function showPumpTab() {
-            resetTabs();
-            document.getElementById('tab-pump').classList.add('active');
-            document.getElementById('section-pump').style.display = 'block';
-            document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
-            if(myMap) {
-                myMap.geoObjects.remove(jkhCollection);
-                myMap.geoObjects.remove(oilCollection);
-                myMap.geoObjects.add(pumpCollection);
-                myMap.panTo([47.245000, 39.720000], {flying: true});
-            }
-        }
-
-        function showOilTab() {
-            resetTabs();
-            document.getElementById('tab-oil').classList.add('active');
-            document.getElementById('section-oil').style.display = 'block';
-            document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
-            if(myMap) {
-                myMap.geoObjects.remove(jkhCollection);
+        function runPipeCalculator() {
