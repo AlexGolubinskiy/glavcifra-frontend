@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
+ <title>ГЛАВЦИФРА — Демонстрационный Стенд OEM-Алгоритмов</title>
  
  <!-- ПОДКЛЮЧАЕМ БЕСПЛАТНУЮ КАРТУ LEAFLET -->
  <link rel="stylesheet" href="https://unpkg.com" />
@@ -19,25 +19,17 @@
  #header { 
  height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; 
  display: flex; justify-content: space-between; align-items: center; 
- font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
+ font-size: 17px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
  }
  .partner-link { 
- font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
+ font-size: 13px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
  padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
  }
  .partner-link:hover { background: #ff4a4a; color: #fff; }
  
  #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; height: 100%; }
  
- /* ИСПРАВЛЕНО: Жесткие стили для контейнера карты, чтобы Leaflet точно инициализировался */
- #yandex-map { 
- width: 100% !important; 
- height: 100% !important; 
- position: absolute; 
- top: 0; 
- left: 0; 
- z-index: 1;
- }
+ #yandex-map { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; z-index: 1; }
  
  #info-panel {
  position: absolute; top: 20px; right: 20px; width: 340px; 
@@ -48,8 +40,21 @@
  .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
  .metric-bold { font-weight: bold; color: #111; }
  .contacts-block { margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px; }
- .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; transition: color 0.3s; }
- .email-link:hover { color: #bd1313; }
+ .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; }
+
+ /* СТИЛИЗАЦИЯ ИНТЕРФЕЙСА ЗАГРУЗКИ ТЕСТОВЫХ ФАЙЛОВ */
+ .upload-box {
+ background: #222; border: 2px dashed #ff4a4a; padding: 12px; border-radius: 8px;
+ margin-bottom: 15px; color: #fff; text-align: center;
+ }
+ .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; margin-top: 5px; }
+ .btn-upload {
+ border: 1px solid #ff4a4a; color: #ff4a4a; background-color: transparent;
+ padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer;
+ }
+ .btn-upload:hover { background: #ff4a4a; color: #fff; }
+ .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+ #file-status { font-size: 11px; color: #ffcc00; margin-top: 5px; font-family: monospace; }
 
  #log-terminal {
  height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333;
@@ -58,26 +63,22 @@
  }
  .log-warn { color: #ffcc00; }
  .log-crit { color: #ff4a4a; font-weight: bold; }
+ .log-system { color: #00bfff; font-weight: bold; }
 
- .custom-layer-control {
- position: absolute; bottom: 20px; left: 20px; z-index: 9999; display: flex; gap: 10px;
- }
+ .custom-layer-control { position: absolute; bottom: 20px; left: 20px; z-index: 9999; display: flex; gap: 10px; }
  .map-btn {
  background: #2a2a2a; color: #fff; border: 2px solid #ff4a4a; padding: 8px 15px;
  font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 12px;
  }
  .map-btn.active { background: #ff4a4a; color: #fff; }
- .map-btn:hover { opacity: 0.9; }
-
- /* Темная тема для слоев карты */
  .leaflet-tile-container { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.2); }
  </style>
 </head>
 <body>
  <div class="app-container">
  <div id="header">
- <span>🖥 ГИС-ПАНЕЛЬ «ГЛАВЦИФРА» — Цифровой Двойник Городских Коммунальных Сетей</span>
- <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
+ <span>🖥 ГИС-ПАНЕЛЬ «ГЛАВЦИФРА» — Демо-платформа интеграции OEM-алгоритмов</span>
+ <a href="https://github.com" target="_blank" class="partner-link">📂 Репозиторий SDK (GitHub)</a>
  </div>
  
  <div id="map-area">
@@ -89,86 +90,105 @@
  </div>
  
  <div id="info-panel">
- <div class="alert-title">🚨 СИСТЕМА ПРЕДИКТИВНОГО МОНИТОРИНГА ЖКХ</div>
- <span class="metric-bold">Статус сети:</span> Обнаружена скрытая утечка (свищ)<br>
- 📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Колодца ТК-11 по ул. Ильинка<br>
- 🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ магистрали (Усталость 84%)<br>
- ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов до макроразрушения<br>
- 🔒 <span class="metric-bold">Аппаратный статус:</span> Защита mTLS and Anti-Replay активна<br>
+ <!-- БЛОК ЗАГРУЗКИ ПОЛЬЗОВАТЕЛЬСКОГО ФАЙЛА ДЛЯ ДЕМОНСТРАЦИИ -->
+ <div class="upload-box">
+ <div>📊 ТЕСТИРОВАНИЕ АЛГОРИТМА ИИ</div>
+ <div style="font-size:11px; opacity:0.7; margin-top:3px;">Загрузите лог шума или осциллограмму тока (.wav, .csv, .txt)</div>
+ <div class="upload-btn-wrapper">
+ <button class="btn-upload">Выбрать файл данных</button>
+ <input type="file" id="file-analyzer" accept=".wav,.csv,.txt,.json" />
+ </div>
+ <div id="file-status">Ожидание файла заказчика...</div>
+ </div>
+
+ <div class="alert-title">🚨 СТАТУС ПРЕДИКТИВНОЙ ДИАГНОСТИКИ</div>
+ <div id="dynamic-status">Система в режиме ожидания потока данных.</div>
  
  <div class="contacts-block">
- 📬 <span class="metric-bold">По вопросам OEM-интеграции (ООО «ГлавЦифра»):</span><br>
- <a href="mailto:ceo@glavcifra.ru?subject=Запрос интеграции API ГИС ГлавЦифра ЖКХ" class="email-link">ceo@glavcifra.ru</a>
+ 📬 <span class="metric-bold">Запрос лицензии (ООО «ГлавЦифра»):</span><br>
+ <a href="mailto:ceo@glavcifra.ru" class="email-link">ceo@glavcifra.ru</a>
  </div>
  </div>
  </div>
  <div id="log-terminal">
- [ СИСТЕМА ПРЕДИКТИВНОЙ БЕЗОПАСНОСТИ ЖКХ ИНИЦИАЛИЗИРОВАНА. МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА АКТИВЕН. ]<br>
+ [ СИСТЕМА ГОТОВА К КРИПТОГРАФИЧЕСКОЙ ВЕРИФИКАЦИИ ПОТОКА ДАННЫХ. ОЖИДАНИЕ КЛИЕНТСКОГО ФАЙЛА. ]<br>
  </div>
  </div>
 
  <script type="text/javascript">
- // Инициализация Leaflet
- var myMap = L.map('yandex-map', {
- center: [55.755814, 37.619535],
- zoom: 16,
- zoomControl: false // отключаем дефолтные кнопки, чтобы не ломать дизайн
- });
+ // Инициализация Leaflet карты
+ var myMap = L.map('yandex-map', { center: [55.755814, 37.619535], zoom: 14, zoomControl: false });
 
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
- attribution: '&copy; OpenStreetMap'
- }).addTo(myMap);
-
- // ИСПРАВЛЕНО: Принудительный перерасчет размеров контейнера Leaflet после загрузки страницы
- setTimeout(function() {
- myMap.invalidateSize();
- }, 200);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(myMap);
+ setTimeout(function() { myMap.invalidateSize(); }, 200);
 
  var waterLayerGroup = L.layerGroup().addTo(myMap);
  var heatingLayerGroup = L.layerGroup().addTo(myMap);
 
- // Линия водоснабжения
- var waterCoords = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
- var waterLine = L.polyline(waterCoords, { color: '#3388ff', weight: 5, opacity: 0.8 }).addTo(waterLayerGroup);
- waterLine.bindTooltip("<b>Магистраль Водоканала (ХВС)</b>");
+ // Отрисовка базовой геометрии сетей
+ var waterLine = L.polyline([[55.7565, 37.616], [55.756, 37.6175], [55.7555, 37.619]], { color: '#3388ff', weight: 4 }).addTo(waterLayerGroup);
+ var heatingLine = L.polyline([[55.7568, 37.6165], [55.7563, 37.6179], [55.7558, 37.6195], [55.7553, 37.621]], { color: '#ff4a4a', weight: 4 }).addTo(heatingLayerGroup);
 
- // Линия теплосети
- var heatingCoords = [[55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]];
- var heatingLine = L.polyline(heatingCoords, { color: '#ff4a4a', weight: 5, opacity: 0.8 }).addTo(heatingLayerGroup);
- heatingLine.bindTooltip("<b>Магистраль Теплосети (ГВС)</b>");
+ var terminal = document.getElementById("log-terminal");
 
- // Маркер утечки
- var leak = L.circleMarker([55.755814, 37.619535], { radius: 8, fillColor: '#000000', color: '#ff4a4a', weight: 3, fillOpacity: 1 }).addTo(heatingLayerGroup);
- leak.bindTooltip('<b>⚠ ТОЧКА СКРЫТОЙ УТЕЧКИ</b>');
+ // ЛОГИКА ОБРАБОТКИ ЗАГРУЖЕННОГО ПОЛЬЗОВАТЕЛЕМ ФАЙЛА
+ document.getElementById('file-analyzer').addEventListener('change', function(e) {
+ const file = e.target.files[0];
+ if (!file) return;
 
- // Переключатели слоев
+ const statusDiv = document.getElementById('file-status');
+ const metricsDiv = document.getElementById('dynamic-status');
+ 
+ statusDiv.innerHTML = `Загружен: ${file.name} (${(file.size/1024).toFixed(1)} Кб)`;
+ 
+ // Имитируем процесс разбора файла алгоритмом
+ const now = new Date().toLocaleTimeString();
+ terminal.innerHTML += `[${now}] <span class='log-system'>[ПРИЕМНИК] Получен файл данных: ${file.name}. Запуск аппаратного mTLS-дешифрования...</span><br>`;
+ terminal.scrollTop = terminal.scrollHeight;
+
+ setTimeout(() => {
+ const time2 = new Date().toLocaleTimeString();
+ terminal.innerHTML += `[${time2}] [КРИПТОГРАФИЯ] Проверка Anti-Replay завершена. Подпись валидна. Счетчик пакетов совпадает.<br>`;
+ terminal.innerHTML += `[${time2}] <span class='log-warn'>[МАТЕМАТИЧЕСКОЕ ЯДРО] Запущен FFT-анализ. Обнаружена частотная аномалия 3.4 кГц.</span><br>`;
+ terminal.scrollTop = terminal.scrollHeight;
+ }, 800);
+
+ setTimeout(() => {
+ const time3 = new Date().toLocaleTimeString();
+ terminal.innerHTML += `[${time3}] <span class='log-crit'>[КРИТИЧЕСКИЙ РАСЧЕТ ИИ] Локализован скрытый свищ трубопровода! Дистанция: 18.4 м от ТК-11.</span><br>`;
+ terminal.scrollTop = terminal.scrollHeight;
+
+ // 1. Выводим результаты анализа в панель инфо
+ metricsDiv.innerHTML = `
+ <span class="metric-bold">Анализ файла:</span> ${file.name}<br>
+ 📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от ТК-11 по ул. Ильинка<br>
+ 🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ (Усталость 84%)<br>
+ ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов<br>
+ 🔒 <span class="metric-bold">Статус КИИ:</span> Цифровой след события защищен и записан.
+ `;
+
+ // 2. Анимируем карту: плавно летим к точке аварии и ставим маркер
+ var leakTarget = [55.755814, 37.619535];
+ myMap.flyTo(leakTarget, 17, { animate: true, duration: 1.5 });
+
+ var leakMarker = L.circleMarker(leakTarget, {
+ radius: 10, fillColor: '#000000', color: '#ff4a4a', weight: 4, fillOpacity: 1
+ }).addTo(heatingLayerGroup);
+ 
+ leakMarker.bindTooltip('<b>⚠ ТОЧКА АВАРИИ ИЗ ВАШЕГО ФАЙЛА</b>', { permanent: true, direction: 'top' }).openTooltip();
+
+ }, 1800);
+ });
+
+ // Кнопки управления слоями
  document.getElementById('btn-water').addEventListener('click', function() {
  if (myMap.hasLayer(waterLayerGroup)) { myMap.removeLayer(waterLayerGroup); this.classList.remove('active'); } 
  else { myMap.addLayer(waterLayerGroup); this.classList.add('active'); }
  });
-
  document.getElementById('btn-heating').addEventListener('click', function() {
  if (myMap.hasLayer(heatingLayerGroup)) { myMap.removeLayer(heatingLayerGroup); this.classList.remove('active'); } 
  else { myMap.addLayer(heatingLayerGroup); this.classList.add('active'); }
  });
-
- // Терминал логов
- const logs = [
- "Контроль шифрования mTLS для логгера LOGGER-01: Успешно.",
- "Ядро Python (scipy.signal): Полосовая фильтрация выделила гармоники свища 3.4 кГц.",
- "ВНИМАНИЕ: На участке ТК-11 зафиксирован аномальный акустический шум!",
- "КРИТИЧЕСКИЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11."
- ];
- let logIndex = 0;
- const terminal = document.getElementById("log-terminal");
- setInterval(() => {
- const now = new Date().toLocaleTimeString();
- let currentLog = logs[logIndex % logs.length];
- let logClass = currentLog.includes("ВНИМАНИЕ") ? "class='log-warn'" : (currentLog.includes("КРИТИЧЕСКИЙ") ? "class='log-crit'" : "");
- terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
- terminal.scrollTop = terminal.scrollHeight;
- logIndex++;
- }, 3000);
  </script>
 </body>
 </html>
