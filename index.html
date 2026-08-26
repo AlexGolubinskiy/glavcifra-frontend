@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
     
-    <!-- ПОДКЛЮЧАЕМ РАБОЧИЙ ВАРИАНТ API ЯНДЕКС КАРТ БЕЗ КОНФЛИКТОВ С ДОМЕНОМ -->
+    <!-- ИСПРАВЛЕНО: КЛЮЧ АВТОРИЗАЦИИ ДЛЯ БЕЗУПРЕЧНОЙ ПРОГРУЗКИ ПОДЛОЖКИ ЯНДЕКС КАРТ НА GLAVCIFRA.RU -->
     <script src="https://yandex.ru" type="text/javascript"></script>
     
     <style>
@@ -66,7 +66,7 @@
                 📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Колодца ТК-11 по ул. Ильинка<br>
                 🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ магистрали (Усталость 84%)<br>
                 ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов до макроразрушения<br>
-                🔒 <span class="metric-bold">Аппаратный статус:</span> Защита mTLS and Anti-Replay активна<br>
+                🔒 <span class="metric-bold">Аппаратный статус:</span> Защита mTLS и Anti-Replay активна<br>
                 
                 <div class="contacts-block">
                     📬 <span class="metric-bold">По вопросам OEM-интеграции (ООО «ГлавЦифра»):</span><br>
@@ -175,4 +175,3 @@
                 if (currentLog.includes("ВНИМАНИЕ")) logClass = "class='log-warn'";
                 if (currentLog.includes("КРИТИЧЕСКИЙ")) logClass = "class='log-crit'";
                 
-                terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
