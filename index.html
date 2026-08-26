@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
     
-    <!-- ИСПРАВЛЕНО: СВЕРХБЫСТРЫЕ РОССИЙСКИЕ И МЕЖДУНАРОДНЫЕ СЕРВЕРА КЭША ДЛЯ НАДЕЖНОЙ ЗАГРУЗКИ LEAFLET -->
-    <link rel="stylesheet" href="https://cloudflare.com" />
-    <script src="https://cloudflare.com"></script>
+    <!-- ПОДКЛЮЧАЕМ АБСОЛЮТНО НАДЕЖНЫЙ СЛУЖЕБНЫЙ СКРИПТ КАРТ ЧЕРЕЗ HTTPS -->
+    <script src="https://yandex.ru" type="text/javascript"></script>
     
     <style>
         html, body { 
@@ -27,8 +26,10 @@
         }
         .partner-link:hover { background: #ff4a4a; color: #fff; }
         
-        #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; height: calc(100vh - 210px); }
-        #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
+        
+        /* ИСПРАВЛЕНО: КОРРЕКТНЫЙ СТИЛЬ ОТОБРАЖЕНИЯ ПОДЛОЖКИ ДЛЯ НАШЕЙ КАРТЫ */
+        #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
         #info-panel {
             position: absolute; top: 20px; right: 20px; width: 340px; 
@@ -82,73 +83,93 @@
     </div>
 
     <script type="text/javascript">
-        // Инициализация карты (Центр — Москва, Ильинка)
-        var map = L.map('yandex-map').setView([55.755814, 37.619535], 16);
+        ymaps.ready(init);
+        function init(){
+            var myMap = new ymaps.Map("yandex-map", {
+                center: [55.755814, 37.619535],
+                zoom: 16,
+                controls: ['zoomControl', 'typeSelector']
+            });
 
-        // Стильная темно-угольная подложка карт без блокировок
-        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
+            var waterCollection = new ymaps.GeoObjectCollection();
+            var heatingCollection = new ymaps.GeoObjectCollection();
 
-        // --- 1. МАГИСТРАЛЬ ВОДОСНАБЖЕНИЯ ВОДОКАНАЛА (Синяя) ---
-        var waterPoints = [
-            [55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]
-        ];
-        var waterLine = L.polyline(waterPoints, {color: '#3388ff', weight: 5, opacity: 0.8}).addTo(map);
-        waterLine.bindTooltip("<b>Магистраль Водоканала (ХВС)</b><br>🔩 Материал: Серый чугун<br>📏 Диаметр: 600 мм");
+            // --- 1. МАГИСТРАЛЬ ВОДОСНАБЖЕНИЯ ВОДОКАНАЛА (Синяя) ---
+            var waterLine = new ymaps.Polyline([
+                [55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]
+            ], {
+                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>🔩 Материал: Серый чугун<br>📏 Диаметр: 600 мм"
+            }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.8 });
+            waterCollection.add(waterLine);
 
-        // Синие нумерованные колодцы ХВС
-        L.circleMarker([55.756500, 37.616000], {color: '#3388ff', fillColor: '#3388ff', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч");
-        L.circleMarker([55.756000, 37.617500], {color: '#3388ff', fillColor: '#3388ff', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Технический колодец ХВС-05</b>");
-        L.circleMarker([55.755500, 37.619000], {color: '#3388ff', fillColor: '#3388ff', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Технический колодец ХВС-06</b>");
+            var waterNodes = [
+                { c: [55.756500, 37.616000], h: "<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч" },
+                { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b>" },
+                { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b>" }
+            ];
+            waterNodes.forEach(function(n) {
+                waterCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
+            });
 
-        // --- 2. МАГИСТРАЛЬ ТЕПЛОСЕТИ (Красная) ---
-        var heatingPoints = [
-            [55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]
-        ];
-        var heatingLine = L.polyline(heatingPoints, {color: '#ff4a4a', weight: 5, opacity: 0.8}).addTo(map);
-        heatingLine.bindTooltip("<b>Магистраль Теплосети (ГВС)</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм");
+            // --- 2. МАГИСТРАЛЬ ТЕПЛОСЕТИ (Красная) ---
+            var heatingLine = new ymaps.Polyline([
+                [55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]
+            ], {
+                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм"
+            }, { strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.8 });
+            heatingCollection.add(heatingLine);
 
-        // Аварийный пунктир свища
-        var leakPoints = [[55.756314, 37.617935], [55.755814, 37.619535]];
-        L.polyline(leakPoints, {color: '#ff4a4a', weight: 8, opacity: 0.9, dashArray: '10, 10'}).addTo(map);
+            var leakHeatingLine = new ymaps.Polyline([
+                [55.756314, 37.617935], [55.755814, 37.619535]
+            ], {}, { strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash' });
+            heatingCollection.add(leakHeatingLine);
 
-        // Красные нумерованные колодцы ГВС
-        L.circleMarker([55.756800, 37.616500], {color: '#ff4a4a', fillColor: '#ff4a4a', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C");
-        L.circleMarker([55.756314, 37.617935], {color: '#ff4a4a', fillColor: '#ff4a4a', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Технический колодец ТК-11 (LOGGER-01)</b><br>⚠️ Акустический шум повышен");
-        L.circleMarker([55.755300, 37.621000], {color: '#ff4a4a', fillColor: '#ff4a4a', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Технический колодец ТК-13</b>");
+            var heatingNodes = [
+                { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C" },
+                { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Логгер LOGGER-01)</b><br>⚠️ Акустический шум: Повышен (+12 дБ)" },
+                { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13</b>" }
+            ];
+            heatingNodes.forEach(function(n) {
+                heatingCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
+            });
 
-        // Точка свища (Черный маркер ТК-12)
-        L.circleMarker([55.755814, 37.619535], {color: '#000000', fillColor: '#ff0000', fillOpacity: 1, radius: 8}).addTo(map)
-            .bindPopup("<b>⚠️ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b><br>Локализация аномалии: 18.4 метров от ТК-11");
+            var leak = new ymaps.Placemark([55.755814, 37.619535], {
+                hintContent: '<b>⚠️ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b>',
+                balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от ТК-11'
+            }, { preset: 'islands#blackDotIcon' });
+            heatingCollection.add(leak);
 
-        // --- СИМУЛЯТОР АСИНХРОННОЙ ЛЕНТЫ ЧЕРНОГО ЯЩИКА ЖКХ ---
-        const logs = [
-            "Контроль шифрования mTLS для логгера LOGGER-01: Успешно. Данные защищены.",
-            "Проверка Nonce трекера: Пакет #10452 принят. Защита от атак повтора активна.",
-            "Ядро Python (scipy.signal): Полосовая фильтрация выделила гармоники свища 3.4 кГц.",
-            "ESA-анализ насоса ТК-10: Спектр токов стабилен. Межвитковых замыканий нет.",
-            "ВНИМАНИЕ: На участке ТК-11 зафиксирован аномальный акустический шум!",
-            "КРИТИЧЕСКИЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11.",
-            "Лог верифицирован и сохранен в main_platform.db. Цифровой след диспетчера сформирован.",
-            "Модуль Anti-Tamper: Сканирование физического контура логгеров... Угрозы отсутствуют."
-        ];
-        
-        let logIndex = 0;
-        const terminal = document.getElementById("log-terminal");
-        
-        setInterval(() => {
-            const now = new Date().toLocaleTimeString();
-            let currentLog = logs[logIndex % logs.length];
-            let logClass = "";
-            
-            if (currentLog.includes("ВНИМАНИЕ")) logClass = "class='log-warn'";
-            if (currentLog.includes("КРИТИЧЕСКИЙ")) logClass = "class='log-crit'";
-            
-            terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
-            terminal.scrollTop = terminal.scrollHeight;
-            logIndex++;
-        }, 4000);
-    </script>
-</body>
-</html>
+            myMap.geoObjects.add(waterCollection);
+            myMap.geoObjects.add(heatingCollection);
+
+            var waterToggle = new ymaps.control.Button({ data: { content: "💧 Водоснабжение" }, options: { selectOnClick: true } });
+            waterToggle.select();
+            waterToggle.events.add('select', function () { myMap.geoObjects.add(waterCollection); });
+            waterToggle.events.add('deselect', function () { myMap.geoObjects.remove(waterCollection); });
+
+            var heatingToggle = new ymaps.control.Button({ data: { content: "🔥 Теплотрассы" }, options: { selectOnClick: true } });
+            heatingToggle.select();
+            heatingToggle.events.add('select', function () { myMap.geoObjects.add(heatingCollection); });
+            heatingToggle.events.add('deselect', function () { myMap.geoObjects.remove(heatingCollection); });
+
+            myMap.controls.add(waterToggle, { float: 'left' });
+            myMap.controls.add(heatingToggle, { float: 'left' });
+
+            const logs = [
+                "Контроль шифрования mTLS для логгера LOGGER-01: Успешно. Данные защищены.",
+                "Проверка Nonce трекера: Пакет #10452 принят. Защита от атак повтора активна.",
+                "Ядро Python (scipy.signal): Полосовая фильтрация выделила гармоники свища 3.4 кГц.",
+                "ESA-анализ насоса ТК-10: Спектр токов стабилен. Межвитковых замыканий нет.",
+                "ВНИМАНИЕ: На участке ТК-11 зафиксирован аномальный акустический шум!",
+                "КРИТИЧЕСКИЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11.",
+                "Лог верифицирован и сохранен в main_platform.db. Цифровой след диспетчера сформирован.",
+                "Модуль Anti-Tamper: Сканирование физического контура логгеров... Угрозы отсутствуют."
+            ];
+            let logIndex = 0;
+            const terminal = document.getElementById("log-terminal");
+            setInterval(() => {
+                const now = new Date().toLocaleTimeString();
+                let currentLog = logs[logIndex % logs.length];
+                let logClass = "";
+                if (currentLog.includes("ВНИМАНИЕ")) logClass = "class='log-warn'";
+                if (currentLog.includes("КРИТИЧЕСКИЙ")) logClass = "class='log-crit'";
