@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
     
-    <!-- ИСПРАВЛЕНО: ДОБАВЛЕН ЖЕСТКИЙ БЕЗОПАСНЫЙ ПРОТОКОЛ HTTPS ДЛЯ ПОДКЛЮЧЕНИЯ API КАРТ -->
+    <!-- ИСПРАВЛЕНО: СТАБИЛЬНОЕ И БЕЗОПАСНОЕ ПОДКЛЮЧЕНИЕ API ЯНДЕКС КАРТ ДЛЯ HTTPS ДОМЕНОВ -->
     <script src="https://yandex.ru" type="text/javascript"></script>
     
     <style>
@@ -101,9 +101,9 @@
             waterCollection.add(waterLine);
 
             var waterNodes = [
-                { c: [55.756500, 37.616000], h: "<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч<br>Состояние: Норма" },
-                { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b><br>Параметры: Потерь давления нет" },
-                { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b><br>Состояние: Сухо" }
+                { c: [55.756500, 37.616000], h: "<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч" },
+                { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b>" },
+                { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b>" }
             ];
             waterNodes.forEach(function(n) {
                 waterCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
@@ -113,7 +113,7 @@
             var heatingLine = new ymaps.Polyline([
                 [55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]
             ], {
-                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм<br>⏳ Срок службы: 12 лет (Текущее состояние: Критическое на участке LINE-02)"
+                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм<br>⏳ Срок службы: 12 лет"
             }, { strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.8 });
             heatingCollection.add(heatingLine);
 
@@ -123,9 +123,9 @@
             heatingCollection.add(leakHeatingLine);
 
             var heatingNodes = [
-                { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C<br>Состояние: Норма" },
+                { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C" },
                 { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Логгер LOGGER-01)</b><br>⚠️ Акустический шум: Повышен (+12 дБ)" },
-                { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13</b><br>Температура ГВС: 89°C" }
+                { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13</b>" }
             ];
             heatingNodes.forEach(function(n) {
                 heatingCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
@@ -133,7 +133,7 @@
 
             var leak = new ymaps.Placemark([55.755814, 37.619535], {
                 hintContent: '<b>⚠️ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b>',
-                balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от ТК-11<br><b>Анализ ИИ:</b> Кавитационный свищ трубопровода'
+                balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от ТК-11'
             }, { preset: 'islands#blackDotIcon' });
             heatingCollection.add(leak);
 
@@ -160,8 +160,12 @@
                 "ESA-анализ насоса ТК-10: Спектр токов стабилен. Межвитковых замыканий нет. [PDF: pdf_4ovfIK.pdf, page 1, 2]",
                 "⚠️ ТРЕВОГА ГИС: На участке ТК-11 зафиксирован аномальный акустический шум! [PDF: pdf_wKiJVl.pdf, page 2]",
                 "🚨 ПРЕДИКТИВНЫЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11. [PDF: pdf_XSa1Jx.pdf, page 1]",
-                "Лог верифицирован и сохранен in main_platform.db. Цифровой след диспетчера сформирован. [PDF: pdf_wKiJVl.pdf, page 2]",
+                "Лог верифицирован и сохранен в main_platform.db. Цифровой след диспетчера сформирован. [PDF: pdf_wKiJVl.pdf, page 2]",
                 "Модуль Anti-Tamper: Сканирование физического контура логгеров... Угрозы отсутствуют. [PDF: pdf_wKiJVl.pdf, page 2]"
             ];
             
             let logIndex = 0;
+            const terminal = document.getElementById("log-terminal");
+            
+            setInterval(() => {
+                const now = new Date().toLocaleTimeString();
