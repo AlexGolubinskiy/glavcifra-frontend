@@ -29,8 +29,6 @@
         .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 10px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
         .calc-btn:hover { background: #bd1313; }
-        .contacts-block { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; }
-        .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; }
         #log-terminal { height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333; box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000; }
         .log-warn { color: #ffcc00; }
         .log-crit { color: #ff4a4a; font-weight: bold; }
@@ -109,9 +107,9 @@
         </div>
     </div>
     <script type="text/javascript">
+        // АБСОЛЮТНО ГЛОБАЛЬНЫЙ МАСШТАБ ВИДИМОСТИ ФУНКЦИЙ СВОБОДНЫЙ ОТ WINDOW.ONLOAD БЛОКИРОВОК
         var map, jkhLayerGroup, pumpLayerGroup, oilLayerGroup;
 
-        // ИСПРАВЛЕНО: ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ПОЛНОСТЬЮ ВЫЧИЩЕНА И НАХОДИТСЯ В ГЛОБАЛЬНОЙ ОБЛАСТИ ВИДИМОСТИ
         function switchTab(type) {
             document.getElementById('tab-pipe').classList.remove('active');
             document.getElementById('tab-pump').classList.remove('active');
@@ -124,10 +122,12 @@
                 document.getElementById('tab-pipe').classList.add('active');
                 document.getElementById('section-pipe').style.display = 'block';
                 document.getElementById('live-sector').innerText = "Городские сети (Москва)";
-                if(map) { map.removeLayer(pumpLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(jkhLayerGroup); map.flyTo([55.755814, 37.619535], 16); }
+                if(map && jkhLayerGroup) { map.removeLayer(pumpLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(jkhLayerGroup); map.flyTo([55.755814, 37.619535], 16); }
             } else if(type === 'pump') {
                 document.getElementById('tab-pump').classList.add('active');
                 document.getElementById('section-pump').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
-                if(map) { map.removeLayer(jkhLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(pumpLayerGroup); map.flyTo([47.245000, 39.720000], 16); }
+                if(map && pumpLayerGroup) { map.removeLayer(jkhLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(pumpLayerGroup); map.flyTo([47.245000, 39.720000], 16); }
             } else if(type === 'oil') {
+                document.getElementById('tab-oil').classList.add('active');
+                document.getElementById('section-oil').style.display = 'block';
