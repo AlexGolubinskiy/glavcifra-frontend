@@ -94,7 +94,7 @@
                 <div id="section-pipe" class="calc-section">
                     <div class="calc-title">🧮 КОРРЕЛЯЦИОННЫЙ ВЫЧИСЛИТЕЛЬ СВИЩЕЙ</div>
                     <div class="form-group">
-                        <label>1. МАТЕРИАЛ И ДИАМЕТР ТРУБОПРОВОДА:</label>
+                        <label>1. МАТЕРИАЛ И ДИАМЕТР ТРУБОПРОВОРА:</label>
                         <select id="pipe-material">
                             <option value="1300">Сталь Х70 (V ≈ 1300 м/с)</option>
                             <option value="1100">Серый чугун (V ≈ 1100 м/с)</option>
@@ -108,14 +108,14 @@
                     <div class="form-group">
                         <label>3. ПОЛЕВЫЕ АУДИОЛОГИ ЛОГГЕРОВ:</label>
                         <div class="file-row">
-                            <div class="file-btn" onclick="alert('Аудио А импортировано')">📂 СИГНАЛ ТОЧКИ А</div>
-                            <div class="file-btn" onclick="alert('Аудио Б импортировано')">📂 СИГНАЛ ТОЧКИ Б</div>
+                            <div class="file-btn" onclick="alert('Аудио-сигнал Точки А успешно импортирован в буфер КИИ')">📂 СИГНАЛ ТОЧКИ А</div>
+                            <div class="file-btn" onclick="alert('Аудио-сигнал Точки Б успешно импортирован в буфер КИИ')">📂 СИГНАЛ ТОЧКИ Б</div>
                         </div>
                     </div>
                     <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ ИИ-КООРДИНАТУ</button>
                 </div>
                 
-                <!-- БЛОК 2: КАЛЬКУЛЯТОР НАСОСОВ (НОВОЕ НАПРАВЛЕНИЕ) -->
+                <!-- БЛОК 2: КАЛЬКУЛЯТОР НАСОСОВ (ИСПРАВЛЕНЫ ИДЕНТИФИКАТОРЫ ТАБОВ) -->
                 <div id="section-pump" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 ИИ-АНАЛИЗАТОР СПЕКТРА ТОКА (ESA)</div>
                     <div class="form-group">
@@ -129,8 +129,8 @@
                     <div class="form-group">
                         <label>3. ЛОГИ ТОКОВЫХ НАГРУЗОК СТАТОРОВ:</label>
                         <div class="file-row">
-                            <div class="file-btn" onclick="alert('Спектр Фазы А принят')">⚡️ ТОК ФАЗЫ А</div>
-                            <div class="file-btn" onclick="alert('Спектр Фазы Б принят')">⚡️ ТОК ФАЗЫ Б</div>
+                            <div class="file-btn" onclick="alert('Токовый лог Фазы А импортирован по mTLS')">⚡️ ТОК ФАЗЫ А</div>
+                            <div class="file-btn" onclick="alert('Токовый лог Фазы Б импортирован по mTLS')">⚡️ ТОК ФАЗЫ Б</div>
                         </div>
                     </div>
                     <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ ЭЛЕКТРОДВИГАТЕЛЬ</button>
@@ -155,7 +155,6 @@
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
-        // Гео-объекты
         var waterPoints = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
         L.polyline(waterPoints, {color: '#3388ff', weight: 5, opacity: 0.8}).addTo(map);
         var heatingPoints = [[55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]];
@@ -164,5 +163,3 @@
         var nodeMarker = L.circleMarker([55.756314, 37.617935], {color: '#ff4a4a', fillColor: '#ff0000', fillOpacity: 1, radius: 7}).addTo(map);
         nodeMarker.bindPopup("<b>Насосная станция ВНС-02 (Логгер LOGGER-01)</b>");
 
-        // ПЕРЕКЛЮЧАТЕЛЬ ТАБОВ
-        function switchTab(type) {
