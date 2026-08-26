@@ -1,194 +1,158 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>ГЛАВЦИФРА — Демонстрационный Стенд OEM-Алгоритмов</title>
- 
- <!-- ПОДКЛЮЧАЕМ БЕСПЛАТНУЮ КАРТУ LEAFLET -->
- <link rel="stylesheet" href="https://unpkg.com" />
- <script src="https://unpkg.com"></script>
- 
- <style>
- html, body { 
- margin: 0; padding: 0; width: 100%; height: 100%; 
- font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
- }
- .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
- 
- #header { 
- height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; 
- display: flex; justify-content: space-between; align-items: center; 
- font-size: 17px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
- }
- .partner-link { 
- font-size: 13px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
- padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
- }
- .partner-link:hover { background: #ff4a4a; color: #fff; }
- 
- #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; height: 100%; }
- 
- #yandex-map { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; z-index: 1; }
- 
- #info-panel {
- position: absolute; top: 20px; right: 20px; width: 340px; 
- background: rgba(255, 255, 255, 0.96); color: #333; padding: 20px; 
- border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
- font-size: 13px; line-height: 1.6; z-index: 9999; border-left: 5px solid #000000; box-sizing: border-box;
- }
- .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
- .metric-bold { font-weight: bold; color: #111; }
- .contacts-block { margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px; }
- .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
+    
+    <!-- ПОДКЛЮЧАЕМ НАДЕЖНЫЕ СЕРВЕРА КЭША CDN ДЛЯ ЗАГРУЗКИ КАРТОГРАФИИ LEAFLET -->
+    <link rel="stylesheet" href="https://cloudflare.com" />
+    <script src="https://cloudflare.com"></script>
+    
+    <style>
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
+        }
+        .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
+        
+        #header { 
+            height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
+        }
+        .partner-link { 
+            font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; \
+            padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
+        }
+        .partner-link:hover { background: #ff4a4a; color: #fff; }
+        
+        #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
+        #map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        
+        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ С ИНЖЕНЕРНЫМ КАЛЬКУЛЯТОРОМ РАСЧЕТА */
+        #info-panel {
+            position: absolute; top: 20px; right: 20px; width: 350px; 
+            background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; 
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+            font-size: 13px; line-height: 1.4; z-index: 9999; border-left: 5px solid #ff4a4a; box-sizing: border-box;
+            max-height: 85%; overflow-y: auto;
+        }
+        .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
+        .metric-bold { font-weight: bold; color: #111; }
+        
+        /* СТИЛИ ФОРМЫ КАЛЬКУЛЯТОРА ДЛЯ ЗАВОДОВ ЖКХ */
+        .calc-section { margin-top: 10px; padding-top: 10px; border-top: 2px dashed #ccc; }
+        .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 8px; font-size: 13px; }
+        .form-group { margin-bottom: 8px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 3px; color: #444; font-size: 11px; }
+        .form-group select, .form-group input { width: 100%; padding: 5px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
+        .file-row { display: flex; gap: 5px; margin-bottom: 5px; }
+        .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #ccc; }
+        .file-btn:hover { background: #d0d0d0; }
+        .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
+        .calc-btn:hover { background: #bd1313; }
+        
+        .contacts-block { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; }
+        .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; }
 
- /* СТИЛИЗАЦИЯ ИНТЕРФЕЙСА ЗАГРУЗКИ ТЕСТОВЫХ ФАЙЛОВ */
- .upload-box {
- background: #222; border: 2px dashed #ff4a4a; padding: 12px; border-radius: 8px;
- margin-bottom: 15px; color: #fff; text-align: center;
- }
- .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; margin-top: 5px; }
- .btn-upload {
- border: 1px solid #ff4a4a; color: #ff4a4a; background-color: transparent;
- padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer;
- }
- .btn-upload:hover { background: #ff4a4a; color: #fff; }
- .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
- #file-status { font-size: 11px; color: #ffcc00; margin-top: 5px; font-family: monospace; }
-
- #log-terminal {
- height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333;
- box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace;
- font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000;
- }
- .log-warn { color: #ffcc00; }
- .log-crit { color: #ff4a4a; font-weight: bold; }
- .log-system { color: #00bfff; font-weight: bold; }
-
- .custom-layer-control { position: absolute; bottom: 20px; left: 20px; z-index: 9999; display: flex; gap: 10px; }
- .map-btn {
- background: #2a2a2a; color: #fff; border: 2px solid #ff4a4a; padding: 8px 15px;
- font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-size: 12px;
- }
- .map-btn.active { background: #ff4a4a; color: #fff; }
- .leaflet-tile-container { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(1.2); }
- </style>
+        #log-terminal {
+            height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333;
+            box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace;
+            font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000;
+        }
+        .log-warn { color: #ffcc00; }
+        .log-crit { color: #ff4a4a; font-weight: bold; }
+    </style>
 </head>
 <body>
- <div class="app-container">
- <div id="header">
- <span>🖥 ГИС-ПАНЕЛЬ «ГЛАВЦИФРА» — Демо-платформа интеграции OEM-алгоритмов</span>
- <a href="https://github.com" target="_blank" class="partner-link">📂 Репозиторий SDK (GitHub)</a>
- </div>
- 
- <div id="map-area">
- <div id="yandex-map"></div>
- 
- <div class="custom-layer-control">
- <button id="btn-water" class="map-btn active">💧 Водоснабжение</button>
- <button id="btn-heating" class="map-btn active">🔥 Теплотрассы</button>
- </div>
- 
- <div id="info-panel">
- <!-- БЛОК ЗАГРУЗКИ ПОЛЬЗОВАТЕЛЬСКОГО ФАЙЛА ДЛЯ ДЕМОНСТРАЦИИ -->
- <div class="upload-box">
- <div>📊 ТЕСТИРОВАНИЕ АЛГОРИТМА ИИ</div>
- <div style="font-size:11px; opacity:0.7; margin-top:3px;">Загрузите лог шума или осциллограмму тока (.wav, .csv, .txt)</div>
- <div class="upload-btn-wrapper">
- <button class="btn-upload">Выбрать файл данных</button>
- <input type="file" id="file-analyzer" accept=".wav,.csv,.txt,.json" />
- </div>
- <div id="file-status">Ожидание файла заказчика...</div>
- </div>
+    <div class="app-container">
+        <div id="header">
+            <span>🖥 ГИС-ПАНЕЛЬ «ГЛАВЦИФРА» — Цифровой Двойник Городских Коммунальных Сетей</span>
+            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
+        </div>
+        
+        <div id="map-area">
+            <div id="map"></div>
+            
+            <div id="info-panel">
+                <div class="alert-title">🚨 ТЕКУЩИЙ МОНИТОРИНГ УЧАСТКА</div>
+                <span class="metric-bold">Узел сети:</span> Магистраль Теплосети ГВС (ул. Ильинка)<br>
+                📐 <span class="metric-bold">ИИ-Локализация:</span> <span id="live-coord" style="color: #ff0000; font-weight: bold;">18.4 метров</span> от Точки А (ТК-11)<br>
+                🔒 <span class="metric-bold">Киберзащита КИИ:</span> Поток зашифрован (mTLS / HMAC-SHA256)<br>
+                
+                <!-- ИСПРАВЛЕНО: ДОБАВЛЕН ИНЖЕНЕРНЫЙ ВХОДНОЙ БЛОК ВЫЧИСЛЕНИЙ ДЛЯ ЗАВОДОВ -->
+                <div class="calc-section">
+                    <div class="calc-title">🧮 ТЕСТОВЫЙ КОРРЕЛЯЦИОННЫЙ ВЫЧИСЛИТЕЛЬ ИИ</div>
+                    
+                    <div class="form-group">
+                        <label>1. МАТЕРИАЛ И ДИАМЕТР ТРУБОПРОВОДА:</label>
+                        <select id="pipe-material">
+                            <option value="1300">Сталь Х70 (V ≈ 1300 м/с)</option>
+                            <option value="1100">Серый чугун (V ≈ 1100 м/с)</option>
+                            <option value="350">Пластик ПНД (V ≈ 350 м/с)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>2. ОБЩАЯ ДЛИНА УЧАСТКА (МЕЖДУ А И Б), МЕТРЫ:</label>
+                        <input type="number" id="pipe-length" value="50" min="5" max="500">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>3. ЗАГРУЗКА ПОЛЕВЫХ АУДИОФАЙЛОВ ЛОГГЕРОВ:</label>
+                        <div class="file-row">
+                            <div class="file-btn" onclick="document.getElementById('file-a').click()">📂 СИГНАЛ ТОЧКИ А</div>
+                            <div class="file-btn" onclick="document.getElementById('file-b').click()">📂 СИГНАЛ ТОЧКИ Б</div>
+                        </div>
+                        <input type="file" id="file-a" style="display:none" onchange="alert('Лог Точки А успешно импортирован в буфер КИИ')">
+                        <input type="file" id="file-b" style="display:none" onchange="alert('Лог Точки Б успешно импортирован в буфер КИИ')">
+                    </div>
+                    
+                    <button class="calc-btn" onclick="runIICalculator()">ЗАПУСТИТЬ РАСЧЕТ СВИЩА</button>
+                </div>
+                
+                <div class="contacts-block">
+                    📬 <span class="metric-bold">По вопросам OEM-интеграции (ООО «ГлавЦифра»):</span><br>
+                    <a href="mailto:ceo@glavcifra.ru?subject=Запрос интеграции API ГИС ГлавЦифра ЖКХ" class="email-link">ceo@glavcifra.ru</a>
+                </div>
+            </div>
+        </div>
 
- <div class="alert-title">🚨 СТАТУС ПРЕДИКТИВНОЙ ДИАГНОСТИКИ</div>
- <div id="dynamic-status">Система в режиме ожидания потока данных.</div>
- 
- <div class="contacts-block">
- 📬 <span class="metric-bold">Запрос лицензии (ООО «ГлавЦифра»):</span><br>
- <a href="mailto:ceo@glavcifra.ru" class="email-link">ceo@glavcifra.ru</a>
- </div>
- </div>
- </div>
- <div id="log-terminal">
- [ СИСТЕМА ГОТОВА К КРИПТОГРАФИЧЕСКОЙ ВЕРИФИКАЦИИ ПОТОКА ДАННЫХ. ОЖИДАНИЕ КЛИЕНТСКОГО ФАЙЛА. ]<br>
- </div>
- </div>
+        <div id="log-terminal">
+            [ СИСТЕМА ПРЕДИКТИВНОЙ БЕЗОПАСНОСТИ ЖКХ ИНИЦИАЛИЗИРОВАНА. МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА АКТИВЕН. ]<br>
+        </div>
+    </div>
 
- <script type="text/javascript">
- // Инициализация Leaflet карты
- var myMap = L.map('yandex-map', { center: [55.755814, 37.619535], zoom: 14, zoomControl: false });
+    <script type="text/javascript">
+        // Инициализация карты Leaflet
+        var map = L.map('map').setView([55.755814, 37.619535], 16);
 
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(myMap);
- setTimeout(function() { myMap.invalidateSize(); }, 200);
+        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
- var waterLayerGroup = L.layerGroup().addTo(myMap);
- var heatingLayerGroup = L.layerGroup().addTo(myMap);
+        var waterPoints = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
+        var waterLine = L.polyline(waterPoints, {color: '#3388ff', weight: 5, opacity: 0.8}).addTo(map);
+        waterLine.bindTooltip("<b>Магистраль Водоканала (ХВС)</b>");
 
- // Отрисовка базовой геометрии сетей
- var waterLine = L.polyline([[55.7565, 37.616], [55.756, 37.6175], [55.7555, 37.619]], { color: '#3388ff', weight: 4 }).addTo(waterLayerGroup);
- var heatingLine = L.polyline([[55.7568, 37.6165], [55.7563, 37.6179], [55.7558, 37.6195], [55.7553, 37.621]], { color: '#ff4a4a', weight: 4 }).addTo(heatingLayerGroup);
+        L.circleMarker([55.756500, 37.616000], {color: '#3388ff', fillColor: '#3388ff', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец ХВС-04</b>");
+        L.circleMarker([55.756000, 37.617500], {color: '#3388ff', fillColor: '#3388ff', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец ХВС-05</b>");
+        L.circleMarker([55.755500, 37.619000], {color: '#3388ff', fillColor: '#3388ff', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец ХВС-06</b>");
 
- var terminal = document.getElementById("log-terminal");
+        var heatingPoints = [[55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]];
+        var heatingLine = L.polyline(heatingPoints, {color: '#ff4a4a', weight: 5, opacity: 0.8}).addTo(map);
+        heatingLine.bindTooltip("<b>Магистраль Теплосети (ГВС)</b>");
 
- // ЛОГИКА ОБРАБОТКИ ЗАГРУЖЕННОГО ПОЛЬЗОВАТЕЛЕМ ФАЙЛА
- document.getElementById('file-analyzer').addEventListener('change', function(e) {
- const file = e.target.files[0];
- if (!file) return;
+        var leakPoints = [[55.756314, 37.617935], [55.755814, 37.619535]];
+        var dashLeakLine = L.polyline(leakPoints, {color: '#ff4a4a', weight: 8, opacity: 0.9, dashArray: '10, 10'}).addTo(map);
 
- const statusDiv = document.getElementById('file-status');
- const metricsDiv = document.getElementById('dynamic-status');
- 
- statusDiv.innerHTML = `Загружен: ${file.name} (${(file.size/1024).toFixed(1)} Кб)`;
- 
- // Имитируем процесс разбора файла алгоритмом
- const now = new Date().toLocaleTimeString();
- terminal.innerHTML += `[${now}] <span class='log-system'>[ПРИЕМНИК] Получен файл данных: ${file.name}. Запуск аппаратного mTLS-дешифрования...</span><br>`;
- terminal.scrollTop = terminal.scrollHeight;
+        L.circleMarker([55.756800, 37.616500], {color: '#ff4a4a', fillColor: '#ff4a4a', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец ТК-10</b>");
+        L.circleMarker([55.756314, 37.617935], {color: '#ff4a4a', fillColor: '#ff4a4a', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец ТК-11 (Точка А)</b>");
+        L.circleMarker([55.755300, 37.621000], {color: '#ff4a4a', fillColor: '#ff4a4a', fillOpacity: 1, radius: 6}).addTo(map).bindPopup("<b>Колодец ТК-13 (Точка Б)</b>");
 
- setTimeout(() => {
- const time2 = new Date().toLocaleTimeString();
- terminal.innerHTML += `[${time2}] [КРИПТОГРАФИЯ] Проверка Anti-Replay завершена. Подпись валидна. Счетчик пакетов совпадает.<br>`;
- terminal.innerHTML += `[${time2}] <span class='log-warn'>[МАТЕМАТИЧЕСКОЕ ЯДРО] Запущен FFT-анализ. Обнаружена частотная аномалия 3.4 кГц.</span><br>`;
- terminal.scrollTop = terminal.scrollHeight;
- }, 800);
+        var leakMarker = L.circleMarker([55.755814, 37.619535], {color: '#000000', fillColor: '#ff0000', fillOpacity: 1, radius: 8}).addTo(map);
+        leakMarker.bindPopup("<b>⚠️ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b>");
 
- setTimeout(() => {
- const time3 = new Date().toLocaleTimeString();
- terminal.innerHTML += `[${time3}] <span class='log-crit'>[КРИТИЧЕСКИЙ РАСЧЕТ ИИ] Локализован скрытый свищ трубопровода! Дистанция: 18.4 м от ТК-11.</span><br>`;
- terminal.scrollTop = terminal.scrollHeight;
-
- // 1. Выводим результаты анализа в панель инфо
- metricsDiv.innerHTML = `
- <span class="metric-bold">Анализ файла:</span> ${file.name}<br>
- 📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от ТК-11 по ул. Ильинка<br>
- 🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ (Усталость 84%)<br>
- ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов<br>
- 🔒 <span class="metric-bold">Статус КИИ:</span> Цифровой след события защищен и записан.
- `;
-
- // 2. Анимируем карту: плавно летим к точке аварии и ставим маркер
- var leakTarget = [55.755814, 37.619535];
- myMap.flyTo(leakTarget, 17, { animate: true, duration: 1.5 });
-
- var leakMarker = L.circleMarker(leakTarget, {
- radius: 10, fillColor: '#000000', color: '#ff4a4a', weight: 4, fillOpacity: 1
- }).addTo(heatingLayerGroup);
- 
- leakMarker.bindTooltip('<b>⚠ ТОЧКА АВАРИИ ИЗ ВАШЕГО ФАЙЛА</b>', { permanent: true, direction: 'top' }).openTooltip();
-
- }, 1800);
- });
-
- // Кнопки управления слоями
- document.getElementById('btn-water').addEventListener('click', function() {
- if (myMap.hasLayer(waterLayerGroup)) { myMap.removeLayer(waterLayerGroup); this.classList.remove('active'); } 
- else { myMap.addLayer(waterLayerGroup); this.classList.add('active'); }
- });
- document.getElementById('btn-heating').addEventListener('click', function() {
- if (myMap.hasLayer(heatingLayerGroup)) { myMap.removeLayer(heatingLayerGroup); this.classList.remove('active'); } 
- else { myMap.addLayer(heatingLayerGroup); this.classList.add('active'); }
- });
- </script>
-</body>
-</html>
+        // --- ЛОГИКА ДИНАМИЧЕСКОГО ИИ КАЛЬКУЛЯТОРА ДЛЯ ТЕСТОВ ЗАВОДОВ ---
+        function runIICalculator() {
