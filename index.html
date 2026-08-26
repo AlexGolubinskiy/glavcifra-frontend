@@ -73,7 +73,7 @@
     <div class="app-container">
         <div id="header">
             <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник Объектов КИИ ТЭК</span>
-            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API КИИ (GitHub)</a>
+            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
         </div>
         
         <div id="map-area">
@@ -84,7 +84,7 @@
                 <span class="metric-bold">Локация:</span> Сектор прокачки «Грушевая балка»<br>
                 <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
                 
-                <!-- ИСПРАВЛЕНО: ТРИ ТАБА НАПРАВЛЕНИЙ, ВКЛЮЧАЯ НЕФТЯНОЙ СЕКТОР -->
+                <!-- ТРИ ТАБА НАПРАВЛЕНИЙ -->
                 <div class="tab-container">
                     <div id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</div>
                     <div id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</div>
@@ -122,7 +122,7 @@
                     <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                 </div>
                 
-                <!-- БЛОК 3: НЕФТЯНАЯ ВКЛАДКА (НОВОЕ СТРАТЕГИЧЕСКОЕ НАПРАВЛЕНИЕ) -->
+                <!-- БЛОК 3: НЕФТЯНАЯ ВКЛАДКА -->
                 <div id="section-oil" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 МОНИТОРИНГ МАГИСТРАЛИ ТРАНСНЕФТИ</div>
                     <div class="form-group">
@@ -165,3 +165,4 @@
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
+        var waterPoints = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
