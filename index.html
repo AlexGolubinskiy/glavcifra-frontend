@@ -4,67 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Промышленных Объектов КИИ</title>
-    
-    <!-- ПОДКЛЮЧАЕМ НАДЕЖНЫЕ СЕРВЕРА КЭША CDN ДЛЯ ЗАГРУЗКИ КАРТОГРАФИИ LEAFLET -->
     <link rel="stylesheet" href="https://cloudflare.com" />
     <script src="https://cloudflare.com"></script>
-    
     <style>
-        html, body { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
-        
-        #header { 
-            height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; 
-            display: flex; justify-content: space-between; align-items: center; 
-            font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000;
-        }
-        .partner-link { 
-            font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; 
-            padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
-        }
+        #header { height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
+        .partner-link { font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold; }
         .partner-link:hover { background: #ff4a4a; color: #fff; }
-        
         #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
         #map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        
-        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ С ТРЕМЯ НАПРАВЛЕНИЯМИ */
-        #info-panel {
-            position: absolute; top: 20px; right: 20px; width: 350px; 
-            background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; 
-            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
-            font-size: 13px; line-height: 1.4; z-index: 9999; border-left: 5px solid #ff4a4a; box-sizing: border-box;
-            max-height: 90%; overflow-y: auto;
-        }
+        #info-panel { position: absolute; top: 20px; right: 20px; width: 350px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-size: 13px; line-height: 1.4; z-index: 9999; border-left: 5px solid #ff4a4a; box-sizing: border-box; max-height: 90%; overflow-y: auto; }
         .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
         .metric-bold { font-weight: bold; color: #111; }
-        
-        /* СТИЛЬ ТРЕХ ТАБОВ ПЕРЕКЛЮЧЕНИЯ */
         .tab-container { display: flex; gap: 3px; margin-top: 10px; margin-bottom: 5px; }
         .tab-btn { flex: 1; padding: 6px 2px; font-size: 10px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; color: #333; }
         .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; }
-        
         .calc-section { margin-top: 5px; padding-top: 10px; border-top: 1px solid #ddd; }
         .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; }
         .form-group { margin-bottom: 8px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 3px; color: #444; font-size: 10px; }
         .form-group select, .form-group input { width: 100%; padding: 5px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
-        .file-row { display: flex; gap: 5px; margin-bottom: 5px; }
-        .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 10px; cursor: pointer; border: 1px solid #ccc; color: #333; }
-        .file-btn:hover { background: #d0d0d0; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
         .calc-btn:hover { background: #bd1313; }
-        
         .contacts-block { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; }
         .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; }
-
-        #log-terminal {
-            height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333;
-            box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace;
-            font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000;
-        }
+        #log-terminal { height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333; box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000; }
         .log-warn { color: #ffcc00; }
         .log-crit { color: #ff4a4a; font-weight: bold; }
     </style>
@@ -75,21 +40,17 @@
             <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник Объектов КИИ ТЭК</span>
             <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
         </div>
-        
         <div id="map-area">
             <div id="map"></div>
-            
             <div id="info-panel">
                 <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
                 <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
                 <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
-                
                 <div class="tab-container">
                     <div id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</div>
                     <div id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</div>
                     <div id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</div>
                 </div>
-                
                 <!-- БЛОК 1: ТРУБЫ ЖКХ -->
                 <div id="section-pipe" class="calc-section">
                     <div class="calc-title">🧮 ВЫЧИСЛИТЕЛЬ СВИЩЕЙ ВОДОКАНАЛА</div>
@@ -106,7 +67,6 @@
                     </div>
                     <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                 </div>
-                
                 <!-- БЛОК 2: НАСОСЫ -->
                 <div id="section-pump" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА ТОКА (ESA)</div>
@@ -120,7 +80,6 @@
                     </div>
                     <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                 </div>
-                
                 <!-- БЛОК 3: НЕФТЬ -->
                 <div id="section-oil" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 МОНИТОРИНГ МАГИСТРАЛИ ТРАНСНЕФТИ</div>
@@ -137,32 +96,48 @@
                     </div>
                     <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ПРОРЫВ НЕФТИ</button>
                 </div>
-                
                 <div class="contacts-block">
                     📬 <span class="metric-bold">Запрос OEM-интеграции (ООО «ГлавЦифра»):</span><br>
                     <a href="mailto:ceo@glavcifra.ru" class="email-link">ceo@glavcifra.ru</a>
                 </div>
             </div>
         </div>
-
         <div id="log-terminal">
             [ СИСТЕМА ПРЕДИКТИВНОЙ БЕЗОПАСНОСТИ КИИ ИНИЦИАЛИЗИРОВАНА. МОНИТОРИНГ АКТИВЕН. ]<br>
         </div>
     </div>
-
     <script type="text/javascript">
-        // Инициализация карты Leaflet на Москву (Ильинка)
-        var map = L.map('map').setView([55.755814, 37.619535], 16);
-        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
+        var map, jkhLayerGroup, oilLayerGroup;
 
-        // Создаем две независимые изолированные гео-группы для слоев сетей
-        var jkhLayerGroup = L.layerGroup().addTo(map);
-        var oilLayerGroup = L.layerGroup();
+        // ИСПРАВЛЕНО: ГЛОБАЛЬНАЯ ФУНКЦИЯ ВЫНЕСЕНА НАРУЖУ И ДОСТУПНА ДЛЯ ONCLICK КНОПОК
+        function switchTab(type) {
+            document.getElementById('tab-pipe').classList.remove('active');
+            document.getElementById('tab-pump').classList.remove('active');
+            document.getElementById('tab-oil').classList.remove('active');
+            document.getElementById('section-pipe').style.display = 'none';
+            document.getElementById('section-pump').style.display = 'none';
+            document.getElementById('section-oil').style.display = 'none';
+            
+            if(type === 'pipe' || type === 'pump') {
+                document.getElementById('tab-' + type).classList.add('active');
+                document.getElementById('section-' + type).style.display = 'block';
+                if(map) {
+                    map.removeLayer(oilLayerGroup);
+                    map.addLayer(jkhLayerGroup);
+                    map.flyTo([55.755814, 37.619535], 16);
+                }
+                document.getElementById('live-sector').innerText = "Городские сети (Москва)";
+            } else if(type === 'oil') {
+                document.getElementById('tab-oil').classList.add('active');
+                document.getElementById('section-oil').style.display = 'block';
+                if(map) {
+                    map.removeLayer(jkhLayerGroup);
+                    map.addLayer(oilLayerGroup);
+                    map.flyTo([44.733000, 37.818000], 15);
+                }
+                document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
+            }
+        }
 
-        // 1. Отрисовка объектов ЖКХ (Москва)
-        var waterPoints = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
-        L.polyline(waterPoints, {color: '#3388ff', weight: 5, opacity: 0.8}).addTo(jkhLayerGroup);
-        var heatingPoints = [[55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]];
-        L.polyline(heatingPoints, {color: '#ff4a4a', weight: 5, opacity: 0.8}).addTo(jkhLayerGroup);
+        window.onload = function() {
+            map = L.map('map').setView([55.755814, 37.619535], 16);
