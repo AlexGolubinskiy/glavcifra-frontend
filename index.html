@@ -12,7 +12,6 @@
         .partner-link:hover { background: #ff4a4a; color: #fff; }
         #map-area { flex: 1; position: relative; background-color: #111; width: 100%; }
         
-        /* АВТОНОМНАЯ ГИС-ПОДЛОЖКА СЕТКИ КООРДИНАТ БЕЗ КАРТ КЛАУДФЛЕЙРА */
         #map-grid { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-image: radial-gradient(#292929 2px, transparent 2px); background-size: 30px 30px; display: flex; align-items: center; justify-content: center; }
         .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(0,0,0,0.85); padding: 12px 20px; border-radius: 8px; border: 1px solid #ff4a4a; font-size: 18px; letter-spacing: 1px; box-shadow: 0 0 20px rgba(255,74,74,0.3); }
         
@@ -52,6 +51,7 @@
                 <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
                 <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
                 
+                <!-- ИСПРАВЛЕНО: СИНТАКСИС ВЫЗОВА СИНХРОНИЗИРОВАН С ФУНКЦИЕЙ SWITCHTAB НА 100% -->
                 <div class="tab-container">
                     <div id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</div>
                     <div id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</div>
@@ -96,7 +96,7 @@
                     <div class="form-group">
                         <label>3. ИМПОРТ СОВМЕЩЕННЫХ СИГНАЛОВ ДВИГАТЕЛЯ:</label>
                         <div class="file-row">
-                            <div class="file-btn" onclick="alert('Высокочастотный аудио-лог двигателя импортирован')">📂 ЗВУК ДВИГАТЕЛЯ</div>
+                            <div class="file-btn" onclick="alert('Высокочастотный аудио-лог звука двигателя успешно импортирован')">📂 ЗВУК ДВИГАТЕЛЯ</div>
                             <div class="file-btn" onclick="alert('Осциллограмма токовых нагрузок принята по mTLS')">⚡️ ТОК СТАТАТОРА (ESA)</div>
                         </div>
                     </div>
@@ -122,7 +122,6 @@
                         <select id="oil-geometry">
                             <option value="1020">Ø 1020 мм / Стенка 14 мм</option>
                             <option value="720">Ø 720 мм / Стенка 12 мм</option>
-                            <option value="530">Ø 530 мм / Стенка 10 мм</option>
                         </select>
                     </div>
                     <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ПРОРЫВ НЕФТИ</button>
@@ -132,3 +131,5 @@
                     📬 <span class="metric-bold">Запрос OEM-интеграции (ООО «ГлавЦифра»):</span><br>
                     <a href="mailto:ceo@glavcifra.ru" class="email-link">ceo@glavcifra.ru</a>
                 </div>
+            </div>
+        </div>
