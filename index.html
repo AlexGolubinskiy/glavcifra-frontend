@@ -49,6 +49,7 @@
                 <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
                 <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
                 
+                <!-- ИСПРАВЛЕНО: ТЕПЕРЬ ОНКЛИК СТРОГО ВЫЗЫВАЕТ ОДНОТИПНУЮ РАБОЧУЮ ФУНКЦИЮ SWITCHTAB -->
                 <div class="tab-container">
                     <button id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</button>
                     <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</button>
@@ -79,7 +80,7 @@
                     <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                 </div>
                 
-                <!-- БЛОК 2: НАСОСЫ (ПОЛНОСТЬЮ ЗАКРЫТЫ ВСЕ ТЕГИ) -->
+                <!-- БЛОК 2: НАСОСЫ -->
                 <div id="section-pump" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
                     <div class="form-group">
@@ -100,7 +101,7 @@
                     <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                 </div>
                 
-                <!-- БЛОК 3: НЕФТЬ (ПОЛНОСТЬЮ ЗАКРЫТЫ ВСЕ ТЕГИ И ВЫВЕДЕН ДИАМЕТР ТРУБЫ) -->
+                <!-- БЛОК 3: НЕФТЬ -->
                 <div id="section-oil" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 МОНИТОРИНГ МАГИСТРАЛИ ТРАНСНЕФТИ</div>
                     <div class="form-group">
@@ -125,4 +126,3 @@
                         <label>4. ТЕЛЕМЕТРИЯ ВОЛН ДАВЛЕНИЯ ЗАДВИЖЕК (dP/dt):</label>
                         <div class="file-row">
                             <div class="file-btn" onclick="alert('Телеметрия Датчика Задвижки КЗ-11 принята по mTLS')">🔒 ЛОГ КЗ-11</div>
-                            <div class="file-btn" onclick="alert('Телеметрия Датчика Задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
