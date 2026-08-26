@@ -25,10 +25,10 @@
         .form-group { margin-bottom: 8px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 3px; color: #444; font-size: 10px; }
         .form-group select, .form-group input { width: 100%; padding: 5px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
+        .file-row { display: flex; gap: 5px; margin-bottom: 5px; }
+        .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 10px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
         .calc-btn:hover { background: #bd1313; }
-        .contacts-block { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 11px; }
-        .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; }
         #log-terminal { height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333; box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000; }
         .log-warn { color: #ffcc00; }
         .log-crit { color: #ff4a4a; font-weight: bold; }
@@ -75,8 +75,15 @@
                         <input type="number" id="pump-rpm" value="1500">
                     </div>
                     <div class="form-group">
-                        <label>2. КОЛИЧЕСТВО ПАЗОВ РОТОРА:</label>
+                        <label>2. КОЛИЧЕСТВО ПАЗОВ РОТОРА / ПОЛЮСОВ:</label>
                         <input type="number" id="pump-slots" value="28">
+                    </div>
+                    <div class="form-group">
+                        <label>3. ЛОГИ ТОКОВЫХ НАГРУЗОК СТАТОРОВ:</label>
+                        <div class="file-row">
+                            <div class="file-btn" onclick="alert('Лог тока Фазы А импортирован по mTLS')">⚡️ ТОК ФАЗЫ А</div>
+                            <div class="file-btn" onclick="alert('Лог тока Фазы Б импортирован по mTLS')">⚡️ ТОК ФАЗЫ Б</div>
+                        </div>
                     </div>
                     <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                 </div>
@@ -107,9 +114,9 @@
         </div>
     </div>
     <script type="text/javascript">
-        var map, jkhLayerGroup, oilLayerGroup;
+        // ВЫНОСИМ ПЕРЕМЕННЫЕ В ГЛОБАЛЬНУЮ ОБЛАСТЬ ДО WINDOW.ONLOAD
+        var map, jkhLayerGroup, pumpLayerGroup, oilLayerGroup;
 
-        // ИСПРАВЛЕНО: ГЛОБАЛЬНАЯ ФУНКЦИЯ ВЫНЕСЕНА НАРУЖУ И ДОСТУПНА ДЛЯ ONCLICK КНОПОК
         function switchTab(type) {
             document.getElementById('tab-pipe').classList.remove('active');
             document.getElementById('tab-pump').classList.remove('active');
@@ -118,26 +125,11 @@
             document.getElementById('section-pump').style.display = 'none';
             document.getElementById('section-oil').style.display = 'none';
             
-            if(type === 'pipe' || type === 'pump') {
-                document.getElementById('tab-' + type).classList.add('active');
-                document.getElementById('section-' + type).style.display = 'block';
-                if(map) {
-                    map.removeLayer(oilLayerGroup);
-                    map.addLayer(jkhLayerGroup);
-                    map.flyTo([55.755814, 37.619535], 16);
-                }
+            if(type === 'pipe') {
+                document.getElementById('tab-pipe').classList.add('active');
+                document.getElementById('section-pipe').style.display = 'block';
                 document.getElementById('live-sector').innerText = "Городские сети (Москва)";
-            } else if(type === 'oil') {
-                document.getElementById('tab-oil').classList.add('active');
-                document.getElementById('section-oil').style.display = 'block';
-                if(map) {
-                    map.removeLayer(jkhLayerGroup);
-                    map.addLayer(oilLayerGroup);
-                    map.flyTo([44.733000, 37.818000], 15);
-                }
-                document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
-            }
-        }
-
-        window.onload = function() {
-            map = L.map('map').setView([55.755814, 37.619535], 16);
+                if(map) { map.removeLayer(pumpLayerGroup); map.removeLayer(oilLayerGroup); map.addLayer(jkhLayerGroup); map.flyTo([55.755814, 37.619535], 16); }
+            } else if(type === 'pump') {
+                document.getElementById('tab-pump').classList.add('active');
+                document.getElementById('section-pump').style.display = 'block';
