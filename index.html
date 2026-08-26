@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
     
-    <!-- ПОДКЛЮЧАЕМ ОТКРЫТУЮ КАРТОГРАФИЮ LEAFLET БЕЗ КЛЮЧЕЙ И БЛОКИРОВОК -->
-    <link rel="stylesheet" href="https://unpkg.com" />
-    <script src="https://unpkg.com"></script>
+    <!-- ИСПРАВЛЕНО: СВЕРХБЫСТРЫЕ РОССИЙСКИЕ И МЕЖДУНАРОДНЫЕ СЕРВЕРА КЭША ДЛЯ НАДЕЖНОЙ ЗАГРУЗКИ LEAFLET -->
+    <link rel="stylesheet" href="https://cloudflare.com" />
+    <script src="https://cloudflare.com"></script>
     
     <style>
         html, body { 
@@ -28,8 +28,6 @@
         .partner-link:hover { background: #ff4a4a; color: #fff; }
         
         #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; height: calc(100vh - 210px); }
-        
-        /* ИСПРАВЛЕНО: ЖЕСТКО ЗАФИКСИРОВАНА ВЫСОТА КОНТЕЙНЕРА ДЛЯ ОТОБРАЖЕНИЯ СЕТКИ LEAFLET */
         #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         
         #info-panel {
@@ -87,7 +85,7 @@
         // Инициализация карты (Центр — Москва, Ильинка)
         var map = L.map('yandex-map').setView([55.755814, 37.619535], 16);
 
-        // Подгружаем стильную темно-угольную подложку карт, не требующую ключей
+        // Стильная темно-угольная подложка карт без блокировок
         L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
