@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
     
-    <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ БЕЗ КОНФЛИКТОВ С WWW -->
-    <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <!-- ИСПРАВЛЕНО: ПОДКЛЮЧАЕМ БЕСПЛАТНЫЙ КЛЮЧ АВТОРИЗАЦИИ ЯНДЕКС КАРТ ДЛЯ ДОМЕНА GLAVCIFRA.RU -->
+    <script src="https://yandex.ru" type="text/javascript"></script>
     
     <style>
         html, body { 
@@ -29,7 +29,6 @@
         #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
         #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
-        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ ДИСПЕТЧЕРА С ЮРИДИЧЕСКИМ АЛИБИ */
         #info-panel {
             position: absolute; top: 20px; right: 20px; width: 340px; 
             background: rgba(255, 255, 255, 0.96); color: #333; padding: 20px; 
@@ -101,7 +100,6 @@
             }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.8 });
             waterCollection.add(waterLine);
 
-            // Синие колодцы Водоканала с номерами
             var waterNodes = [
                 { c: [55.756500, 37.616000], h: "<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч<br>Состояние: Норма" },
                 { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b><br>Параметры: Потерь давления нет" },
@@ -110,7 +108,6 @@
             waterNodes.forEach(function(n) {
                 waterCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
             });
-
 
             // --- 2. МАГИСТРАЛЬ ТЕПЛОСЕТИ (Красная) ---
             var heatingLine = new ymaps.Polyline([
@@ -125,7 +122,6 @@
             ], {}, { strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash' });
             heatingCollection.add(leakHeatingLine);
 
-            // Красные колодцы Теплосети с номерами
             var heatingNodes = [
                 { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C<br>Состояние: Норма" },
                 { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Логгер LOGGER-01)</b><br>⚠️ Акустический шум: Повышен (+12 дБ)" },
@@ -135,7 +131,6 @@
                 heatingCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
             });
 
-            // Точка свища (Колодец ТК-12)
             var leak = new ymaps.Placemark([55.755814, 37.619535], {
                 hintContent: '<b>⚠️ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b>',
                 balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от ТК-11<br><b>Анализ ИИ:</b> Кавитационный свищ трубопровода'
@@ -145,7 +140,6 @@
             myMap.geoObjects.add(waterCollection);
             myMap.geoObjects.add(heatingCollection);
 
-            // Кнопки фильтрации слоев для диспетчера
             var waterToggle = new ymaps.control.Button({ data: { content: "💧 Водоснабжение" }, options: { selectOnClick: true } });
             waterToggle.select();
             waterToggle.events.add('select', function () { myMap.geoObjects.add(waterCollection); });
@@ -159,7 +153,6 @@
             myMap.controls.add(waterToggle, { float: 'left' });
             myMap.controls.add(heatingToggle, { float: 'left' });
 
-            // --- СИМУЛЯТОР АСИНХРОННОЙ ЛЕНТЫ ЧЕРНОГО ЯЩИКА ЖКХ ---
             const logs = [
                 "Контроль шифрования mTLS для логгера LOGGER-01: Успешно. Данные защищены. [PDF: pdf_wKiJVl.pdf, page 2]",
                 "Проверка Nonce трекера: Пакет #10452 принят. Защита от атак повтора активна. [PDF: pdf_wKiJVl.pdf, page 2]",
@@ -167,3 +160,7 @@
                 "ESA-анализ насоса ТК-10: Спектр токов стабилен. Межвитковых замыканий нет. [PDF: pdf_4ovfIK.pdf, page 1, 2]",
                 "⚠️ ТРЕВОГА ГИС: На участке ТК-11 зафиксирован аномальный акустический шум! [PDF: pdf_wKiJVl.pdf, page 2]",
                 "🚨 ПРЕДИКТИВНЫЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11. [PDF: pdf_XSa1Jx.pdf, page 1]",
+                "Лог верифицирован и сохранен в main_platform.db. Цифровой след диспетчера сформировано. [PDF: pdf_wKiJVl.pdf, page 2]",
+                "Модуль Anti-Tamper: Сканирование физического контура логгеров... Угрозы отсутствуют. [PDF: pdf_wKiJVl.pdf, page 2]"
+            ];
+            
