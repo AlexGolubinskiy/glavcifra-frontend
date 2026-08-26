@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГЛАВЦИФРА — Цифровой Двойник Нефтегазовых Комплексов</title>
+    <title>ГЛАВЦИФРА — Цифровой Двойник Городских Сетей ЖКХ</title>
+    
+    <!-- ПОДКЛЮЧАЕМ ОФИЦИАЛЬНЫЙ БЕСПЛАТНЫЙ API ЯНДЕКС КАРТ БЕЗ КОНФЛИКТОВ С WWW -->
     <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    
     <style>
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; 
         }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
+        
         #header { 
             height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -21,8 +25,11 @@
             padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold;
         }
         .partner-link:hover { background: #ff4a4a; color: #fff; }
+        
         #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
         #yandex-map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        
+        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ ДИСПЕТЧЕРА С ЮРИДИЧЕСКИМ АЛИБИ */
         #info-panel {
             position: absolute; top: 20px; right: 20px; width: 340px; 
             background: rgba(255, 255, 255, 0.96); color: #333; padding: 20px; 
@@ -34,6 +41,7 @@
         .contacts-block { margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 12px; }
         .email-link { color: #ff4a4a; text-decoration: none; font-weight: bold; transition: color 0.3s; }
         .email-link:hover { color: #bd1313; }
+
         #log-terminal {
             height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333;
             box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace;
@@ -46,28 +54,33 @@
 <body>
     <div class="app-container">
         <div id="header">
-            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Мониторинг Объектов КИИ ТН</span>
-            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API КИИ (GitHub)</a>
+            <span>🖥 ГИС-ПАНЕЛЬ «ГЛАВЦИФРА» — Цифровой Двойник Городских Коммунальных Сетей</span>
+            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API ЖКХ (GitHub)</a>
         </div>
+        
         <div id="map-area">
             <div id="yandex-map"></div>
+            
             <div id="info-panel">
-                <div class="alert-title">🚨 ПРЕДИКТИВНАЯ ТРЕВОГА: АНОМАЛИЯ РОТОРА</div>
-                <span class="metric-bold">Узел КИИ:</span> Промышленный сектор «Грушевая балка»<br>
-                📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Камеры Задвижек №11 по ходу магистрали<br>
-                🛠 <span class="metric-bold">Дефект ИИ:</span> Скрытая разгерметизация (Свищ LINE-02)<br>
-                ⏱ <span class="metric-bold">RUL (Остаточный ресурс):</span> 4 дня 12 часов до разрушения<br>
-                🔒 <span class="metric-bold">Статус Алиби:</span> Непрерывный крипто-лог активен (Запись HMAC)<br>
+                <div class="alert-title">🚨 СИСТЕМА ПРЕДИКТИВНОГО МОНИТОРИНГА ЖКХ</div>
+                <span class="metric-bold">Статус сети:</span> Обнаружена скрытая утечка (свищ)<br>
+                📐 <span class="metric-bold">Локализация:</span> <span style="color: #ff4a4a; font-weight: bold;">18.4 метров</span> от Колодца ТК-11 по ул. Ильинка<br>
+                🛠 <span class="metric-bold">Анализ ИИ:</span> Кавитационный износ магистрали (Усталость 84%)<br>
+                ⏱ <span class="metric-bold">Ресурс до прорыва:</span> 4 дня 12 часов до макроразрушения<br>
+                🔒 <span class="metric-bold">Аппаратный статус:</span> Защита mTLS и Anti-Replay активна<br>
+                
                 <div class="contacts-block">
-                    📬 <span class="metric-bold">Запрос OEM-интеграции (CEO ООО «ГлавЦифра»):</span><br>
-                    <a href="mailto:ceo@glavcifra.ru?subject=Запрос интеграции API КИИ ТН" class="email-link">ceo@glavcifra.ru</a>
+                    📬 <span class="metric-bold">По вопросам OEM-интеграции (ООО «ГлавЦифра»):</span><br>
+                    <a href="mailto:ceo@glavcifra.ru?subject=Запрос интеграции API ГИС ГлавЦифра ЖКХ" class="email-link">ceo@glavcifra.ru</a>
                 </div>
             </div>
         </div>
+
         <div id="log-terminal">
-            [ КИБЕРЗАЩИТА КИИ ИНИЦИАЛИЗИРОВАНА. ЭНЕРГОНЕЗАВИСИМЫЙ ЧЕРНЫЙ ЯЩИК АКТИВЕН. ]<br>
+            [ СИСТЕМА ПРЕДИКТИВНОЙ БЕЗОПАСНОСТИ ЖКХ ИНИЦИАЛИЗИРОВАНА. МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА АКТИВЕН. ]<br>
         </div>
     </div>
+
     <script type="text/javascript">
         ymaps.ready(init);
         function init(){
@@ -76,78 +89,81 @@
                 zoom: 16,
                 controls: ['zoomControl', 'typeSelector']
             });
+
             var waterCollection = new ymaps.GeoObjectCollection();
             var heatingCollection = new ymaps.GeoObjectCollection();
+
+            // --- 1. МАГИСТРАЛЬ ВОДОСНАБЖЕНИЯ ВОДОКАНАЛА (Синяя) ---
             var waterLine = new ymaps.Polyline([
                 [55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]
             ], {
-                hintContent: "<b>Водовод противопожарного тушения</b><br>🔩 Сталь | 📏 600 мм"
+                hintContent: "<b>Магистраль Водоканала (ХВС)</b><br>🔩 Материал: Серый чугун<br>📏 Диаметр: 600 мм<br>⏳ Срок службы: 24 года (Текущее состояние: Стабильное)"
             }, { strokeColor: "#3388ff", strokeWidth: 5, strokeOpacity: 0.8 });
             waterCollection.add(waterLine);
+
+            // Синие колодцы Водоканала с номерами
             var waterNodes = [
-                { c: [55.756500, 37.616000], h: "<b>Пожарный гидрант ПГ-04</b>" },
-                { c: [55.756000, 37.617500], h: "<b>Узел задвижек автоматики тушения</b>" }
+                { c: [55.756500, 37.616000], h: "<b>Колодец учета ХВС-04</b><br>Расход: 140 м³/ч<br>Состояние: Норма" },
+                { c: [55.756000, 37.617500], h: "<b>Технический колодец ХВС-05</b><br>Параметры: Потерь давления нет" },
+                { c: [55.755500, 37.619000], h: "<b>Технический колодец ХВС-06</b><br>Состояние: Сухо" }
             ];
             waterNodes.forEach(function(n) {
                 waterCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#blueCircleDotIcon' }));
             });
+
+
+            // --- 2. МАГИСТРАЛЬ ТЕПЛОСЕТИ (Красная) ---
             var heatingLine = new ymaps.Polyline([
                 [55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]
             ], {
-                hintContent: "<b>Магистральный Нефтепровод ТН</b><br>🔩 Сталь Х70 | 📏 1200 мм"
+                hintContent: "<b>Магистраль Теплосети (ГВС)</b><br>🔩 Материал: Сталь в ППУ-изоляции<br>📏 Диаметр: 400 мм<br>⏳ Срок службы: 12 лет (Текущее состояние: Критическое на участке LINE-02)"
             }, { strokeColor: "#ff4a4a", strokeWidth: 5, strokeOpacity: 0.8 });
             heatingCollection.add(heatingLine);
+
             var leakHeatingLine = new ymaps.Polyline([
                 [55.756314, 37.617935], [55.755814, 37.619535]
             ], {}, { strokeColor: "#ff4a4a", strokeWidth: 8, strokeOpacity: 0.9, strokeStyle: 'dash' });
             heatingCollection.add(leakHeatingLine);
+
+            // Красные колодцы Теплосети с номерами
             var heatingNodes = [
-                { c: [55.756800, 37.616500], h: "<b>Камера пуска скребка КП-10</b>" },
-                { c: [55.756314, 37.617935], h: "<b>Камера Задвижек КЗ-11 (Логгер LOGGER-01)</b>" }
+                { c: [55.756800, 37.616500], h: "<b>Технический колодец ТК-10</b><br>Температура ГВС: 95°C<br>Состояние: Норма" },
+                { c: [55.756314, 37.617935], h: "<b>Технический колодец ТК-11 (Логгер LOGGER-01)</b><br>⚠️ Акустический шум: Повышен (+12 дБ)" },
+                { c: [55.755300, 37.621000], h: "<b>Технический колодец ТК-13</b><br>Температура ГВС: 89°C" }
             ];
             heatingNodes.forEach(function(n) {
                 heatingCollection.add(new ymaps.Placemark(n.c, { hintContent: n.h }, { preset: 'islands#redCircleDotIcon' }));
             });
+
+            // Точка свища (Колодец ТК-12)
             var leak = new ymaps.Placemark([55.755814, 37.619535], {
-                hintContent: '<b>🚨 КРИТИЧЕСКИЙ СВИЩ ТРАССЫ</b>',
-                balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от КЗ-11'
+                hintContent: '<b>⚠️ ТОЧКА СКРЫТОЙ УТЕЧКИ (КОЛОДЕЦ ТК-12)</b>',
+                balloonContent: '<b>Локализация аномалии:</b> 18.4 метров от ТК-11<br><b>Анализ ИИ:</b> Кавитационный свищ трубопровода'
             }, { preset: 'islands#blackDotIcon' });
             heatingCollection.add(leak);
+
             myMap.geoObjects.add(waterCollection);
             myMap.geoObjects.add(heatingCollection);
-            var waterToggle = new ymaps.control.Button({ data: { content: "💧 Пенотушение" }, options: { selectOnClick: true } });
+
+            // Кнопки фильтрации слоев для диспетчера
+            var waterToggle = new ymaps.control.Button({ data: { content: "💧 Водоснабжение" }, options: { selectOnClick: true } });
             waterToggle.select();
             waterToggle.events.add('select', function () { myMap.geoObjects.add(waterCollection); });
             waterToggle.events.add('deselect', function () { myMap.geoObjects.remove(waterCollection); });
-            var heatingToggle = new ymaps.control.Button({ data: { content: "🛢 Нефтепровод" }, options: { selectOnClick: true } });
+
+            var heatingToggle = new ymaps.control.Button({ data: { content: "🔥 Теплотрассы" }, options: { selectOnClick: true } });
             heatingToggle.select();
             heatingToggle.events.add('select', function () { myMap.geoObjects.add(heatingCollection); });
             heatingToggle.events.add('deselect', function () { myMap.geoObjects.remove(heatingCollection); });
+
             myMap.controls.add(waterToggle, { float: 'left' });
             myMap.controls.add(heatingToggle, { float: 'left' });
+
+            // --- СИМУЛЯТОР АСИНХРОННОЙ ЛЕНТЫ ЧЕРНОГО ЯЩИКА ЖКХ ---
             const logs = [
-                "Проверка шифрования mTLS для LOGGER-01 (Грушевая): Успешно. [PDF: 0.1.2]",
-                "Сверка монотонного Nonce: Пакет #40891 принят. [PDF: 0.1.2]",
-                "Ядро Python: Выделена частота утечки нефти 3.2 кГц. [PDF: 0.1.2]",
-                "ESA-анализ ШУН-02: Искажения спектра токов отсутствуют. [PDF: 0.1.2]",
-                "⚠️ ТРЕВОГА КИИ: Датчик КЗ-11 зафиксировал акустический свищ! [PDF: 0.1.2]",
-                "🚨 ПРЕДИКТИВНЫЙ РАСЧЕТ: Локализация точки прорыва — 18.4 метров. [PDF: 0.1.6]",
-                "Лог верифицирован. Юридическое алиби диспетчера сформировано. [PDF: 0.1.2, 0.1.6]",
-                "Система Anti-Tamper: Сканирование... Угрозы отсутствуют. [PDF: 0.1.2]"
-            ];
-            let logIndex = 0;
-            const terminal = document.getElementById("log-terminal");
-            setInterval(() => {
-                const now = new Date().toLocaleTimeString();
-                let currentLog = logs[logIndex % logs.length];
-                let logClass = "";
-                if (currentLog.includes("⚠️")) logClass = "class='log-warn'";
-                if (currentLog.includes("🚨")) logClass = "class='log-crit'";
-                terminal.innerHTML += `[${now}] <span ${logClass}>${currentLog}</span><br>`;
-                terminal.scrollTop = terminal.scrollHeight;
-                logIndex++;
-            }, 4000);
-        }
-    </script>
-</body>
-</html>
+                "Контроль шифрования mTLS для логгера LOGGER-01: Успешно. Данные защищены. [PDF: pdf_wKiJVl.pdf, page 2]",
+                "Проверка Nonce трекера: Пакет #10452 принят. Защита от атак повтора активна. [PDF: pdf_wKiJVl.pdf, page 2]",
+                "Ядро Python (scipy.signal): Полосовая фильтрация выделила гармоники свища 3.4 кГц. [PDF: pdf_XSa1Jx.pdf, page 1]",
+                "ESA-анализ насоса ТК-10: Спектр токов стабилен. Межвитковых замыканий нет. [PDF: pdf_4ovfIK.pdf, page 1, 2]",
+                "⚠️ ТРЕВОГА ГИС: На участке ТК-11 зафиксирован аномальный акустический шум! [PDF: pdf_wKiJVl.pdf, page 2]",
+                "🚨 ПРЕДИКТИВНЫЙ РАСЧЕТ ИИ: Скрытый свищ обнаружен на дистанции 18.4 метров от ТК-11. [PDF: pdf_XSa1Jx.pdf, page 1]",
