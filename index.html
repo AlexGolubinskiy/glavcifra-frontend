@@ -30,7 +30,6 @@
         #map-area { flex: 1; position: relative; background-color: #1a1a1a; width: 100%; }
         #map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         
-        /* ИНФОРМАЦИОННАЯ ПАНЕЛЬ С ТРЕМЯ НАПРАВЛЕНИЯМИ */
         #info-panel {
             position: absolute; top: 20px; right: 20px; width: 350px; 
             background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; 
@@ -41,7 +40,6 @@
         .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
         .metric-bold { font-weight: bold; color: #111; }
         
-        /* СТИЛЬ ТРЕХ ТАБОВ ПЕРЕКЛЮЧЕНИЯ */
         .tab-container { display: flex; gap: 3px; margin-top: 10px; margin-bottom: 5px; }
         .tab-btn { flex: 1; padding: 6px 2px; font-size: 10px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; color: #333; }
         .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; }
@@ -81,17 +79,16 @@
             
             <div id="info-panel">
                 <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
-                <span class="metric-bold">Локация:</span> Сектор прокачки «Грушевая балка»<br>
+                <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
                 <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
                 
-                <!-- ТРИ ТАБА НАПРАВЛЕНИЙ -->
                 <div class="tab-container">
                     <div id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</div>
                     <div id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</div>
                     <div id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</div>
                 </div>
                 
-                <!-- БЛОК 1: КАЛЬКУЛЯТОР ТРУБ ЖКХ -->
+                <!-- БЛОК 1: ТРУБЫ ЖКХ -->
                 <div id="section-pipe" class="calc-section">
                     <div class="calc-title">🧮 ВЫЧИСЛИТЕЛЬ СВИЩЕЙ ВОДОКАНАЛА</div>
                     <div class="form-group">
@@ -108,7 +105,7 @@
                     <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                 </div>
                 
-                <!-- БЛОК 2: КАЛЬКУЛЯТОР НАСОСОВ -->
+                <!-- БЛОК 2: НАСОСЫ -->
                 <div id="section-pump" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА ТОКА (ESA)</div>
                     <div class="form-group">
@@ -122,12 +119,12 @@
                     <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                 </div>
                 
-                <!-- БЛОК 3: НЕФТЯНАЯ ВКЛАДКА -->
+                <!-- БЛОК 3: НЕФТЬ -->
                 <div id="section-oil" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 МОНИТОРИНГ МАГИСТРАЛИ ТРАНСНЕФТИ</div>
                     <div class="form-group">
                         <label>1. РАБОЧЕЕ ДАВЛЕНИЕ В МАГИСТРАЛИ (МПа):</label>
-                        <input type="number" id="oil-pressure" value="6.4" step="0.1" min="1" max="15">
+                        <input type="number" id="oil-pressure" value="6.4" step="0.1">
                     </div>
                     <div class="form-group">
                         <label>2. СОРТ И ВЯЗКОСТЬ НЕФТИ (SST):</label>
@@ -135,13 +132,6 @@
                             <option value="1150">Urals (V_гидро ≈ 1150 м/с)</option>
                             <option value="1250">Siberian Light (V_гидро ≈ 1250 м/с)</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label>3. ЛОГИ ВОЛНЫ ДАВЛЕНИЯ С КАМЕР ЗАДВИЖЕК (dP/dt):</label>
-                        <div class="file-row">
-                            <div class="file-btn" onclick="alert('Телеметрия Датчика Задвижки КЗ-11 принята по mTLS')">🔒 ТЕЛЕМЕТРИЯ КЗ-11</div>
-                            <div class="file-btn" onclick="alert('Телеметрия Датчика Задвижки КЗ-12 принята по mTLS')">🔒 ТЕЛЕМЕТРИЯ КЗ-12</div>
-                        </div>
                     </div>
                     <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ПРОРЫВ НЕФТИ</button>
                 </div>
@@ -159,10 +149,18 @@
     </div>
 
     <script type="text/javascript">
-        // Инициализация карты Leaflet
+        // Стартовая инициализация карты Leaflet на Москву (Ильинка)
         var map = L.map('map').setView([55.755814, 37.619535], 16);
-        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+        var tileLayer = L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
+        // Создаем две независимые изолированные гео-группы для слоев сетей
+        var jkhLayerGroup = L.layerGroup().addTo(map);
+        var oilLayerGroup = L.layerGroup();
+
+        // 1. Отрисовка объектов ЖКХ (Москва)
         var waterPoints = [[55.756500, 37.616000], [55.756000, 37.617500], [55.755500, 37.619000]];
+        L.polyline(waterPoints, {color: '#3388ff', weight: 5, opacity: 0.8}).addTo(jkhLayerGroup);
+        var heatingPoints = [[55.756800, 37.616500], [55.756314, 37.617935], [55.755814, 37.619535], [55.755300, 37.621000]];
+        L.polyline(heatingPoints, {color: '#ff4a4a', weight: 5, opacity: 0.8}).addTo(jkhLayerGroup);
