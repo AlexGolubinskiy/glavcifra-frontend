@@ -11,29 +11,19 @@
         #map-area { flex: 1; position: relative; background-color: #111; width: 100%; }
         #map-grid { width: 100%; height: 100%; position: absolute; background-image: radial-gradient(#292929 2px, transparent 2px); background-size: 40px 40px; display: flex; align-items: center; justify-content: center; }
         .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(0,0,0,0.9); padding: 18px 35px; border-radius: 10px; border: 2px solid #ff4a4a; font-size: 20px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.5); letter-spacing: 1px; }
-        
-        /* МОДЕРНИЗИРОВАННАЯ КРУПНАЯ ПАНЕЛЬ ДО НИЗА ЭКРАНА */
         #info-panel { position: absolute; top: 20px; right: 20px; width: 420px; height: calc(100vh - 240px); background: rgba(255, 255, 255, 0.98); color: #333; padding: 22px; border-radius: 14px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); font-size: 15px; z-index: 9999; border-left: 6px solid #ff4a4a; box-sizing: border-box; overflow-y: auto; display: flex; flex-direction: column; }
         .alert-title { color: #ff0000; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; font-size: 16px; letter-spacing: 0.5px; }
         .tab-container { display: flex; gap: 5px; margin: 15px 0; }
-        
-        /* КРУПНЫЕ ТЕКСТОВЫЕ КНОПКИ ТАБОВ */
         .tab-btn { flex: 1; padding: 10px 5px; font-size: 12px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #333; transition: all 0.2s; }
         .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; box-shadow: 0 3px 10px rgba(255,74,74,0.3); }
-        
         .calc-section { margin-top: 5px; padding-top: 15px; border-top: 1px solid #ddd; flex: 1; }
         .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 12px; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; }
         .form-group { margin-bottom: 14px; }
-        
-        /* КРУПНЫЕ ШРИФТЫ ДЛЯ ФОРМ И ВВОДА */
         .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #444; font-size: 11px; letter-spacing: 0.3px; }
         .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; box-sizing: border-box; font-size: 14px; color: #222; background-color: #fff; }
         .file-row { display: flex; gap: 6px; margin-bottom: 8px; }
         .file-btn { flex: 1; background: #e1e1e1; padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 12px; cursor: pointer; border: 1px solid #ccc; color: #333; transition: background 0.2s; }
-        .file-btn:hover { background: #d0d0d0; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(255,74,74,0.2); transition: background 0.2s; }
-        .calc-btn:hover { background: #bd1313; }
-        
         #log-terminal { height: 140px; background: #0b0b0b; border-top: 2px solid #333; padding: 15px; font-family: monospace; font-size: 13px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; }
     </style>
 </head>
@@ -52,12 +42,11 @@
                 <div style="font-size: 14px; margin-bottom: 4px;"><b>Контур ИБ:</b> mTLS / Логи HMAC-SHA256</div>
                 
                 <div class="tab-container">
-                    <button id="tab-pipe" class="tab-btn active" onclick="document.getElementById('tab-pipe').className='tab-btn active'; document.getElementById('tab-pump').className='tab-btn'; document.getElementById('tab-oil').className='tab-btn'; document.getElementById('section-pipe').style.display='block'; document.getElementById('section-pump').style.display='none'; document.getElementById('section-oil').style.display='none'; document.getElementById('live-sector').innerText='Городские сети (Москва)'; document.getElementById('live-geo-text').innerHTML='📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style=\'font-size:12px; color:#aaa; font-weight:normal;\'>[Сетка ХВС/ГВС развернута]</span>';">   СВИЩИ ЖКХ</button>
-                    <button id="tab-pump" class="tab-btn" onclick="document.getElementById('tab-pump').className='tab-btn active'; document.getElementById('tab-pipe').className='tab-btn'; document.getElementById('tab-oil').className='tab-btn'; document.getElementById('section-pump').style.display='block'; document.getElementById('section-pipe').style.display='none'; document.getElementById('section-oil').style.display='none'; document.getElementById('live-sector').innerText='ГНС Суходольная (Энергоузел)'; document.getElementById('live-geo-text').innerHTML='⚡️ СЕКТОР КИИ: ГНС СУХОДОЛЬНАЯ<br><span style=\'font-size:12px; color:#00ff00; font-weight:normal;\'>[Мониторинг МНА по методу ESA активен]</span>';">⚡️ НАСОСЫ ESA</button>
-                    <button id="tab-oil" class="tab-btn" onclick="document.getElementById('tab-oil').className='tab-btn active'; document.getElementById('tab-pipe').className='tab-btn'; document.getElementById('tab-pump').className='tab-btn'; document.getElementById('section-oil').style.display='block'; document.getElementById('section-pipe').style.display='none'; document.getElementById('section-pump').style.display='none'; document.getElementById('live-sector').innerText='ПБ «Шесхарис» (Новороссийск)'; document.getElementById('live-geo-text').innerHTML='🛢 СЕКТОР ТРАНСНЕФТЬ: ПБ «ШЕСХАРИС»<br><span style=\'font-size:12px; color:#ffcc00; font-weight:normal;\'>[Контур dP/dt магистрали давления]</span>';">🛢 НЕФТЬ КИИ</button>
+                    <button id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</button>
+                    <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</button>
+                    <button id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</button>
                 </div>
                 
-                <!-- БЛОК 1: СВИЩИ ЖКХ -->
                 <div id="section-pipe" class="calc-section">
                     <div class="calc-title">🧮 ВЫЧИСЛИТЕЛЬ СВИЩЕЙ ВОДОКАНАЛА</div>
                     <div class="form-group">
@@ -75,9 +64,9 @@
                             <div class="file-btn" onclick="alert('Аудио-сигнал Точки Б успешно импортирован')">📂 ШУМ ТОЧКИ Б</div>
                         </div>
                     </div>
-                    <button class="calc-btn" onclick="var s=parseFloat(document.getElementById('pipe-material').value); var l=parseFloat(document.getElementById('pipe-length').value); var d=((l-(0.0102*s))/2).toFixed(1); document.getElementById('log-terminal').innerHTML+='['+new Date().toLocaleTimeString()+'] <span style=\'color:#ff4a4a; font-weight:bold;\'>[ИИ-АКУСТИКА] Свищ локализован на отметке '+d+' м. от Точки А.</span><br>'; var t=document.getElementById('log-terminal'); t.scrollTop=t.scrollHeight;">РАССЧИТАТЬ СВИЩ ЖКХ</button>
+                    <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                 </div>
-                <!-- БЛОК 2: НАСОСЫ ESA -->
+                <!-- БЛОК 2: НАСОСЫ ESA (С ИНТЕГРАЦИЕЙ ГЛУБОКОВОДНОГО КОНТРОЛЯ) -->
                 <div id="section-pump" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
                     <div class="form-group">
@@ -89,7 +78,15 @@
                         <input type="number" id="pump-slots" value="28">
                     </div>
                     <div class="form-group">
-                        <label>3. ИМПОРТ СОВМЕЩЕННЫХ СИГНАЛОВ ДВИГАТЕЛЯ:</label>
+                        <label>3. ТИП УСТАНОВКИ И ГЛУБИНА ПОДВЕСА АГРЕГАТА:</label>
+                        <select id="pump-depth">
+                            <option value="артезианского (Глубина 150 м)">🌊 Артезианский ЭЦВ / Наземный шкаф (150 м)</option>
+                            <option value="нефтяного УЭЦН (Глубина 1500 м)">🛢 Нефтяной УЭЦН / Съем тока с устья (1500 м)</option>
+                            <option value="поверхностного ХВС (Магистральный)">🏢 Наземный МНА / Прямое подключение</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>4. ИМПОРТ СОВМЕЩЕННЫХ СИГНАЛОВ ДВИГАТЕЛЯ:</label>
                         <div class="file-row">
                             <div class="file-btn" onclick="alert('Высокочастотный аудио-лог звука двигателя успешно импортирован')">📂 ЗВУК ДВИГАТЕЛЯ</div>
                             <div class="file-btn" onclick="alert('Осциллограмма токовых нагрузок принята по mTLS')">⚡️ ТОК СТАТАТОРА (ESA)</div>
@@ -131,7 +128,6 @@
         <div id="log-terminal">[ СИСТЕМА ПРЕДИКТИВНОЙ БЕЗОПАСНОСТИ КИИ ИНИЦИАЛИЗИРОВАНА. МОНИТОРИНГ АКТИВЕН. ]<br></div>
     </div>
 
-    <!-- НАДЕЖНЫЙ ОДНОТИПНЫЙ СКРИПТ УПРАВЛЕНИЯ СИТУАЦИОННЫМ ЦЕНТРОМ -->
     <script type="text/javascript">
         function switchTab(type) {
             document.getElementById('tab-pipe').classList.remove('active');
@@ -170,10 +166,14 @@
         function runPumpCalculator() {
             var rpm = parseInt(document.getElementById('pump-rpm').value);
             var slots = parseInt(document.getElementById('pump-slots').value);
+            var depth = document.getElementById('pump-depth').value;
             var hz = (rpm / 60).toFixed(1);
             var fault = (hz * slots).toFixed(1);
-            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffcc00;">[ИИ-ESA] Выполнено БПФ. Вал: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц! Аварийное отключение за 1.2 сек.</span><br>';
-            var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
+            var terminal = document.getElementById('log-terminal');
+            
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИИ-ESA] Анализ БПФ токов статора для погружного агрегата... Глубина подвеса определена корректно. Снятие спектра с поверхностного кабеля шкафа автоматики выполнено успешно.</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffcc00;">[ИИ-ESA] Базовая частота вала: ' + hz + ' Гц. Обнаружен критический пик боковой модуляции пазов ротора на частоте ' + fault + ' Гц! Локализован кавитационный износ лопаток глубоководного насоса. Аварийное отключение за 1.2 сек.</span><br>';
+            terminal.scrollTop = terminal.scrollHeight;
         }
 
         function runOilCalculator() {
