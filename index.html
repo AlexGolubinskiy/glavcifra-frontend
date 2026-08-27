@@ -9,36 +9,26 @@
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
         #header { height: 55px; min-height: 55px; padding: 0 15px; background: #11161d; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
         #map-area { flex: 1; position: relative; background-color: #05070a; width: 100%; overflow: hidden; }
-        
-        /* ИНЖЕНЕРНЫЙ CANVAS-ХОЛСТ С АППАРАТНЫМ ТРЕКИНГОМ МЫШИ */
         #gi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: block; cursor: crosshair; }
-        
         .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(5, 10, 15, 0.95); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; border-left: 6px solid #ff4a4a; }
-        
-        /* МОБИЛЬНАЯ УМНАЯ ПАНЕЛЬ С ОГРАНИЧЕНИЕМ ПО ВЫСОТЕ */
         #info-panel { position: absolute; bottom: 15px; right: 15px; left: 15px; top: 120px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); font-size: 14px; z-index: 9999; border-left: 6px solid #ff4a4a; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
-        
         @media (min-width: 768px) {
             #info-panel { width: 420px; left: auto; top: 15px; bottom: 15px; height: calc(100vh - 145px); }
             .geo-target { top: auto; bottom: 150px; right: 450px; left: auto; font-size: 18px; padding: 15px 30px; }
         }
         .alert-title { color: #ff0000; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 14px; letter-spacing: 0.5px; }
         .tab-container { display: flex; gap: 4px; margin: 10px 0; min-height: 40px; }
-        
         .tab-btn { flex: 1; padding: 8px 2px; font-size: 11px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #333; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
         .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; box-shadow: 0 3px 10px rgba(255,74,74,0.3); }
-        
         .scroll-content { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-right: 2px; }
         .calc-section { border-top: 1px solid #ddd; padding-top: 10px; }
         .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 10px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; }
         .form-group { margin-bottom: 10px; }
-        
         .form-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #444; font-size: 10px; letter-spacing: 0.3px; }
         .form-group select, .form-group input { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 6px; box-sizing: border-box; font-size: 13px; color: #222; background-color: #fff; }
         .file-row { display: flex; gap: 5px; margin-bottom: 6px; }
         .file-btn { flex: 1; background: #e1e1e1; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; margin-top: 5px; box-shadow: 0 4px 12px rgba(255,74,74,0.2); }
-        
         #log-terminal { height: 110px; min-height: 110px; background: #05070a; border-top: 2px solid #22353e; padding: 10px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; width: 100%; margin-top: auto; border-radius: 4px; }
     </style>
 </head>
@@ -63,6 +53,7 @@
                     <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ</button>
                     <button id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</button>
                 </div>
+                
                 <div class="scroll-content">
                     <!-- БЛОК 1: СВИЩИ ЖКХ -->
                     <div id="section-pipe" class="calc-section">
@@ -84,7 +75,6 @@
                         </div>
                         <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                     </div>
-
                     <!-- БЛОК 2: НАСОСЫ ESA -->
                     <div id="section-pump" class="calc-section" style="display:none;">
                         <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
@@ -114,9 +104,9 @@
                         <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                     </div>
                     
-                    <!-- БЛОК 3: НЕФТЬ КИИ — ПРОКАЧКА ПОД ВЫСОКОГОРНЫЙ СПУСК -->
+                    <!-- БЛОК 3: НЕФТЬ КИИ — ПРОКАЧКА ПОД ПОДЗЕМНЫЙ НАКЛОННЫЙ ТОННЕЛЬ -->
                     <div id="section-oil" class="calc-section" style="display:none;">
-                        <div class="calc-title">🧮 МОНИТОРИНГ ВЫСОКОГОРНОГО СПУСКА</div>
+                        <div class="calc-title">🧮 МОНИТОРИНГ ВЫСОКОГОРНОГО ТОННЕЛЯ</div>
                         <div class="form-group">
                             <label>1. БАЗОВОЕ ДАВЛЕНИЕ В МАГИСТРАЛИ (МПа):</label>
                             <input type="number" id="oil-pressure" value="6.4" step="0.1">
@@ -130,7 +120,7 @@
                             <select id="oil-geometry"><option value="1020">Ø 1020 мм / Стенка 14 мм</option><option value="720">Ø 720 мм / Стенка 12 мм</option></select>
                         </div>
                         <div class="form-group">
-                            <label>4. ГЕОДЕЗИЧЕСКИЙ ПЕРЕПАД ВЫСОТЫ (МЕТРЫ):</label>
+                            <label>4. ПЕРЕПАД ВЫСОТЫ ТОННЕЛЯ ГРУШОВАЯ-ШЕСХАРИС (М):</label>
                             <input type="number" id="oil-height" value="340">
                         </div>
                         <div class="form-group">
@@ -140,7 +130,7 @@
                                 <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
                             </div>
                         </div>
-                        <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ СПУСК</button>
+                        <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ТОННЕЛЬ</button>
                     </div>
                 </div> <!-- КОНЕЦ SCROLL-CONTENT -->
                 
@@ -158,10 +148,10 @@
         var canvas = document.getElementById('gi-canvas');
         var ctx = canvas.getContext('2d');
         var currentMode = 'pipe';
+        
         var startX = 0, startY = 0, endX = 0, endY = 0;
         var mouseX = -100, mouseY = -100;
         var hoveredElement = null;
-
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
@@ -196,8 +186,8 @@
                 labelA = "Ввод кабеля (Шкаф)"; labelB = "Насос Агрегат";
             } else if (currentMode === 'oil') {
                 colorGrid = "rgba(255, 150, 0, 0.06)"; colorLine = "#ff9600";
-                sectorName = "МАГИСТРАЛЬ ТРАНСНЕФТЬ: УЧАСТОК LINE-02";
-                labelA = "Камера задвижек КЗ-11 (0.0 м)"; labelB = "Камера задвижек КЗ-12 (2000.0 м)";
+                sectorName = "МАГИСТРАЛЬ ТРАНСНЕФТЬ: LINE-02";
+                labelA = "Камера КЗ-11 (0.0 м)"; labelB = "Камера КЗ-12 (2000.0 м)";
             }
             
             ctx.strokeStyle = colorGrid; ctx.lineWidth = 1;
@@ -262,9 +252,10 @@
                         ctx.fillText("🛢️ ДИАГНОСТИКА УЧАСТКА LINE-02:", boxX + 12, boxY + 20);
                         ctx.font = "11px monospace"; ctx.fillStyle = "#00ff00";
                         ctx.fillText("• СОРТ НЕФТИ: Urals (1150 м/с)", boxX + 12, boxY + 40);
-                        ctx.fillText("• ГЕО-СПУСК: МАРКОТХ (HВ=340 м)", boxX + 12, boxY + 55);
+                        ctx.fillText("• ТРАССА: ТОННЕЛЬ ГРУШОВАЯ-ШЕСХАРИС", boxX + 12, boxY + 55);
                         ctx.fillText("• СТАТУС ПОТОКА: САМОТЕЧНОСТЬ СТАБ.", boxX + 12, boxY + 70);
-                    } else if (currentMode === 'pump') {
+                    }
+                    else if (currentMode === 'pump') {
                         ctx.fillText("⚡ ТЕЛЕМЕТРИЯ СИЛОВОЙ ЛИНИИ МНА:", boxX + 12, boxY + 20);
                         ctx.font = "11px monospace"; ctx.fillStyle = "#00ff00";
                         ctx.fillText("• МЕТОД ДИАГНОСТИКИ: ESA АКТИВЕН", boxX + 12, boxY + 40);
@@ -337,15 +328,7 @@
             var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
             
             var terminal = document.getElementById('log-terminal');
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование спуска Маркотх (H=' + h + 'м). Избыточное гравитационное давление столба: +' + p_grav + ' МПа. Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа.</span><br>';
-        function runOilCalculator() {
-            var p = parseFloat(document.getElementById('oil-pressure').value);
-            var h = parseFloat(document.getElementById('oil-height').value);
-            var p_grav = (890 * 9.81 * h / 1000000).toFixed(2);
-            var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
-            
-            var terminal = document.getElementById('log-terminal');
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование спуска Маркотх (H=' + h + 'м). Избыточное гравитационное давление столба: +' + p_grav + ' МПа. Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа.</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование тоннеля Грушовая-Шесхарис (H=' + h + 'м). Избыточное гравитационное давление столба: +' + p_grav + ' МПа. Полное расчетное давление у причала: ' + p_total + ' МПа.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Предиктивный ИИ-контроль сплошности: Число кавитации в норме, вакуумные карманы отсутствуют. Лог подписан HMAC-SHA256 и внесен в защищенную базу main_platform.db.</span><br>';
             terminal.scrollTop = terminal.scrollHeight;
         }
