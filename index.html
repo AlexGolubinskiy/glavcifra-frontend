@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ГЛАВЦИФРА — Двойник КИИ</title>
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #0d0d0d; color: #fff; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
-        #header { height: 55px; min-height: 55px; padding: 0 15px; background: #2a2a2a; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
-        #map-area { flex: 1; position: relative; background-color: #111; width: 100%; overflow: hidden; }
+        #header { height: 55px; min-height: 55px; padding: 0 15px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
+        #map-area { flex: 1; position: relative; background-color: #070a0e; width: 100%; overflow: hidden; }
         
-        /* ВСТРОЕННАЯ ВЫСОКОДЕТАЛИЗИРОВАННАЯ СПУТНИКОВАЯ КАРТА-ПОДЛОЖКА (БЕЗУПРЕЧНЫЙ ОБХОД CORS) */
-        #map-grid { width: 100%; height: 100%; position: absolute; background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('https://unsplash.com'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; transition: all 0.5s ease; }
+        /* НЕУЯЗВИМАЯ ВЕКТОРНАЯ ГИС-КАРТА (РАБОТАЕТ БЕЗ ИНТЕРНЕТА И ОБХОДИТ CORS) */
+        #map-grid { width: 100%; height: 100%; position: absolute; background-color: #0b1118; background-image: radial-gradient(rgba(0, 255, 0, 0.15) 1px, transparent 1px), linear-gradient(rgba(26, 43, 62, 0.4) 2px, transparent 2px), linear-gradient(90deg, rgba(26, 43, 62, 0.4) 2px, transparent 2px); background-size: 20px 20px, 40px 40px, 40px 40px; background-position: center; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
         
-        .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(0,0,0,0.9); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 20px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; }
+        .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(5, 10, 15, 0.95); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; border-left: 6px solid #ff4a4a; }
         
         /* МОБИЛЬНАЯ УМНАЯ ПАНЕЛЬ С ФИКСИРОВАННОЙ ВЫСОТОЙ */
         #info-panel { position: absolute; bottom: 15px; right: 15px; left: 15px; top: 120px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); font-size: 14px; z-index: 9999; border-left: 6px solid #ff4a4a; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
@@ -29,7 +29,6 @@
         .tab-btn { flex: 1; padding: 8px 2px; font-size: 11px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #333; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
         .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; box-shadow: 0 3px 10px rgba(255,74,74,0.3); }
         
-        /* СКРОЛЛ-ЗОНА ДЛЯ ВЫЧИСЛЕНИЙ — ПРЕДОТВРАЩАЕТ ВЫПАДЕНИЕ ИЗ ЭКРАНА */
         .scroll-content { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-right: 2px; }
         .calc-section { border-top: 1px solid #ddd; padding-top: 10px; }
         .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 10px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; }
@@ -41,18 +40,17 @@
         .file-btn { flex: 1; background: #e1e1e1; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; margin-top: 5px; box-shadow: 0 4px 12px rgba(255,74,74,0.2); }
         
-        /* ТЕРМИНАЛ НАМЕРТВО ПРИВЯЗАН К НИЗУ ЭКРАНА МОБИЛЬНОГО */
-        #log-terminal { height: 110px; min-height: 110px; background: #0b0b0b; border-top: 2px solid #333; padding: 10px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; width: 100%; margin-top: auto; }
+        #log-terminal { height: 110px; min-height: 110px; background: #05070a; border-top: 2px solid #22353e; padding: 10px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; width: 100%; margin-top: auto; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,255,0,0.1); }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div id="header">
-            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА»</span>
+            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Контур КИИ РФ</span>
         </div>
         <div id="map-area">
             <div id="map-grid">
-                <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:11px; color:#aaa; font-weight:normal;">[Сетка ХВС/ГВС развернута]</span></div>
+                <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:11px; color:#95a5a6; font-weight:normal;">[Сетка ХВС/ГВС развернута в буфере]</span></div>
             </div>
             <div id="info-panel">
                 <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
@@ -166,19 +164,28 @@
                 document.getElementById('section-pipe').style.display = 'block';
                 document.getElementById('live-sector').innerText = "Городские сети (Москва)";
                 document.getElementById('live-geo-text').innerHTML = "📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style='font-size:11px; color:#aaa; font-weight:normal;'>[Сетка ХВС/ГВС развернута]</span>";
-                mapGrid.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('https://unsplash.com')";
+                
+                // Синий векторный ГИС-стиль для ЖКХ
+                mapGrid.style.backgroundColor = "#0b1118";
+                mapGrid.style.backgroundImage = "radial-gradient(rgba(0, 150, 255, 0.15) 1px, transparent 1px), linear-gradient(rgba(26, 43, 62, 0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(26, 43, 62, 0.5) 2px, transparent 2px)";
             } else if(type === 'pump') {
                 document.getElementById('tab-pump').classList.add('active');
                 document.getElementById('section-pump').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
                 document.getElementById('live-geo-text').innerHTML = "⚡️ СЕКТОР КИИ: ГНС СУХОДОЛЬНАЯ<br><span style='font-size:11px; color:#00ff00; font-weight:normal;'>[Мониторинг МНА по методу ESA активен]</span>";
-                mapGrid.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://unsplash.com')";
+                
+                // Ярко-зеленый кибер-стиль для Энергоузла Насосов
+                mapGrid.style.backgroundColor = "#050c05";
+                mapGrid.style.backgroundImage = "radial-gradient(rgba(0, 255, 0, 0.2) 1px, transparent 1px), linear-gradient(rgba(10, 40, 10, 0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(10, 40, 10, 0.5) 2px, transparent 2px)";
             } else if(type === 'oil') {
                 document.getElementById('tab-oil').classList.add('active');
                 document.getElementById('section-oil').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
                 document.getElementById('live-geo-text').innerHTML = "🛢 СЕКТОР ТРАНСНЕФТЬ: ПБ «ШЕСХАРИС»<br><span style='font-size:11px; color:#ffcc00; font-weight:normal;'>[Контур dP/dt магистрали давления]</span>";
-                mapGrid.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://unsplash.com')";
+                
+                // Янтарно-оранжевый промышленный стиль для Транснефти
+                mapGrid.style.backgroundColor = "#140f05";
+                mapGrid.style.backgroundImage = "radial-gradient(rgba(255, 150, 0, 0.15) 1px, transparent 1px), linear-gradient(rgba(50, 30, 10, 0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(50, 30, 10, 0.5) 2px, transparent 2px)";
             }
         }
 
