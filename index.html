@@ -312,36 +312,36 @@
             document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[ИИ-АКУСТИКА] Свищ локализован на отметке ' + dist + ' м. от Точки А.</span><br>';
             var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
         }
-        function runOilCalculator() {
+                function runOilCalculator() {
             var p = parseFloat(document.getElementById('oil-pressure').value);
             var h = parseFloat(document.getElementById('oil-height').value);
             var p_grav = (890 * 9.81 * h / 1000000).toFixed(2);
             var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
             
             var terminal = document.getElementById('log-terminal');
-            terminal.innerHTML = ''; // Очищаем старый лог для вывода боевого протокола ПЛА
+            terminal.innerHTML = ''; // Очищаем экран для вывода боевого протокола ПЛА
             
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ПЕРЕПАД H=' + h + 'м] Избыточное гравитационное давление столба нефти: +' + p_grav + ' МПа.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное гидростатическое давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
             
-            // Пошаговый автоматический ведомственный протокол КИИ ТЭК для диспетчера
+            // Жесткое ведомственное разделение: информация - зеленый, приказы диспетчеру - красный
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">• ШАГ 1: Активирован аварийный сброс через клапаны СППК в резервуары-сбросники ПБ Шесхарис.</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Автоматика открыла аварийные клапаны СППК. Сброс излишков в резервуары начат.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 600);
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">• ШАГ 2: Передана автоматическая команда на прикрытие верхней задвижки КЗ-11 (площадка Грушовая).</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ПЕРЕКРОЙ ЗАДВИЖКУ КЗ-11 НА ПЛОЩАДКЕ ГРУШОВАЯ!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 1200);
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">• ШАГ 3: Инициирована экстренная остановка магистральных насосных агрегатов (МНА) на горе.</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСНЫЕ АГРЕГАТЫ (МНА) НА ГОРЕ!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 1800);
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог инцидента верифицирован mTLS, подписан хэшем HMAC-SHA256 и запечатан в main_platform.db. Алиби смены сформировано.</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог подписан HMAC-SHA256 и запечатан в main_platform.db. Действия смены защищены.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 2400);
             
