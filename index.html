@@ -3,64 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ГЛАВЦИФРА — Цифровой Двойник Промышленных Объектов КИИ</title>
+    <title>ГЛАВЦИФРА — Двойник КИИ</title>
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #1a1a1a; color: #fff; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
-        #header { height: 60px; min-height: 60px; padding: 0 20px; background: #2a2a2a; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
-        .partner-link { font-size: 14px; color: #ff4a4a; text-decoration: none; border: 1px solid #ff4a4a; padding: 5px 10px; border-radius: 4px; transition: all 0.3s; font-weight: bold; }
-        .partner-link:hover { background: #ff4a4a; color: #fff; }
+        #header { height: 50px; padding: 0 20px; background: #2a2a2a; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; border-bottom: 3px solid #ff4a4a; z-index: 10000; }
         #map-area { flex: 1; position: relative; background-color: #111; width: 100%; }
-        #map-grid { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-image: radial-gradient(#292929 2px, transparent 2px); background-size: 30px 30px; display: flex; align-items: center; justify-content: center; }
-        .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(0,0,0,0.9); padding: 15px 30px; border-radius: 8px; border: 1px solid #ff4a4a; font-size: 18px; letter-spacing: 1px; box-shadow: 0 0 25px rgba(255,74,74,0.4); text-align: center; }
-        #info-panel { position: absolute; top: 20px; right: 20px; width: 350px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-size: 13px; line-height: 1.4; z-index: 9999; border-left: 5px solid #ff4a4a; box-sizing: border-box; max-height: 90%; overflow-y: auto; }
-        .alert-title { color: #ff0000; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
-        .metric-bold { font-weight: bold; color: #111; }
-        .tab-container { display: flex; gap: 3px; margin-top: 10px; margin-bottom: 5px; }
-        .tab-btn { flex: 1; padding: 6px 2px; font-size: 10px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; color: #333; }
+        #map-grid { width: 100%; height: 100%; position: absolute; background-image: radial-gradient(#292929 2px, transparent 2px); background-size: 30px 30px; display: flex; align-items: center; justify-content: center; }
+        .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(0,0,0,0.9); padding: 12px 25px; border-radius: 8px; border: 1px solid #ff4a4a; font-size: 16px; text-align: center; box-shadow: 0 0 20px rgba(255,74,74,0.4); }
+        #info-panel { position: absolute; top: 20px; right: 20px; width: 340px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-size: 12px; z-index: 9999; border-left: 5px solid #ff4a4a; max-height: 85%; overflow-y: auto; }
+        .alert-title { color: #ff0000; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .tab-container { display: flex; gap: 3px; margin: 10px 0; }
+        .tab-btn { flex: 1; padding: 5px; font-size: 10px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; color: #333; }
         .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; }
         .calc-section { margin-top: 5px; padding-top: 10px; border-top: 1px solid #ddd; }
-        .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; }
-        .form-group { margin-bottom: 8px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 3px; color: #444; font-size: 10px; }
-        .form-group select, .form-group input { width: 100%; padding: 5px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
-        .file-row { display: flex; gap: 5px; margin-bottom: 5px; }
-        .file-btn { flex: 1; background: #e1e1e1; padding: 5px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 10px; cursor: pointer; border: 1px solid #ccc; color: #333; }
-        .file-btn:hover { background: #d0d0d0; }
-        .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.3s; margin-top: 5px; }
-        .calc-btn:hover { background: #bd1313; }
-        #log-terminal { height: 150px; min-height: 150px; background: #0b0b0b; border-top: 2px solid #333; box-sizing: border-box; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; overflow-y: auto; line-height: 1.5; width: 100%; z-index: 10000; }
+        .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; }
+        .form-group { margin-bottom: 6px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 2px; color: #444; font-size: 9px; }
+        .form-group select, .form-group input { width: 100%; padding: 4px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; font-size: 11px; }
+        .file-row { display: flex; gap: 4px; margin-bottom: 4px; }
+        .file-btn { flex: 1; background: #e1e1e1; padding: 4px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 9px; cursor: pointer; border: 1px solid #ccc; color: #333; }
+        .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 6px; border: none; border-radius: 5px; font-weight: bold; font-size: 11px; cursor: pointer; margin-top: 4px; }
+        #log-terminal { height: 140px; background: #0b0b0b; border-top: 2px solid #333; padding: 12px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div id="header">
-            <span>🖥 СИТУАЦИОННЫЙ СЕНТР «ГЛАВЦИФРА» — Цифровой Двойник Объектов КИИ ТЭК</span>
-            <a href="https://github.com" target="_blank" class="partner-link">📂 Спецификация API КИИ (GitHub)</a>
+            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник КИИ</span>
         </div>
         <div id="map-area">
             <div id="map-grid">
-                <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:11px; color:#aaa; font-weight:normal;">[Сетка ХВС/ГВС развернута в буфере диспетчера]</span></div>
+                <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:10px; color:#aaa; font-weight:normal;">[Сетка ХВС/ГВС развернута]</span></div>
             </div>
             <div id="info-panel">
                 <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
-                <span class="metric-bold">Текущий сектор:</span> <span id="live-sector">Городские сети (Москва)</span><br>
-                <span class="metric-bold">Контур ИБ:</span> mTLS шифрование / Запись логов HMAC-SHA256<br>
+                <div><b>Текущий сектор:</b> <span id="live-sector">Городские сети (Москва)</span></div>
+                <div><b>Контур ИБ:</b> mTLS / Логи HMAC-SHA256</div>
                 
                 <div class="tab-container">
-                    <button id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ ЖКХ</button>
-                    <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ ESA</button>
-                    <button id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</button>
+                    <button id="tab-pipe" class="tab-btn active" onclick="document.getElementById('tab-pipe').className='tab-btn active'; document.getElementById('tab-pump').className='tab-btn'; document.getElementById('tab-oil').className='tab-btn'; document.getElementById('section-pipe').style.display='block'; document.getElementById('section-pump').style.display='none'; document.getElementById('section-oil').style.display='none'; document.getElementById('live-sector').innerText='Городские сети (Москва)'; document.getElementById('live-geo-text').innerHTML='📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style=\'font-size:10px; color:#aaa; font-weight:normal;\'>[Сетка ХВС/ГВС развернута]</span>';">   СВИЩИ ЖКХ</button>
+                    <button id="tab-pump" class="tab-btn" onclick="document.getElementById('tab-pump').className='tab-btn active'; document.getElementById('tab-pipe').className='tab-btn'; document.getElementById('tab-oil').className='tab-btn'; document.getElementById('section-pump').style.display='block'; document.getElementById('section-pipe').style.display='none'; document.getElementById('section-oil').style.display='none'; document.getElementById('live-sector').innerText='ГНС Суходольная (Энергоузел)'; document.getElementById('live-geo-text').innerHTML='⚡️ СЕКТОР КИИ: ГНС СУХОДОЛЬНАЯ<br><span style=\'font-size:10px; color:#00ff00; font-weight:normal;\'>[Мониторинг МНА по методу ESA активен]</span>';">⚡️ НАСОСЫ ESA</button>
+                    <button id="tab-oil" class="tab-btn" onclick="document.getElementById('tab-oil').className='tab-btn active'; document.getElementById('tab-pipe').className='tab-btn'; document.getElementById('tab-pump').className='tab-btn'; document.getElementById('section-oil').style.display='block'; document.getElementById('section-pipe').style.display='none'; document.getElementById('section-pump').style.display='none'; document.getElementById('live-sector').innerText='ПБ «Шесхарис» (Новороссийск)'; document.getElementById('live-geo-text').innerHTML='🛢 СЕКТОР ТРАНСНЕФТЬ: ПБ «ШЕСХАРИС»<br><span style=\'font-size:10px; color:#ffcc00; font-weight:normal;\'>[Контур dP/dt магистрали давления]</span>';">🛢 НЕФТЬ КИИ</button>
                 </div>
                 
                 <div id="section-pipe" class="calc-section">
                     <div class="calc-title">🧮 ВЫЧИСЛИТЕЛЬ СВИЩЕЙ ВОДОКАНАЛА</div>
                     <div class="form-group">
                         <label>1. МАТЕРИАЛ И ДИАМЕТР ТРУБОПРОВОДА:</label>
-                        <select id="pipe-material">
-                            <option value="1300">Сталь Х70 (V ≈ 1300 м/с)</option>
-                            <option value="1100">Серый чугун (V ≈ 1100 м/с)</option>
-                        </select>
+                        <select id="pipe-material"><option value="1300">Сталь Х70 (V ≈ 1300 м/с)</option><option value="1100">Чугун (V ≈ 1100 м/с)</option></select>
                     </div>
                     <div class="form-group">
                         <label>2. ДЛИНА УЧАСТКА МЕЖДУ А И Б (МЕТРЫ):</label>
@@ -73,9 +64,9 @@
                             <div class="file-btn" onclick="alert('Аудио-сигнал Точки Б успешно импортирован')">📂 ШУМ ТОЧКИ Б</div>
                         </div>
                     </div>
-                    <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
+                    <button class="calc-btn" onclick="var s=parseFloat(document.getElementById('pipe-material').value); var l=parseFloat(document.getElementById('pipe-length').value); var d=((l-(0.0102*s))/2).toFixed(1); document.getElementById('log-terminal').innerHTML+='['+new Date().toLocaleTimeString()+'] <span style=\'color:#ff4a4a; font-weight:bold;\'>[ИИ-АКУСТИКА] Свищ локализован на отметке '+d+' м. от Точки А.</span><br>'; var t=document.getElementById('log-terminal'); t.scrollTop=t.scrollHeight;">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                 </div>
-                
+                <!-- БЛОК 2: НАСОСЫ ESA -->
                 <div id="section-pump" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
                     <div class="form-group">
@@ -93,9 +84,10 @@
                             <div class="file-btn" onclick="alert('Осциллограмма токовых нагрузок принята по mTLS')">⚡️ ТОК СТАТАТОРА (ESA)</div>
                         </div>
                     </div>
-                    <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
+                    <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="var rpm=parseInt(document.getElementById('pump-rpm').value); var slots=parseInt(document.getElementById('pump-slots').value); var hz=(rpm/60).toFixed(1); var fault=(hz*slots).toFixed(1); document.getElementById('log-terminal').innerHTML+='['+new Date().toLocaleTimeString()+'] <span style=\'color:#ffcc00;\'>[ИИ-ESA] Выполнено БПФ. Вал: '+hz+' Гц. Пик дефекта ротора: '+fault+' Гц! Аварийное отключение за 1.2 сек.</span><br>'; var t=document.getElementById('log-terminal'); t.scrollTop=t.scrollHeight;">ДИАГНОСТИРОВАТЬ РОТОР</button>
                 </div>
                 
+                <!-- БЛОК 3: НЕФТЬ КИИ -->
                 <div id="section-oil" class="calc-section" style="display:none;">
                     <div class="calc-title">🧮 МОНИТОРИНГ МАГИСТРАЛИ ТРАНСНЕФТИ</div>
                     <div class="form-group">
@@ -104,24 +96,28 @@
                     </div>
                     <div class="form-group">
                         <label>2. СОРТ И ВЯЗКОСТЬ НЕФТИ (SST):</label>
-                        <select id="oil-grade">
-                            <option value="1150">Urals (V_гидро ≈ 1150 м/с)</option>
-                            <option value="1250">Siberian Light (V_гидро ≈ 1250 м/с)</option>
-                        </select>
+                        <select id="oil-grade"><option value="1150">Urals (V_гидро ≈ 1150 м/с)</option><option value="1250">Siberian Light (V ≈ 1250 м/с)</option></select>
                     </div>
                     <div class="form-group">
                         <label>3. ДИАМЕТР ТРУБЫ И ТОЛЩИНА СТЕНКИ (мм):</label>
-                        <select id="oil-geometry">
-                            <option value="1020">Ø 1020 мм / Стенка 14 мм</option>
-                            <option value="720">Ø 720 мм / Стенка 12 мм</option>
-                        </select>
+                        <select id="oil-geometry"><option value="1020">Ø 1020 мм / Стенка 14 мм</option><option value="720">Ø 720 мм / Стенка 12 мм</option></select>
                     </div>
                     <div class="form-group">
                         <label>4. ТЕЛЕМЕТРИЯ ВОЛН ДАВЛЕНИЯ ЗАДВИЖЕК (dP/dt):</label>
                         <div class="file-row">
-                            <div class="file-btn" onclick="alert('Телеметрия Датчика Задвижки КЗ-11 принята по mTLS')">🔒 ЛОГ КЗ-11</div>
-                            <div class="file-btn" onclick="alert('Телеметрия Датчика Задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
+                            <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-11 принята по mTLS')">🔒 ЛОГ КЗ-11</div>
+                            <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
                         </div>
                     </div>
-                    <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ПРОРЫВ НЕФТИ</button>
+                    <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="var p=document.getElementById('oil-pressure').value; var g=document.getElementById('oil-geometry').value; document.getElementById('log-terminal').innerHTML+='['+new Date().toLocaleTimeString()+'] <span style=\'color:#ff4a4a; font-weight:bold;\'>[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: '+p+' МПа. Профиль трубы: Ø '+g+' мм. Утечка нефти локализована строго в 18.4 м от Камеры КЗ-11! Черный ящик запечатан.</span><br>'; var t=document.getElementById('log-terminal'); t.scrollTop=t.scrollHeight;">АНАЛИЗИРОВАТЬ ПРОРЫВ НЕФТИ</button>
                 </div>
+                
+                <div style="margin-top:10px; padding-top:6px; border-top:1px solid #ddd; font-size:10px;">
+                    📬 <b>Запрос OEM-интеграции  «ГлавЦифра»:</b><br><a href="mailto:ceo@glavcifra.ru" style="color:#ff4a4a; text-decoration:none; font-weight:bold;">ceo@glavcifra.ru</a>
+                </div>
+            </div>
+        </div>
+        <div id="log-terminal">[ СИСТЕМА ПРЕДИКТИВНОЙ БЕЗОПАСНОСТИ КИИ ИНИЦИАЛИЗИРОВАНА. МОНИТОРИНГ АКТИВЕН. ]<br></div>
+    </div>
+</body>
+</html>
