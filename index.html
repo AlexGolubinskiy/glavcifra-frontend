@@ -10,13 +10,14 @@
         #header { height: 55px; min-height: 55px; padding: 0 15px; background: #11161d; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
         #map-area { flex: 1; position: relative; background-color: #05070a; width: 100%; overflow: hidden; }
         
-        /* ИНЖЕНЕРНЫЙ CANVAS-ХОЛСТ С АППАРТНЫМ ТРЕКИНГОМ МЫШИ */
+        /* ИНЖЕНЕРНЫЙ CANVAS-ХОЛСТ С АППАРАТНЫМ ТРЕКИНГОМ МЫШИ */
         #gi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: block; cursor: crosshair; }
         
         .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(5, 10, 15, 0.95); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; border-left: 6px solid #ff4a4a; }
         
         /* МОБИЛЬНАЯ УМНАЯ ПАНЕЛЬ С ОГРАНИЧЕНИЕМ ПО ВЫСОТЕ */
         #info-panel { position: absolute; bottom: 15px; right: 15px; left: 15px; top: 120px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); font-size: 14px; z-index: 9999; border-left: 6px solid #ff4a4a; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+        
         @media (min-width: 768px) {
             #info-panel { width: 420px; left: auto; top: 15px; bottom: 15px; height: calc(100vh - 145px); }
             .geo-target { top: auto; bottom: 150px; right: 450px; left: auto; font-size: 18px; padding: 15px 30px; }
@@ -148,33 +149,25 @@
             </div>
         </div>
     </div>
+
     <script type="text/javascript">
-        // ИНТЕРАКТИВНЫЙ ГИС-ДВИЖЕК CANVAS С ИИ-ОТСЛЕЖИВАНИЕМ КУРСОРА (HOVER TELEMETRY)
+        // ИНИЦИАЛИЗАЦИЯ И ИНТЕЛЛЕКТУАЛЬНЫЙ ТРЕКИНГ ГИС-КАРТЫ
         var canvas = document.getElementById('gi-canvas');
         var ctx = canvas.getContext('2d');
-        var currentMode = 'oil';
-        
-        // Координаты физических объектов на ГИС-карте
+        var currentMode = 'pipe'; // Синхронизировано по умолчанию с табом 'pipe'
         var startX = 0, startY = 0, endX = 0, endY = 0;
-        // Координаты мыши и статус наведения
         var mouseX = -100, mouseY = -100;
-        var hoveredElement = null; // 'valve1', 'valve2', 'pipe', null
+        var hoveredElement = null;
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
-            
-            // Расчет динамических координат по геометрии экрана
-            startX = 60;
-            startY = canvas.height * 0.45;
-            endX = canvas.width * 0.55;
-            endY = canvas.height * 0.45;
+            startX = 60; startY = canvas.height * 0.45;
+            endX = canvas.width * 0.55; endY = canvas.height * 0.45;
             if(canvas.width < 768) { endX = canvas.width * 0.85; }
-            
             drawGisMap();
         }
 
-        // Функция проверки наведения мыши на отрезок трубы (математический луч)
         function isMouseOnPipe(x, y, x1, y1, x2, y2, tolerance) {
             var A = x - x1; var B = y - y1; var C = x2 - x1; var D = y2 - y1;
             var dot = A * C + B * D; var len_sq = C * C + D * D;
@@ -190,23 +183,20 @@
 
         function drawGisMap() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            var colorGrid = "rgba(0, 150, 255, 0.08)";
-            var colorLine = "#0096ff";
+            var colorGrid = "rgba(0, 150, 255, 0.08)", colorLine = "#0096ff";
             var sectorName = "МГВН ВОДОКАНАЛ: КОНТУР ХВС-01";
-            var labelA = "Колодец А (0.0 м)"; var labelB = "Колодец Б (50.0 м)";
+            var labelA = "Колодец А (0.0 м)", labelB = "Колодец Б (50.0 м)";
             
             if (currentMode === 'pump') {
                 colorGrid = "rgba(0, 255, 0, 0.06)"; colorLine = "#00ff00";
                 sectorName = "ЭНЕРГОУЗЕЛ КИИ: СИСТЕМА ESA МНА-04";
-                labelA = "Ввод кабеля (Шкаф СУ)"; labelB = "Погружной агрегат (Глубина)";
+                labelA = "Ввод кабеля (Шкаф)"; labelB = "Насос Агрегат";
             } else if (currentMode === 'oil') {
                 colorGrid = "rgba(255, 150, 0, 0.06)"; colorLine = "#ff9600";
                 sectorName = "МАГИСТРАЛЬ ТРАНСНЕФТЬ: УЧАСТОК LINE-02";
                 labelA = "Камера задвижек КЗ-11 (0.0 м)"; labelB = "Камера задвижек КЗ-12 (2000.0 м)";
             }
             
-            // 1. СЕТКА КООРДИНАТ КИИ
             ctx.strokeStyle = colorGrid; ctx.lineWidth = 1;
             var step = 40;
             for (var x = 0; x < canvas.width; x += step) {
@@ -216,63 +206,40 @@
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
             }
             
-            // Проверка Hover-статуса перед отрисовкой
             hoveredElement = null;
-            if (Math.sqrt((mouseX - startX)*(mouseX - startX) + (mouseY - startY)*(mouseY - startY)) < 15) {
-                hoveredElement = 'valve1';
-            } else if (Math.sqrt((mouseX - endX)*(mouseX - endX) + (mouseY - endY)*(mouseY - endY)) < 15) {
-                hoveredElement = 'valve2';
-            } else if (isMouseOnPipe(mouseX, mouseY, startX, startY, endX, endY, 10)) {
-                hoveredElement = 'pipe';
-            }
-            
-            // 2. ОТРИСОВКА НЕОНОВОЙ ТРУБЫ (С ДИНАМИЧЕСКОЙ ПОДСВЕТКОЙ)
+            if (Math.sqrt((mouseX - startX)*(mouseX - startX) + (mouseY - startY)*(mouseY - startY)) < 15) { hoveredElement = 'valve1'; }
+            else if (Math.sqrt((mouseX - endX)*(mouseX - endX) + (mouseY - endY)*(mouseY - endY)) < 15) { hoveredElement = 'valve2'; }
+            else if (isMouseOnPipe(mouseX, mouseY, startX, startY, endX, endY, 10)) { hoveredElement = 'pipe'; }
             ctx.strokeStyle = (hoveredElement === 'pipe') ? "#ffffff" : colorLine;
             ctx.lineWidth = (hoveredElement === 'pipe') ? 6 : 4;
-            ctx.shadowBlur = (hoveredElement === 'pipe') ? 30 : 15;
-            ctx.shadowColor = ctx.strokeStyle;
+            ctx.shadowBlur = (hoveredElement === 'pipe') ? 30 : 15; ctx.shadowColor = ctx.strokeStyle;
             ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
             ctx.shadowBlur = 0;
             
-            // Подпись трассы сверху
             ctx.font = "bold 12px Arial"; ctx.fillStyle = colorLine; ctx.textAlign = "center";
             ctx.fillText(sectorName, (startX + endX)/2, startY - 20);
-            // 3. ФУНКЦИЯ ОТРИСОВКИ ПРОМЫШЛЕННЫХ ЗАДВИЖЕК SCADA (Треугольники)
+            
             function drawValve(cx, cy, isHovered) {
                 ctx.fillStyle = isHovered ? "#ffffff" : "#ff4a4a";
-                ctx.strokeStyle = isHovered ? "#ffffff" : "#ff4a4a";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = isHovered ? "#ffffff" : "#ff4a4a"; ctx.lineWidth = 2;
                 ctx.shadowBlur = isHovered ? 20 : 0; ctx.shadowColor = ctx.fillStyle;
-                ctx.beginPath();
-                ctx.moveTo(cx - 12, cy - 9); ctx.lineTo(cx + 12, cy + 9);
-                ctx.lineTo(cx + 12, cy - 9); ctx.lineTo(cx - 12, cy + 9);
-                ctx.closePath(); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(cx, cy, 2, 0, 2*Math.PI); ctx.fill();
-                ctx.shadowBlur = 0;
+                ctx.beginPath(); ctx.moveTo(cx - 12, cy - 9); ctx.lineTo(cx + 12, cy + 9);
+                ctx.lineTo(cx + 12, cy - 8); ctx.lineTo(cx - 12, cy + 8); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(cx, cy, 2, 0, 2*Math.PI); ctx.fill(); ctx.shadowBlur = 0;
             }
-            
             drawValve(startX, startY, (hoveredElement === 'valve1'));
             drawValve(endX, endY, (hoveredElement === 'valve2'));
             
-            // Базовые текстовые подписи объектов
             ctx.font = "bold 11px Arial"; ctx.fillStyle = "#ffffff";
             ctx.textAlign = "left"; ctx.fillText(labelA, startX - 10, startY + 30);
             ctx.textAlign = "right"; ctx.fillText(labelB, endX + 10, startY + 30);
             
-            // 4. ИНТЕЛЛЕКТУАЛЬНЫЕ ВСПЛЫВАЮЩИЕ ТУЛТИПЫ ТЕЛЕМЕТРИИ КИИ (ПРИ НАВЕДЕНИИ)
             if (hoveredElement) {
-                var boxW = 260, boxH = 90;
-                var boxX = mouseX + 15, boxY = mouseY + 15;
-                
+                var boxW = 260, boxH = 90; var boxX = mouseX + 15, boxY = mouseY + 15;
                 if (boxX + boxW > canvas.width) boxX = mouseX - boxW - 15;
                 if (boxY + boxH > canvas.height) boxY = mouseY - boxH - 15;
-                
-                ctx.fillStyle = "rgba(5, 12, 22, 0.96)";
-                ctx.strokeStyle = colorLine;
-                ctx.lineWidth = 2;
-                ctx.fillRect(boxX, boxY, boxW, boxH);
-                ctx.strokeRect(boxX, boxY, boxW, boxH);
-                
+                ctx.fillStyle = "rgba(5, 12, 22, 0.96)"; ctx.strokeStyle = colorLine; ctx.lineWidth = 2;
+                ctx.fillRect(boxX, boxY, boxW, boxH); ctx.strokeRect(boxX, boxY, boxW, boxH);
                 ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px Arial"; ctx.textAlign = "left";
                 
                 if (hoveredElement === 'valve1') {
@@ -309,54 +276,36 @@
                     }
                 }
             }
-            
             ctx.textAlign = "left"; ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.font = "10px monospace";
             ctx.fillText("ГИС МАСШТАБ: 1 КЛЕТКА = 100 МЕТРОВ | СКАНЕР ХОВЕР-ТЕЛЕМЕТРИИ ПОДКЛЮЧЕН", 20, canvas.height - 20);
         }
 
-        // Слушатели движений для мыши (ПК) и тачей (смартфоны)
         canvas.addEventListener('mousemove', function(e) {
-            var rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
-            drawGisMap();
+            var rect = canvas.getBoundingClientRect(); mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top; drawGisMap();
         });
-        
         canvas.addEventListener('touchmove', function(e) {
-            var rect = canvas.getBoundingClientRect();
-            if(e.touches.length > 0) {
-                mouseX = e.touches[0].clientX - rect.left; mouseY = e.touches[0].clientY - rect.top;
-                drawGisMap();
-            }
+            var rect = canvas.getBoundingClientRect(); if(e.touches.length > 0) { mouseX = e.touches[0].clientX - rect.left; mouseY = e.touches[0].clientY - rect.top; drawGisMap(); }
         });
-
         canvas.addEventListener('mouseleave', function() { mouseX = -100; mouseY = -100; drawGisMap(); });
         canvas.addEventListener('touchend', function() { mouseX = -100; mouseY = -100; drawGisMap(); });
 
         window.addEventListener('resize', resizeCanvas);
-        setTimeout(resizeCanvas, 150);
 
         function switchTab(type) {
             currentMode = type;
-            document.getElementById('tab-pipe').classList.remove('active');
-            document.getElementById('tab-pump').classList.remove('active');
-            document.getElementById('tab-oil').classList.remove('active');
-            document.getElementById('section-pipe').style.display = 'none';
-            document.getElementById('section-pump').style.display = 'none';
-            document.getElementById('section-oil').style.display = 'none';
+            document.getElementById('tab-pipe').classList.remove('active'); document.getElementById('tab-pump').classList.remove('active'); document.getElementById('tab-oil').classList.remove('active');
+            document.getElementById('section-pipe').style.display = 'none'; document.getElementById('section-pump').style.display = 'none'; document.getElementById('section-oil').style.display = 'none';
             
             if(type === 'pipe') {
-                document.getElementById('tab-pipe').classList.add('active');
-                document.getElementById('section-pipe').style.display = 'block';
+                document.getElementById('tab-pipe').classList.add('active'); document.getElementById('section-pipe').style.display = 'block';
                 document.getElementById('live-sector').innerText = "Городские сети (Москва)";
                 document.getElementById('live-geo-text').innerHTML = "📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style='font-size:11px; color:#aaa; font-weight:normal;'>[Сетка ХВС/ГВС развернута]</span>";
             } else if(type === 'pump') {
-                document.getElementById('tab-pump').classList.add('active');
-                document.getElementById('section-pump').style.display = 'block';
+                document.getElementById('tab-pump').classList.add('active'); document.getElementById('section-pump').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
                 document.getElementById('live-geo-text').innerHTML = "⚡️ СЕКТОР КИИ: ГНС СУХОДОЛЬНАЯ<br><span style='font-size:11px; color:#00ff00; font-weight:normal;'>[Мониторинг МНА по методу ESA активен]</span>";
             } else if(type === 'oil') {
-                document.getElementById('tab-oil').classList.add('active');
-                document.getElementById('section-oil').style.display = 'block';
+                document.getElementById('tab-oil').classList.add('active'); document.getElementById('section-oil').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
                 document.getElementById('live-geo-text').innerHTML = "🛢 СЕКТОР ТРАНСНЕФТЬ: ПБ «ШЕСХАРИС»<br><span style='font-size:11px; color:#ffcc00; font-weight:normal;'>[Контур dP/dt магистрали давления]</span>";
             }
@@ -364,20 +313,15 @@
         }
 
         function runPipeCalculator() {
-            var speed = parseFloat(document.getElementById('pipe-material').value);
-            var len = parseFloat(document.getElementById('pipe-length').value);
+            var speed = parseFloat(document.getElementById('pipe-material').value); var len = parseFloat(document.getElementById('pipe-length').value);
             var dist = ((len - (0.0102 * speed)) / 2).toFixed(1);
             document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[ИИ-АКУСТИКА] Свищ локализован на отметке ' + dist + ' м. от Точки А.</span><br>';
             var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
         }
 
         function runPumpCalculator() {
-            var rpm = parseInt(document.getElementById('pump-rpm').value);
-            var slots = parseInt(document.getElementById('pump-slots').value);
-            var hz = (rpm / 60).toFixed(1);
-            var fault = (hz * slots).toFixed(1);
-            var terminal = document.getElementById('log-terminal');
-            
+            var rpm = parseInt(document.getElementById('pump-rpm').value); var slots = parseInt(document.getElementById('pump-slots').value);
+            var hz = (rpm / 60).toFixed(1); var fault = (hz * slots).toFixed(1); var terminal = document.getElementById('log-terminal');
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИИ-ESA] Бесконтактный съем спектра тока с поверхности выполнен успешно. 1.5 км кабеля пробито.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffcc00;">[ИИ-ESA] Вал: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц! Кавитация. Блокировка за 1.2 сек.</span><br>';
             terminal.scrollTop = terminal.scrollHeight;
@@ -385,16 +329,11 @@
 
         function runOilCalculator() {
             var p = document.getElementById('oil-pressure').value;
-            var g = document.getElementById('oil-geometry').value;
-            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
-        function runOilCalculator() {
-            var p = document.getElementById('oil-pressure').value;
-            var g = document.getElementById('oil-geometry').value;
             document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
             var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
         }
         
-        window.onload = function() { switchTab('oil'); };
+        setTimeout(resizeCanvas, 200);
     </script>
 </body>
 </html>
