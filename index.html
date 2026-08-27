@@ -387,3 +387,14 @@
             var p = document.getElementById('oil-pressure').value;
             var g = document.getElementById('oil-geometry').value;
             document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
+        function runOilCalculator() {
+            var p = document.getElementById('oil-pressure').value;
+            var g = document.getElementById('oil-geometry').value;
+            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
+            var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
+        }
+        
+        window.onload = function() { switchTab('oil'); };
+    </script>
+</body>
+</html>
