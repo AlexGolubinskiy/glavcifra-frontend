@@ -45,7 +45,7 @@
 <body>
     <div class="app-container">
         <div id="header">
-            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА»</span>
+            <span>🖥 СИТУАЦИОННЫЙ СЕНТР «ГЛАВЦИФРА»</span>
         </div>
         <div id="map-area">
             <div id="map-grid">
@@ -197,7 +197,7 @@
         function runOilCalculator() {
             var p = document.getElementById('oil-pressure').value;
             var g = document.getElementById('oil-geometry').value;
-            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Лог защищен хэшем HMAC-SHA256 и запечатан в черный ящик. Алиби диспетчера сформировано.</span><br>';
+            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
             var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
         }
     </script>
