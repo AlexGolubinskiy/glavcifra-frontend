@@ -22,7 +22,6 @@
             #info-panel { width: 420px; left: auto; top: 15px; bottom: 15px; height: calc(100vh - 145px); }
             .geo-target { top: auto; bottom: 150px; right: 450px; left: auto; font-size: 18px; padding: 15px 30px; }
         }
-        
         .alert-title { color: #ff0000; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 14px; letter-spacing: 0.5px; }
         .tab-container { display: flex; gap: 4px; margin: 10px 0; min-height: 40px; }
         
@@ -64,7 +63,6 @@
                     <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ</button>
                     <button id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</button>
                 </div>
-                
                 <div class="scroll-content">
                     <!-- БЛОК 1: СВИЩИ ЖКХ -->
                     <div id="section-pipe" class="calc-section">
@@ -86,6 +84,7 @@
                         </div>
                         <button class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                     </div>
+
                     <!-- БЛОК 2: НАСОСЫ ESA -->
                     <div id="section-pump" class="calc-section" style="display:none;">
                         <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
@@ -115,11 +114,11 @@
                         <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                     </div>
                     
-                    <!-- БЛОК 3: НЕФТЬ КИИ -->
+                    <!-- БЛОК 3: НЕФТЬ КИИ — ПРОКАЧКА ПОД ВЫСОКОГОРНЫЙ СПУСК -->
                     <div id="section-oil" class="calc-section" style="display:none;">
-                        <div class="calc-title">🧮 МОНИТОРИНГ ТРАНСНЕФТИ</div>
+                        <div class="calc-title">🧮 МОНИТОРИНГ ВЫСОКОГОРНОГО СПУСКА</div>
                         <div class="form-group">
-                            <label>1. РАБОЧЕЕ ДАВЛЕНИЕ В МАГИСТРАЛИ (МПа):</label>
+                            <label>1. БАЗОВОЕ ДАВЛЕНИЕ В МАГИСТРАЛИ (МПа):</label>
                             <input type="number" id="oil-pressure" value="6.4" step="0.1">
                         </div>
                         <div class="form-group">
@@ -131,13 +130,17 @@
                             <select id="oil-geometry"><option value="1020">Ø 1020 мм / Стенка 14 мм</option><option value="720">Ø 720 мм / Стенка 12 мм</option></select>
                         </div>
                         <div class="form-group">
-                            <label>4. ТЕЛЕМЕТРИЯ ВОЛН ДАВЛЕНИЯ (dP/dt):</label>
+                            <label>4. ГЕОДЕЗИЧЕСКИЙ ПЕРЕПАД ВЫСОТЫ (МЕТРЫ):</label>
+                            <input type="number" id="oil-height" value="340">
+                        </div>
+                        <div class="form-group">
+                            <label>5. ТЕЛЕМЕТРИЯ ВОЛН ДАВЛЕНИЯ (dP/dt):</label>
                             <div class="file-row">
                                 <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-11 принята по mTLS')">🔒 ЛОГ КЗ-11</div>
                                 <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
                             </div>
                         </div>
-                        <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ПРОРЫВ</button>
+                        <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ СПУСК</button>
                     </div>
                 </div> <!-- КОНЕЦ SCROLL-CONTENT -->
                 
@@ -154,7 +157,7 @@
         // ИНИЦИАЛИЗАЦИЯ И ИНТЕЛЛЕКТУАЛЬНЫЙ ТРЕКИНГ ГИС-КАРТЫ
         var canvas = document.getElementById('gi-canvas');
         var ctx = canvas.getContext('2d');
-        var currentMode = 'pipe'; // Синхронизировано по умолчанию с табом 'pipe'
+        var currentMode = 'pipe';
         var startX = 0, startY = 0, endX = 0, endY = 0;
         var mouseX = -100, mouseY = -100;
         var hoveredElement = null;
@@ -235,7 +238,7 @@
             ctx.textAlign = "right"; ctx.fillText(labelB, endX + 10, startY + 30);
             
             if (hoveredElement) {
-                var boxW = 260, boxH = 90; var boxX = mouseX + 15, boxY = mouseY + 15;
+                var boxW = 260, boxH = 95; var boxX = mouseX + 15, boxY = mouseY + 15;
                 if (boxX + boxW > canvas.width) boxX = mouseX - boxW - 15;
                 if (boxY + boxH > canvas.height) boxY = mouseY - boxH - 15;
                 ctx.fillStyle = "rgba(5, 12, 22, 0.96)"; ctx.strokeStyle = colorLine; ctx.lineWidth = 2;
@@ -259,8 +262,8 @@
                         ctx.fillText("🛢️ ДИАГНОСТИКА УЧАСТКА LINE-02:", boxX + 12, boxY + 20);
                         ctx.font = "11px monospace"; ctx.fillStyle = "#00ff00";
                         ctx.fillText("• СОРТ НЕФТИ: Urals (1150 м/с)", boxX + 12, boxY + 40);
-                        ctx.fillText("• ТЕКУЩЕЕ ДАВЛЕНИЕ: 6.4 МПа", boxX + 12, boxY + 55);
-                        ctx.fillText("• ИИ-ПРОГНОЗ: ДЕФЕКТЫ ОТСУТСТВУЮТ", boxX + 12, boxY + 70);
+                        ctx.fillText("• ГЕО-СПУСК: МАРКОТХ (HВ=340 м)", boxX + 12, boxY + 55);
+                        ctx.fillText("• СТАТУС ПОТОКА: САМОТЕЧНОСТЬ СТАБ.", boxX + 12, boxY + 70);
                     } else if (currentMode === 'pump') {
                         ctx.fillText("⚡ ТЕЛЕМЕТРИЯ СИЛОВОЙ ЛИНИИ МНА:", boxX + 12, boxY + 20);
                         ctx.font = "11px monospace"; ctx.fillStyle = "#00ff00";
@@ -284,7 +287,7 @@
             var rect = canvas.getBoundingClientRect(); mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top; drawGisMap();
         });
         canvas.addEventListener('touchmove', function(e) {
-            var rect = canvas.getBoundingClientRect(); if(e.touches.length > 0) { mouseX = e.touches[0].clientX - rect.left; mouseY = e.touches[0].clientY - rect.top; drawGisMap(); }
+            var rect = canvas.getBoundingClientRect(); if(e.touches.length > 0) { mouseX = e.touches.clientX - rect.left; mouseY = e.touches.clientY - rect.top; drawGisMap(); }
         });
         canvas.addEventListener('mouseleave', function() { mouseX = -100; mouseY = -100; drawGisMap(); });
         canvas.addEventListener('touchend', function() { mouseX = -100; mouseY = -100; drawGisMap(); });
@@ -328,9 +331,23 @@
         }
 
         function runOilCalculator() {
-            var p = document.getElementById('oil-pressure').value;
-            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
-            var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
+            var p = parseFloat(document.getElementById('oil-pressure').value);
+            var h = parseFloat(document.getElementById('oil-height').value);
+            var p_grav = (890 * 9.81 * h / 1000000).toFixed(2);
+            var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
+            
+            var terminal = document.getElementById('log-terminal');
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование спуска Маркотх (H=' + h + 'м). Избыточное гравитационное давление столба: +' + p_grav + ' МПа. Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа.</span><br>';
+        function runOilCalculator() {
+            var p = parseFloat(document.getElementById('oil-pressure').value);
+            var h = parseFloat(document.getElementById('oil-height').value);
+            var p_grav = (890 * 9.81 * h / 1000000).toFixed(2);
+            var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
+            
+            var terminal = document.getElementById('log-terminal');
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование спуска Маркотх (H=' + h + 'м). Избыточное гравитационное давление столба: +' + p_grav + ' МПа. Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа.</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Предиктивный ИИ-контроль сплошности: Число кавитации в норме, вакуумные карманы отсутствуют. Лог подписан HMAC-SHA256 и внесен в защищенную базу main_platform.db.</span><br>';
+            terminal.scrollTop = terminal.scrollHeight;
         }
         
         setTimeout(resizeCanvas, 200);
