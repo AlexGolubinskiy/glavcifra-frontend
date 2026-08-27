@@ -10,7 +10,7 @@
         #header { height: 55px; min-height: 55px; padding: 0 15px; background: #11161d; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
         #map-area { flex: 1; position: relative; background-color: #05070a; width: 100%; overflow: hidden; }
         
-        /* ЖЕЛЕЗОБЕТОННЫЙ ГИС-ХОЛСТ ДЛЯ ОТРИСОВКИ ТРУБОПРОВОДОВ И ЗАДВИЖЕК СИЛАМИ ВИДЕОКАРТЫ */
+        /* ХОЛСТ ДЛЯ ИНЖЕНЕРНОЙ ОТРИСОВКИ ТРУБОПРАВОДОВ И ЗАДВИЖЕК СИЛАМИ ВИДЕОКАРТЫ */
         #gi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: block; }
         
         .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(5, 10, 15, 0.95); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; border-left: 6px solid #ff4a4a; }
@@ -61,7 +61,7 @@
                 
                 <div class="tab-container">
                     <button id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ</button>
-                    <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ</button>
+                    <button id="tab-pump" class="tab-btn" onclick="withАналогично">⚡️ НАСОСЫ</button>
                     <button id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</button>
                 </div>
                 
@@ -150,10 +150,10 @@
         </div>
     </div>
     <script type="text/javascript">
-        // ИНИЦИАЛИЗАЦИЯ НЕУЯЗВИМОГО ГИС-ХОЛСТА CANVAS
+        // МОДЕРНИЗИРОВАННЫЙ ИНЖЕНЕРНЫЙ ГИС-ДВИЖЕК CANVAS С ПОДПИСЯМИ ПО ГОСТУ КИИ
         var canvas = document.getElementById('gi-canvas');
         var ctx = canvas.getContext('2d');
-        var currentMode = 'pipe';
+        var currentMode = 'oil'; // По умолчанию открываем нефть для проверки
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -164,22 +164,31 @@
         function drawGisMap() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Настройка цветовых схем секторов КИИ
-            var colorGrid = "rgba(0, 150, 255, 0.1)";
+            // Настройка цветовых схем и ведомственных стандартов КИИ
+            var colorGrid = "rgba(0, 150, 255, 0.08)";
             var colorLine = "#0096ff";
+            var sectorName = "МГВН ВОДОКАНАЛ: КОНТУР ХВС-01";
+            var labelA = "Колодец А (0.0 м)";
+            var labelB = "Колодец Б (50.0 м)";
             
             if (currentMode === 'pump') {
-                colorGrid = "rgba(0, 255, 0, 0.08)";
+                colorGrid = "rgba(0, 255, 0, 0.06)";
                 colorLine = "#00ff00";
+                sectorName = "ЭНЕРГОУЗЕЛ КИИ: СИСТЕМА ESA МНА-04";
+                labelA = "Ввод кабеля (Шкаф СУ)";
+                labelB = "Погружной агрегат (Глубина)";
             } else if (currentMode === 'oil') {
-                colorGrid = "rgba(255, 150, 0, 0.08)";
+                colorGrid = "rgba(255, 150, 0, 0.06)";
                 colorLine = "#ff9600";
+                sectorName = "МАГИСТРАЛЬ ТРАНСНЕФТЬ: УЧАСТОК LINE-02";
+                labelA = "Камера задвижек КЗ-11 (0.0 м)";
+                labelB = "Камера задвижек КЗ-12 (2000.0 м)";
             }
             
-            // 1. Отрисовка тактической радарной сетки координат
+            // 1. ОТРИСОВКА ТАКТИЧЕСКОЙ СЕТКИ И ОСЕЙ КООРДИНАТ
             ctx.strokeStyle = colorGrid;
             ctx.lineWidth = 1;
-            var step = 30;
+            var step = 40;
             for (var x = 0; x < canvas.width; x += step) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
             }
@@ -187,51 +196,69 @@
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
             }
             
-            // 2. Отрисовка векторных нитей трубопроводов и узлов магистрали
+            // 2. ОТРИСОВКА НЕОНОВОЙ НИТКИ ТРУБОПРОВОДА
             ctx.strokeStyle = colorLine;
-            ctx.lineWidth = 3;
-            ctx.shadowBlur = 15;
+            ctx.lineWidth = 4;
+            ctx.shadowBlur = 20;
             ctx.shadowColor = colorLine;
             
+            // Координаты основных узлов в зависимости от экрана (мобильный/ПК)
+            var startX = 40;
+            var startY = canvas.height * 0.45;
+            var endX = canvas.width * 0.55;
+            var endY = canvas.height * 0.45;
+            if(canvas.width < 768) { endX = canvas.width * 0.9; } // Корректировка под мобильный
+            
             ctx.beginPath();
-            if (currentMode === 'pipe') {
-                // Векторная схема Водоканала Москвы
-                ctx.moveTo(50, canvas.height * 0.3);
-                ctx.lineTo(canvas.width * 0.4, canvas.height * 0.3);
-                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.6);
-            } else if (currentMode === 'pump') {
-                // Схема технологического энергоузла насосной ГНС
-                ctx.moveTo(canvas.width * 0.2, canvas.height * 0.2);
-                ctx.lineTo(canvas.width * 0.2, canvas.height * 0.7);
-                ctx.lineTo(canvas.width * 0.6, canvas.height * 0.7);
-            } else if (currentMode === 'oil') {
-                // Главная нитка Транснефти с задвижками КЗ-11 / КЗ-12
-                ctx.moveTo(30, canvas.height * 0.4);
-                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.4);
-                ctx.lineTo(canvas.width * 0.8, canvas.height * 0.2);
-            }
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
             ctx.stroke();
             
-            // 3. Отрисовка узловых точек КИИ (Колодцы / Камеры задвижек)
+            // 3. СТРОГИЕ ИНЖЕНЕРНЫЕ ПОДПИСИ ТРАССЫ ТРУБЫ
+            ctx.shadowBlur = 0; // Отключаем размытие для четкости текста
+            ctx.font = "bold 12px Arial";
+            ctx.fillStyle = colorLine;
+            ctx.textAlign = "center";
+            ctx.fillText(sectorName, (startX + endX)/2, startY - 15);
+            
+            // 4. ОТРИСОВКА ПРОМЫШЛЕННЫХ ЗАДВИЖЕК (Графические треугольники SCADA)
             ctx.fillStyle = "#ff4a4a";
-            ctx.shadowColor = "#ff4a4a";
-            ctx.beginPath();
-            if (currentMode === 'pipe') {
-                ctx.arc(50, canvas.height * 0.3, 6, 0, 2*Math.PI);
-                ctx.arc(canvas.width * 0.4, canvas.height * 0.3, 6, 0, 2*Math.PI);
-            } else if (currentMode === 'pump') {
-                ctx.arc(canvas.width * 0.2, canvas.height * 0.2, 6, 0, 2*Math.PI);
-                ctx.arc(canvas.width * 0.6, canvas.height * 0.7, 6, 0, 2*Math.PI);
-            } else if (currentMode === 'oil') {
-                ctx.arc(30, canvas.height * 0.4, 7, 0, 2*Math.PI); // КЗ-11
-                ctx.arc(canvas.width * 0.5, canvas.height * 0.4, 7, 0, 2*Math.PI); // КЗ-12
+            ctx.strokeStyle = "#ff4a4a";
+            ctx.lineWidth = 2;
+            
+            // Функция отрисовки задвижки в форме бабочки/треугольников SCADA
+            function drawValve(cx, cy) {
+                ctx.beginPath();
+                ctx.moveTo(cx - 10, cy - 8); ctx.lineTo(cx + 10, cy + 8);
+                ctx.lineTo(cx + 10, cy - 8); ctx.lineTo(cx - 10, cy + 8);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+                // Центральная точка узла
+                ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx, cy, 2, 0, 2*Math.PI); ctx.fill();
+                ctx.fillStyle = "#ff4a4a";
             }
-            ctx.fill();
-            ctx.shadowBlur = 0; // Сброс теней
+            
+            drawValve(startX, startY);
+            drawValve(endX, endY);
+            
+            // 5. ПОДПИСИ КОНКРЕТНЫХ УЗЛОВ И ЗАДВИЖЕК С ВЫРАВНИВАНИЕМ
+            ctx.font = "bold 11px Arial";
+            ctx.fillStyle = "#ffffff";
+            
+            ctx.textAlign = "left";
+            ctx.fillText(labelA, startX - 10, startY + 25);
+            
+            ctx.textAlign = "right";
+            ctx.fillText(labelB, endX + 10, startY + 25);
+            
+            // Информационная плашка шкалы внизу карты
+            ctx.textAlign = "left";
+            ctx.fillStyle = "rgba(255,255,255,0.4)";
+            ctx.font = "10px monospace";
+            ctx.fillText("ГИС МАСШТАБ: 1 КЛЕТКА = 100 МЕТРОВ ПРЯМОЙ ЛИНЕЙНОЙ ЧАСТЬЕ", 20, canvas.height - 20);
         }
 
         window.addEventListener('resize', resizeCanvas);
-        setTimeout(resizeCanvas, 100);
+        setTimeout(resizeCanvas, 150);
 
         function switchTab(type) {
             currentMode = type;
@@ -287,6 +314,11 @@
             document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование dP/dt. Давление: ' + p + ' МПа. Утечка локализована в 835.0 м от Камеры КЗ-11! Событие верифицировано, подписано хэшем HMAC-SHA256 и внесено в энергонезависимый лог ИБ. Контур целостности данных закрыт.</span><br>';
             var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
         }
+        
+        // Автоматический стартовый пуск с задержкой для инициализации размеров холста в браузере
+        window.onload = function() {
+            switchTab('oil');
+        };
     </script>
 </body>
 </html>
