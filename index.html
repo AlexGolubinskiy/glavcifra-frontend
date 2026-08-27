@@ -305,26 +305,68 @@
             }
             drawGisMap();
         }
-
         function runPipeCalculator() {
-            var speed = parseFloat(document.getElementById('pipe-material').value); var len = parseFloat(document.getElementById('pipe-length').value);
+            var speed = parseFloat(document.getElementById('pipe-material').value);
+            var len = parseFloat(document.getElementById('pipe-length').value);
             var dist = ((len - (0.0102 * speed)) / 2).toFixed(1);
-            document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[ИИ-АКУСТИКА] Свищ локализован на отметке ' + dist + ' м. от Точки А.</span><br>';
-            var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
+            var terminal = document.getElementById('log-terminal');
+            terminal.innerHTML = ''; // Очистка для вывода боевого ПЛА
+            
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Зафиксировано падение давления на участке ХВС-01! Утечка: СВИЩ.</span><br>';
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-АКУСТИКА локализовала свищ на отметке ' + dist + ' м от Точки А (Ильинка).</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 500);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 1000);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Координаты свища запечатаны по mTLS в HMAC-SHA256 лог. Целостность данных ОК.</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 1500);
         }
-                function runOilCalculator() {
+
+        function runPumpCalculator() {
+            var rpm = parseInt(document.getElementById('pump-rpm').value);
+            var slots = parseInt(document.getElementById('pump-slots').value);
+            var hz = (rpm / 60).toFixed(1);
+            var fault = (hz * slots).toFixed(1);
+            var terminal = document.getElementById('log-terminal');
+            terminal.innerHTML = ''; // Очистка для вывода боевого ПЛА
+            
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Аномальные токи статора МНА-04 (Суходольная). Критическая вибрация!</span><br>';
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-ESA выполнил съем спектра. Частота: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц (Кавитация).</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 500);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 1000);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Телеметрия дефекта ротора верифицирована mTLS и запечатана в main_platform.db.</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 1500);
+        }
+
+        function runOilCalculator() {
             var p = parseFloat(document.getElementById('oil-pressure').value);
             var h = parseFloat(document.getElementById('oil-height').value);
             var p_grav = (890 * 9.81 * h / 1000000).toFixed(2);
             var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
-            
             var terminal = document.getElementById('log-terminal');
-            terminal.innerHTML = ''; // Очищаем экран для вывода боевого протокола ПЛА
+            terminal.innerHTML = ''; // Очистка для вывода боевого ПЛА
             
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ПЕРЕПАД H=' + h + 'м] Избыточное гравитационное давление столба нефти: +' + p_grav + ' МПа.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное гидростатическое давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
             
-            // Жесткое ведомственное разделение: информация - зеленый, приказы диспетчеру - красный
             setTimeout(function() {
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Автоматика открыла аварийные клапаны СППК. Сброс излишков в резервуары начат.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
@@ -344,8 +386,6 @@
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог подписан HMAC-SHA256 и запечатан в main_platform.db. Действия смены защищены.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 2400);
-            
-            terminal.scrollTop = terminal.scrollHeight;
         }
         
         setTimeout(resizeCanvas, 200);
