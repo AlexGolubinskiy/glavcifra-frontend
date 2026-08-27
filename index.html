@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ГЛАВЦИФРА — Двойник КИИ</title>
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #0d0d0d; color: #fff; overflow: hidden; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #05070a; color: #fff; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
-        #header { height: 55px; min-height: 55px; padding: 0 15px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
-        #map-area { flex: 1; position: relative; background-color: #070a0e; width: 100%; overflow: hidden; }
+        #header { height: 55px; min-height: 55px; padding: 0 15px; background: #11161d; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
+        #map-area { flex: 1; position: relative; background-color: #05070a; width: 100%; overflow: hidden; }
         
-        /* НЕУЯЗВИМАЯ ВЕКТОРНАЯ ГИС-КАРТА (РАБОТАЕТ БЕЗ ИНТЕРНЕТА И ОБХОДИТ CORS) */
-        #map-grid { width: 100%; height: 100%; position: absolute; background-color: #0b1118; background-image: radial-gradient(rgba(0, 255, 0, 0.15) 1px, transparent 1px), linear-gradient(rgba(26, 43, 62, 0.4) 2px, transparent 2px), linear-gradient(90deg, rgba(26, 43, 62, 0.4) 2px, transparent 2px); background-size: 20px 20px, 40px 40px, 40px 40px; background-position: center; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
+        /* ЖЕЛЕЗОБЕТОННЫЙ ГИС-ХОЛСТ ДЛЯ ОТРИСОВКИ ТРУБОПРОВОДОВ И ЗАДВИЖЕК СИЛАМИ ВИДЕОКАРТЫ */
+        #gi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: block; }
         
         .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(5, 10, 15, 0.95); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; border-left: 6px solid #ff4a4a; }
         
@@ -40,18 +40,20 @@
         .file-btn { flex: 1; background: #e1e1e1; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #ccc; color: #333; }
         .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; margin-top: 5px; box-shadow: 0 4px 12px rgba(255,74,74,0.2); }
         
-        #log-terminal { height: 110px; min-height: 110px; background: #05070a; border-top: 2px solid #22353e; padding: 10px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; width: 100%; margin-top: auto; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,255,0,0.1); }
+        #log-terminal { height: 110px; min-height: 110px; background: #05070a; border-top: 2px solid #22353e; padding: 10px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; width: 100%; margin-top: auto; border-radius: 4px; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div id="header">
-            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Контур КИИ РФ</span>
+            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник КИИ</span>
         </div>
         <div id="map-area">
-            <div id="map-grid">
-                <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:11px; color:#95a5a6; font-weight:normal;">[Сетка ХВС/ГВС развернута в буфере]</span></div>
-            </div>
+            <!-- НАСТОЯЩИЙ ИНЖЕНЕРНЫЙ ХОЛСТ -->
+            <canvas id="gi-canvas"></canvas>
+            
+            <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:11px; color:#95a5a6; font-weight:normal;">[Сетка ХВС/ГВС развернута]</span></div>
+            
             <div id="info-panel">
                 <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
                 <div style="font-size: 13px; margin-bottom: 2px;"><b>Сектор:</b> <span id="live-sector">Городские сети (Москва)</span></div>
@@ -147,9 +149,92 @@
             </div>
         </div>
     </div>
-
     <script type="text/javascript">
+        // ИНИЦИАЛИЗАЦИЯ НЕУЯЗВИМОГО ГИС-ХОЛСТА CANVAS
+        var canvas = document.getElementById('gi-canvas');
+        var ctx = canvas.getContext('2d');
+        var currentMode = 'pipe';
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawGisMap();
+        }
+
+        function drawGisMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Настройка цветовых схем секторов КИИ
+            var colorGrid = "rgba(0, 150, 255, 0.1)";
+            var colorLine = "#0096ff";
+            
+            if (currentMode === 'pump') {
+                colorGrid = "rgba(0, 255, 0, 0.08)";
+                colorLine = "#00ff00";
+            } else if (currentMode === 'oil') {
+                colorGrid = "rgba(255, 150, 0, 0.08)";
+                colorLine = "#ff9600";
+            }
+            
+            // 1. Отрисовка тактической радарной сетки координат
+            ctx.strokeStyle = colorGrid;
+            ctx.lineWidth = 1;
+            var step = 30;
+            for (var x = 0; x < canvas.width; x += step) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (var y = 0; y < canvas.height; y += step) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+            
+            // 2. Отрисовка векторных нитей трубопроводов и узлов магистрали
+            ctx.strokeStyle = colorLine;
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = colorLine;
+            
+            ctx.beginPath();
+            if (currentMode === 'pipe') {
+                // Векторная схема Водоканала Москвы
+                ctx.moveTo(50, canvas.height * 0.3);
+                ctx.lineTo(canvas.width * 0.4, canvas.height * 0.3);
+                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.6);
+            } else if (currentMode === 'pump') {
+                // Схема технологического энергоузла насосной ГНС
+                ctx.moveTo(canvas.width * 0.2, canvas.height * 0.2);
+                ctx.lineTo(canvas.width * 0.2, canvas.height * 0.7);
+                ctx.lineTo(canvas.width * 0.6, canvas.height * 0.7);
+            } else if (currentMode === 'oil') {
+                // Главная нитка Транснефти с задвижками КЗ-11 / КЗ-12
+                ctx.moveTo(30, canvas.height * 0.4);
+                ctx.lineTo(canvas.width * 0.5, canvas.height * 0.4);
+                ctx.lineTo(canvas.width * 0.8, canvas.height * 0.2);
+            }
+            ctx.stroke();
+            
+            // 3. Отрисовка узловых точек КИИ (Колодцы / Камеры задвижек)
+            ctx.fillStyle = "#ff4a4a";
+            ctx.shadowColor = "#ff4a4a";
+            ctx.beginPath();
+            if (currentMode === 'pipe') {
+                ctx.arc(50, canvas.height * 0.3, 6, 0, 2*Math.PI);
+                ctx.arc(canvas.width * 0.4, canvas.height * 0.3, 6, 0, 2*Math.PI);
+            } else if (currentMode === 'pump') {
+                ctx.arc(canvas.width * 0.2, canvas.height * 0.2, 6, 0, 2*Math.PI);
+                ctx.arc(canvas.width * 0.6, canvas.height * 0.7, 6, 0, 2*Math.PI);
+            } else if (currentMode === 'oil') {
+                ctx.arc(30, canvas.height * 0.4, 7, 0, 2*Math.PI); // КЗ-11
+                ctx.arc(canvas.width * 0.5, canvas.height * 0.4, 7, 0, 2*Math.PI); // КЗ-12
+            }
+            ctx.fill();
+            ctx.shadowBlur = 0; // Сброс теней
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 100);
+
         function switchTab(type) {
+            currentMode = type;
             document.getElementById('tab-pipe').classList.remove('active');
             document.getElementById('tab-pump').classList.remove('active');
             document.getElementById('tab-oil').classList.remove('active');
@@ -157,36 +242,23 @@
             document.getElementById('section-pump').style.display = 'none';
             document.getElementById('section-oil').style.display = 'none';
             
-            var mapGrid = document.getElementById('map-grid');
-            
             if(type === 'pipe') {
                 document.getElementById('tab-pipe').classList.add('active');
                 document.getElementById('section-pipe').style.display = 'block';
                 document.getElementById('live-sector').innerText = "Городские сети (Москва)";
                 document.getElementById('live-geo-text').innerHTML = "📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style='font-size:11px; color:#aaa; font-weight:normal;'>[Сетка ХВС/ГВС развернута]</span>";
-                
-                // Синий векторный ГИС-стиль для ЖКХ
-                mapGrid.style.backgroundColor = "#0b1118";
-                mapGrid.style.backgroundImage = "radial-gradient(rgba(0, 150, 255, 0.15) 1px, transparent 1px), linear-gradient(rgba(26, 43, 62, 0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(26, 43, 62, 0.5) 2px, transparent 2px)";
             } else if(type === 'pump') {
                 document.getElementById('tab-pump').classList.add('active');
                 document.getElementById('section-pump').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
                 document.getElementById('live-geo-text').innerHTML = "⚡️ СЕКТОР КИИ: ГНС СУХОДОЛЬНАЯ<br><span style='font-size:11px; color:#00ff00; font-weight:normal;'>[Мониторинг МНА по методу ESA активен]</span>";
-                
-                // Ярко-зеленый кибер-стиль для Энергоузла Насосов
-                mapGrid.style.backgroundColor = "#050c05";
-                mapGrid.style.backgroundImage = "radial-gradient(rgba(0, 255, 0, 0.2) 1px, transparent 1px), linear-gradient(rgba(10, 40, 10, 0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(10, 40, 10, 0.5) 2px, transparent 2px)";
             } else if(type === 'oil') {
                 document.getElementById('tab-oil').classList.add('active');
                 document.getElementById('section-oil').style.display = 'block';
                 document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
                 document.getElementById('live-geo-text').innerHTML = "🛢 СЕКТОР ТРАНСНЕФТЬ: ПБ «ШЕСХАРИС»<br><span style='font-size:11px; color:#ffcc00; font-weight:normal;'>[Контур dP/dt магистрали давления]</span>";
-                
-                // Янтарно-оранжевый промышленный стиль для Транснефти
-                mapGrid.style.backgroundColor = "#140f05";
-                mapGrid.style.backgroundImage = "radial-gradient(rgba(255, 150, 0, 0.15) 1px, transparent 1px), linear-gradient(rgba(50, 30, 10, 0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(50, 30, 10, 0.5) 2px, transparent 2px)";
             }
+            drawGisMap();
         }
 
         function runPipeCalculator() {
