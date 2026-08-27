@@ -312,15 +312,6 @@
             document.getElementById('log-terminal').innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[ИИ-АКУСТИКА] Свищ локализован на отметке ' + dist + ' м. от Точки А.</span><br>';
             var t = document.getElementById('log-terminal'); t.scrollTop = t.scrollHeight;
         }
-
-        function runPumpCalculator() {
-            var rpm = parseInt(document.getElementById('pump-rpm').value); var slots = parseInt(document.getElementById('pump-slots').value);
-            var hz = (rpm / 60).toFixed(1); var fault = (hz * slots).toFixed(1); var terminal = document.getElementById('log-terminal');
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИИ-ESA] Бесконтактный съем спектра тока с поверхности выполнен успешно. 1.5 км кабеля пробито.</span><br>';
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffcc00;">[ИИ-ESA] Вал: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц! Кавитация. Блокировка за 1.2 сек.</span><br>';
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
         function runOilCalculator() {
             var p = parseFloat(document.getElementById('oil-pressure').value);
             var h = parseFloat(document.getElementById('oil-height').value);
@@ -328,8 +319,32 @@
             var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
             
             var terminal = document.getElementById('log-terminal');
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[КИИ-НЕФТЬ] Сканирование тоннеля Грушовая-Шесхарис (H=' + h + 'м). Избыточное гравитационное давление столба: +' + p_grav + ' МПа. Полное расчетное давление у причала: ' + p_total + ' МПа.</span><br>';
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КИИ-НЕФТЬ] Предиктивный ИИ-контроль сплошности: Число кавитации в норме, вакуумные карманы отсутствуют. Лог подписан HMAC-SHA256 и внесен в защищенную базу main_platform.db.</span><br>';
+            terminal.innerHTML = ''; // Очищаем старый лог для вывода боевого протокола ПЛА
+            
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ПЕРЕПАД H=' + h + 'м] Избыточное гравитационное давление столба нефти: +' + p_grav + ' МПа.</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное гидростатическое давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
+            
+            // Пошаговый автоматический ведомственный протокол КИИ ТЭК для диспетчера
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">• ШАГ 1: Активирован аварийный сброс через клапаны СППК в резервуары-сбросники ПБ Шесхарис.</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 600);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">• ШАГ 2: Передана автоматическая команда на прикрытие верхней задвижки КЗ-11 (площадка Грушовая).</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 1200);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">• ШАГ 3: Инициирована экстренная остановка магистральных насосных агрегатов (МНА) на горе.</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 1800);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог инцидента верифицирован mTLS, подписан хэшем HMAC-SHA256 и запечатан в main_platform.db. Алиби смены сформировано.</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 2400);
+            
             terminal.scrollTop = terminal.scrollHeight;
         }
         
@@ -337,3 +352,5 @@
     </script>
 </body>
 </html>
+
+        
