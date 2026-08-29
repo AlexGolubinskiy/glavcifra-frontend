@@ -290,8 +290,7 @@
             ctx.textAlign = "left"; ctx.fillStyle = "rgba(255,255,255,0.3)"; ctx.font = "10px monospace";
             ctx.fillText("ГИС МАСШТАБ: 1 КЛЕТКА = 100 МЕТРОВ | СКАНЕР ХОВЕР-ТЕЛЕМЕТРИИ ПОДКЛЮЧЕН", 20, canvas.height - 20);
         }
-
-                canvas.addEventListener('mousemove', function(e) {
+        canvas.addEventListener('mousemove', function(e) {
             var rect = canvas.getBoundingClientRect(); mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top; drawGisMap();
         });
         canvas.addEventListener('touchmove', function(e) {
