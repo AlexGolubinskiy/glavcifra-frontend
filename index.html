@@ -37,12 +37,7 @@
     <!-- Свищ: Высокочастотное шипение струи -->
         <!-- ПРОМЫШЛЕННЫЙ АУДИО-КОНТУР ЦИФРОВОГО ДВОЙНИКА -->
     <!-- Свищ: Реальный высокочастотный свист прорыва трубы -->
-    <audio id="snd-leak" src="https://githubusercontent.com" loop></audio>
-    <!-- Насос: Глухой, циклический гул вращающегося вала ротора -->
-    <audio id="snd-pump" src="https://githubusercontent.com" loop></audio>
-    <!-- Нефть в тоннеле: Мощный подземный рокот падающего потока жидкости -->
-    <audio id="snd-oil" src="https://githubusercontent.com" loop></audio>
-
+    
     <div class="app-container">
         <div id="header">
             <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник КИИ</span>
@@ -326,13 +321,12 @@
 
                         // Функция отслеживания выбора файлов свища диспетчером
                 // Исправленная функция отслеживания выбора файлов свища диспетчером
-        function handleFileLoad(point) {
+                function handleFileLoad(point) {
             var fileInput = document.getElementById('input-shum-' + point.toLowerCase());
             var button = document.getElementById('btn-shum-' + point.toLowerCase());
             
             if (fileInput.files && fileInput.files.length > 0) {
                 var fileName = fileInput.files[0].name.toUpperCase();
-                // Меняем стиль кнопки на "Успешно импортировано"
                 button.style.background = "#00ff00";
                 button.style.color = "#000";
                 button.innerText = "📄 " + fileName;
@@ -349,16 +343,14 @@
             var fileInputB = document.getElementById('input-shum-b');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            // Если файлы не выбраны, выдаем инженерное предупреждение КИИ
             if (fileInputA.files.length === 0 || fileInputB.files.length === 0) {
-                terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска БПФ-глубинного анализа выберите аудиофайлы сигналов свища Точки А и Точки Б!</span><br>';
+                terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска БПФ-глубинного анализа выберите аудиофайлы сигналов свища Точной А и Точки Б!</span><br>';
                 return;
             }
 
-            var nameA = fileInputA.files[0].name;
-            var nameB = fileInputB.files[0].name;
+            var nameA = fileInputA.files[0].name.toUpperCase();
+            var nameB = fileInputB.files[0].name.toUpperCase();
 
-            // РЕАЛЬНЫЕ ПОЛЕВЫЕ ДАННЫЕ ИЗ ТВОИХ УСПЕШНЫХ ТЕСТОВ VS CODE
             var field_energy = 837378995210.0;
             var field_freq = 1076.8;
             var distance_from_a = (len / 2).toFixed(1); 
@@ -379,11 +371,6 @@
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 1800);
-            
-            setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Координаты запечатаны по mTLS в HMAC-SHA256 лог. Целостность данных ОК.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 2400);
         }
 
         function runPumpCalculator() {
@@ -400,10 +387,6 @@
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }, 1000);
-            setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Телеметрия дефекта ротора верифицирована mTLS и запечатана.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 1500);
         }
 
         function runOilCalculator() {
@@ -415,28 +398,33 @@
             var calc_freq = (28.4 + (h % 12) + (p * 0.85)).toFixed(1);
             
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ТЕХНОЛОГИЧЕСКИЙ ТОННЕЛЬ H=' + h + 'м] Избыточное гравитационное давление падающего столба: +' + p_grav + ' МПа.</span><br>';
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное гидростатическое давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ТОННЕЛЬ H=' + h + 'м] Избыточное гравитационное давление падающего столба: +' + p_grav + ' МПа.</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-БПФ Спектр: Поток верифицирован. Расчетная энергия шума: ' + calc_energy + '. Частота кавитационных пузырей: ' + calc_freq + ' Гц (НОРМА).</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия шума: ' + calc_energy + ' | Частота кавитации: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 500);
+            }, 600);
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ПЕРЕКРОЙ ЗАДВИЖКУ КЗ-11 НА ПЛОЩАДКЕ ГРУШОВАЯ!</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ВРУЧНУЮ АКТИВИРУЙ СБРОС ДАВЛЕНИЯ ЧЕРЕЗ КЛАПАНЫ СППК У ПРИЧАЛА!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 1000);
+            }, 1200);
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСНЫЕ АГРЕГАТЫ (МНА) НА ГОРЕ!</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ПЕРЕКРОЙ ВЕРХНЮЮ ЗАДВИЖКУ КЗ-11 НА ПЛОЩАДКЕ ГРУШОВАЯ!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 1500);
+            }, 1800);
+            
+            setTimeout(function() {
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! СВЯЖИСЬ С ГОРНОЙ ПЛОЩАДКОЙ И ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСЫ МНА!</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 2400);
             
             setTimeout(function() {
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог запечатан в main_platform.db с хэшем HMAC-SHA256. Контур ИБ закрыт.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 2000);
+            }, 3000);
         }
         
         setTimeout(resizeCanvas, 200);
