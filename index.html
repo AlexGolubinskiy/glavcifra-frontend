@@ -33,11 +33,6 @@
     </style>
 </head>
 <body>
-    <!-- ПРОМЫШЛЕННЫЙ АУДИО-КОНТУР ЦИФРОВОГО ДВОЙНИКА -->
-    <!-- Свищ: Высокочастотное шипение струи -->
-        <!-- ПРОМЫШЛЕННЫЙ АУДИО-КОНТУР ЦИФРОВОГО ДВОЙНИКА -->
-    <!-- Свищ: Реальный высокочастотный свист прорыва трубы -->
-    
     <div class="app-container">
         <div id="header">
             <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник КИИ</span>
@@ -70,18 +65,17 @@
                             <label>2. ДЛИНА УЧАСТКА МЕЖДУ А И Б (МЕТРЫ):</label>
                             <input type="number" id="pipe-length" value="50">
                         </div>
-                                                <div class="form-group">
+                        <div class="form-group">
                             <label>3. ЗАГРУЗКА ПОЛЕВЫХ АУДИОФАЙЛОВ СВИЩА (ФОРМАТ WAV/MP3):</label>
                             <div class="file-row">
-                                <!-- Скрытые системные инпуты выбора файлов -->
                                 <input type="file" id="input-shum-a" style="display:none;" onchange="handleFileLoad('A')">
                                 <input type="file" id="input-shum-b" style="display:none;" onchange="handleFileLoad('B')">
-                                
                                 <div id="btn-shum-a" class="file-btn" onclick="document.getElementById('input-shum-a').click()">📂 ЗАГРУЗИТЬ ШУМ А</div>
                                 <div id="btn-shum-b" class="file-btn" onclick="document.getElementById('input-shum-b').click()">📂 ЗАГРУЗИТЬ ШУМ Б</div>
                             </div>
                         </div>
-
+                        <button id="main-calc-btn-pipe" class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
+                    </div>
 
                     <!-- БЛОК 2: НАСОСЫ ESA -->
                     <div id="section-pump" class="calc-section" style="display:none;">
@@ -109,7 +103,7 @@
                                 <div class="file-btn" onclick="alert('Осциллограмма токовых нагрузок принята по mTLS')">⚡️ ТОК СТАТАТОРА</div>
                             </div>
                         </div>
-                        <button class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
+                        <button id="main-calc-btn-pump" class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
                     </div>
                     <!-- БЛОК 3: НЕФТЬ КИИ — ПРОКАЧКА ПОД ПОДЗЕМНЫЙ НАКЛОННЫЙ ТОННЕЛЬ -->
                     <div id="section-oil" class="calc-section" style="display:none;">
@@ -137,7 +131,7 @@
                                 <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
                             </div>
                         </div>
-                        <button class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ТОННЕЛЬ</button>
+                        <button id="main-calc-btn-oil" class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ТОННЕЛЬ</button>
                     </div>
                 </div> <!-- КОНЕЦ SCROLL-CONTENT -->
                 
@@ -292,14 +286,8 @@
 
         window.addEventListener('resize', resizeCanvas);
 
-        function stopAllSounds() {
-            document.getElementById('snd-leak').pause();
-            document.getElementById('snd-pump').pause();
-            document.getElementById('snd-oil').pause();
-        }
-
         function switchTab(type) {
-            currentMode = type; stopAllSounds();
+            currentMode = type;
             document.getElementById('tab-pipe').classList.remove('active'); document.getElementById('tab-pump').classList.remove('active'); document.getElementById('tab-oil').classList.remove('active');
             document.getElementById('section-pipe').style.display = 'none'; document.getElementById('section-pump').style.display = 'none'; document.getElementById('section-oil').style.display = 'none';
             
@@ -319,115 +307,86 @@
             drawGisMap();
         }
 
-                        // Функция отслеживания выбора файлов свища диспетчером
-                // Исправленная функция отслеживания выбора файлов свища диспетчером
-                function handleFileLoad(point) {
+        function handleFileLoad(point) {
             var fileInput = document.getElementById('input-shum-' + point.toLowerCase());
             var button = document.getElementById('btn-shum-' + point.toLowerCase());
-            
             if (fileInput.files && fileInput.files.length > 0) {
                 var fileName = fileInput.files[0].name.toUpperCase();
-                button.style.background = "#00ff00";
-                button.style.color = "#000";
-                button.innerText = "📄 " + fileName;
-                
+                button.style.background = "#00ff00"; button.style.color = "#000"; button.innerText = "📄 " + fileName;
                 var terminal = document.getElementById('log-terminal');
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Файл ' + fileName + ' успешно импортирован в буфер ИИ-ядра.</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Файл ' + fileName + ' импортирован в ИИ-ядро.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }
         }
 
         function runPipeCalculator() {
             var len = parseFloat(document.getElementById('pipe-length').value);
-            var fileInputA = document.getElementById('input-shum-a');
-            var fileInputB = document.getElementById('input-shum-b');
+            var fileA = document.getElementById('input-shum-a').files; var fileB = document.getElementById('input-shum-b').files;
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
-            
-            if (fileInputA.files.length === 0 || fileInputB.files.length === 0) {
-                terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска БПФ-глубинного анализа выберите аудиофайлы сигналов свища Точной А и Точки Б!</span><br>';
-                return;
+            if (fileA.length === 0 || fileB.length === 0) {
+                terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска БПФ-анализа выберите файлы сигналов Точки А и Точки Б!</span><br>'; return;
             }
-
-            var nameA = fileInputA.files[0].name.toUpperCase();
-            var nameB = fileInputB.files[0].name.toUpperCase();
-
-            var field_energy = 837378995210.0;
-            var field_freq = 1076.8;
-            var distance_from_a = (len / 2).toFixed(1); 
-            
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Падение давления на участке ХВС-01! Акустический логгер зафиксировал СВИЩ.</span><br>';
-            
+            var nameA = fileA[0].name.toUpperCase(); var nameB = fileB[0].name.toUpperCase();
+            var field_energy = 837378995210.0; var field_freq = 1076.8; var distance_from_a = (len / 2).toFixed(1); 
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Падение давления! Логгер зафиксировал СВИЩ.</span><br>';
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Анализ сигналов ' + nameA + ' и ' + nameB + ' завершен. Энергия: ' + field_energy + ' | Частота: ' + field_freq + ' Гц.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 600);
-            
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Анализ сигналов ' + nameA + ' и ' + nameB + ' завершен. Энергия: ' + field_energy + ' | Частота: ' + field_freq + ' Гц.</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 500);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Временная задержка волны d_t: 0.000000 сек. Свищ обнаружен на отметке ' + distance_from_a + ' м от Колодца А.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 1200);
-            
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Временная задержка d_t: 0.000000 сек. Локализация: ' + distance_from_a + ' м от Колодца А.</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 1000);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 1800);
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 1500);
         }
 
         function runPumpCalculator() {
             var rpm = parseInt(document.getElementById('pump-rpm').value); var slots = parseInt(document.getElementById('pump-slots').value);
             var hz = (rpm / 60).toFixed(1); var fault = (hz * slots).toFixed(1);
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
-            
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Аномальные токи статора МНА-04. Спектральный датчик ловит критическую вибрацию вала!</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Аномальные токи статора МНА-04. Критическая вибрация вала!</span><br>';
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-БПФ Анализ: Съем гармоник выполнен. Частота вала: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц (Кавитация).</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-БПФ Анализ: Частота вала: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц (Кавитация).</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 500);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 1000);
         }
 
         function runOilCalculator() {
             var p = parseFloat(document.getElementById('oil-pressure').value); var h = parseFloat(document.getElementById('oil-height').value);
-            var p_grav = (890 * 9.81 * h / 1000000).toFixed(2);
-            var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
-            
-            var calc_energy = (p * h * 1.38 + (p_total * 4.2)).toFixed(1);
-            var calc_freq = (28.4 + (h % 12) + (p * 0.85)).toFixed(1);
-            
+            var p_grav = (890 * 9.81 * h / 1000000).toFixed(2); var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
+            var calc_energy = (p * h * 1.38 + (p_total * 4.2)).toFixed(1); var calc_freq = (28.4 + (h % 12) + (p * 0.85)).toFixed(1);
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ТОННЕЛЬ H=' + h + 'м] Избыточное гравитационное давление падающего столба: +' + p_grav + ' МПа.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия шума: ' + calc_energy + ' | Частота кавитации: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 600);
-            
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия шума: ' + calc_energy + ' | Частота кавитации: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 500);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ВРУЧНУЮ АКТИВИРУЙ СБРОС ДАВЛЕНИЯ ЧЕРЕЗ КЛАПАНЫ СППК У ПРИЧАЛА!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 1200);
-            
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ВРУЧНУЮ АКТИВИРУЙ СБРОС ДАВЛЕНИЯ ЧЕРЕЗ КЛАПАНЫ СППК У ПРИЧАЛА!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 1000);
+            setTimeout(function() {
             setTimeout(function() {
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ПЕРЕКРОЙ ВЕРХНЮЮ ЗАДВИЖКУ КЗ-11 НА ПЛОЩАДКЕ ГРУШОВАЯ!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 1800);
+            }, 1500);
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! СВЯЖИСЬ С ГОРНОЙ ПЛОЩАДКОЙ И ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСЫ МНА!</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! СВЯЖИСЬ С ГОРНОЙ ПЛОЩАДКОЙ И ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСНЫЕ АГРЕГАТЫ МНА!</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 2400);
+            }, 2000);
             
             setTimeout(function() {
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог запечатан в main_platform.db с хэшем HMAC-SHA256. Контур ИБ закрыт.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
-            }, 3000);
+            }, 2500);
         }
         
         setTimeout(resizeCanvas, 200);
     </script>
 </body>
 </html>
+
+                       
