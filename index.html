@@ -1,3 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ГЛАВЦИФРА — Двойник КИИ</title>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; background-color: #05070a; color: #fff; overflow: hidden; }
+        .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
+        #header { height: 55px; min-height: 55px; padding: 0 15px; background: #11161d; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: bold; border-bottom: 3px solid #ff4a4a; box-sizing: border-box; z-index: 10000; }
+        #map-area { flex: 1; position: relative; background-color: #05070a; width: 100%; overflow: hidden; }
+        #gi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: block; cursor: crosshair; }
+        .geo-target { position: absolute; font-weight: bold; color: #ff4a4a; background: rgba(5, 10, 15, 0.95); padding: 12px 20px; border-radius: 8px; border: 2px solid #ff4a4a; font-size: 15px; text-align: center; box-shadow: 0 0 25px rgba(255,74,74,0.4); letter-spacing: 0.5px; max-width: 90%; box-sizing: border-box; top: 15px; left: 15px; z-index: 10; border-left: 6px solid #ff4a4a; }
+        #info-panel { position: absolute; bottom: 15px; right: 15px; left: 15px; top: 120px; background: rgba(255, 255, 255, 0.98); color: #333; padding: 15px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.6); font-size: 14px; z-index: 9999; border-left: 6px solid #ff4a4a; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+        @media (min-width: 768px) {
+            #info-panel { width: 420px; left: auto; top: 15px; bottom: 15px; height: calc(100vh - 145px); }
+            .geo-target { top: auto; bottom: 150px; right: 450px; left: auto; font-size: 18px; padding: 15px 30px; }
+        }
+        .alert-title { color: #ff0000; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 14px; letter-spacing: 0.5px; }
+        .tab-container { display: flex; gap: 4px; margin: 10px 0; min-height: 40px; }
+        .tab-btn { flex: 1; padding: 8px 2px; font-size: 11px; font-weight: bold; text-align: center; background: #e1e1e1; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #333; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
+        .tab-btn.active { background: #ff4a4a; color: #fff; border-color: #ff4a4a; box-shadow: 0 3px 10px rgba(255,74,74,0.3); }
+        .scroll-content { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-right: 2px; }
+        .calc-section { border-top: 1px solid #ddd; padding-top: 10px; }
+        .calc-title { font-weight: bold; color: #ff4a4a; margin-bottom: 10px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 4px; color: #444; font-size: 10px; letter-spacing: 0.3px; }
+        .form-group select, .form-group input { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 6px; box-sizing: border-box; font-size: 13px; color: #222; background-color: #fff; }
+        .file-row { display: flex; gap: 5px; margin-bottom: 6px; }
+        .file-btn { flex: 1; background: #e1e1e1; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #ccc; color: #333; }
+        .calc-btn { width: 100%; background: #ff4a4a; color: #fff; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; margin-top: 5px; box-shadow: 0 4px 12px rgba(255,74,74,0.2); }
+        #log-terminal { height: 110px; min-height: 110px; background: #05070a; border-top: 2px solid #22353e; padding: 10px; font-family: monospace; font-size: 11px; color: #00ff00; overflow-y: auto; z-index: 10000; box-sizing: border-box; width: 100%; margin-top: auto; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <!-- НЕВИДИМЫЙ ВЕДОМСТВЕННЫЙ СЧЕТЧИК ТРАФИКА ДЛЯ МОНИТОРИНГА ВОРОНКИ ТЕНЧАТА -->
+    <div style="display:none;">
+        <script type="text/javascript">
+            document.write("<img src='//counter.yadro.ru/hit?r"+
+            escape(document.referrer)+((typeof(screen)=="undefined")?"":
+            ";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+            screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+            ";h"+escape(document.title.substring(0,150))+";"+Math.random()+
+            "' alt='' title='LiveInternet' border='0' width='1' height='1'>");
+        </script>
+    </div>
+
+    <div class="app-container">
+        <div id="header">
+            <span>🖥 СИТУАЦИОННЫЙ ЦЕНТР «ГЛАВЦИФРА» — Цифровой Двойник КИИ</span>
+        </div>
+        <div id="map-area">
+            <canvas id="gi-canvas"></canvas>
+            
+            <div id="live-geo-text" class="geo-target">📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style="font-size:11px; color:#95a5a6; font-weight:normal;">[Сетка ХВС/ГВС развернута]</span></div>
+            
+            <div id="info-panel">
+                <div class="alert-title">🚨 МОНИТОРИНГ ЦИФРОВОГО ДВОЙНИКА</div>
+                <div style="font-size: 13px; margin-bottom: 2px;"><b>Сектор:</b> <span id="live-sector">Городские сети (Москва)</span></div>
+                <div style="font-size: 13px; margin-bottom: 4px;"><b>ИБ:</b> mTLS / Логи HMAC-SHA256</div>
+                
+                <div class="tab-container">
+                    <button id="tab-pipe" class="tab-btn active" onclick="switchTab('pipe')">   СВИЩИ</button>
+                    <button id="tab-pump" class="tab-btn" onclick="switchTab('pump')">⚡️ НАСОСЫ</button>
+                    <button id="tab-oil" class="tab-btn" onclick="switchTab('oil')">🛢 НЕФТЬ КИИ</button>
+                </div>
+                
+                <div class="scroll-content">
+                    <!-- БЛОК 1: СВИЩИ ЖКХ -->
+                    <div id="section-pipe" class="calc-section">
+                        <div class="calc-title">🧮 ВЫЧИСЛИТЕЛЬ СВИЩЕЙ ВОДОКАНАЛА</div>
+                        <div class="form-group">
+                            <label>1. МАТЕРИАЛ И ДИАМЕТР ТРУБОПРОВОДА:</label>
+                            <select id="pipe-material"><option value="1300">Сталь Х70 (V ≈ 1300 м/с)</option><option value="1100">Чугун (V ≈ 1100 м/с)</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>2. ДЛИНА УЧАСТКА МЕЖДУ А И Б (МЕТРЫ):</label>
+                            <input type="number" id="pipe-length" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label>3. ЗАГРУЗКА ПОЛЕВЫХ АУДИОФАЙЛОВ СВИЩА (ФОРМАТ WAV/MP3):</label>
+                            <div class="file-row">
+                                <input type="file" id="input-shum-a" style="display:none;" onchange="handleFileLoad('SHUM_A')">
+                                <input type="file" id="input-shum-b" style="display:none;" onchange="handleFileLoad('SHUM_B')">
+                                <div id="btn-shum-a" class="file-btn" onclick="document.getElementById('input-shum-a').click()">📂 ЗАГРУЗИТЬ ШУМ А</div>
+                                <div id="btn-shum-b" class="file-btn" onclick="document.getElementById('input-shum-b').click()">📂 ЗАГРУЗИТЬ ШУМ Б</div>
+                            </div>
+                        </div>
+                        <button id="main-calc-btn-pipe" class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
+                    </div>
+
+                    <!-- БЛОК 2: НАСОСЫ ESA -->
+                    <div id="section-pump" class="calc-section" style="display:none;">
+                        <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
+                        <div class="form-group">
+                            <label>1. НОМИНАЛЬНАЯ ЧАСТОТА ВРАЩЕНИЯ (ОБ/МИН):</label>
+                            <input type="number" id="pump-rpm" value="1500">
+                        </div>
+                        <div class="form-group">
+                            <label>2. КОЛИЧЕСТВО ПАЗОВ РОТОРА / ПОЛЮСОВ:</label>
+                            <input type="number" id="pump-slots" value="28">
+                        </div>
+                        <div class="form-group">
+                            <label>3. ТИП УСТАНОВКИ И ГЛУБИНА ПОДВЕСА:</label>
+                            <select id="pump-depth">
+                                <option value="артезианского (Глубина 150 м)">🌊 Артезианский ЭЦВ / Наземный шкаф (150 м)</option>
+                                <option value="нефтяного УЭЦН (Глубина 1500 м)">🛢 Нефтяной УЭЦН / Съем тока с устья (1500 м)</option>
+                                <option value="поверхностного ХВС (Магистральный)">🏢 Наземный МНА / Прямое подключение</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>4. ИМПОРТ СОВМЕЩЕННЫХ СИГНАЛОВ ДВИГАТЕЛЯ:</label>
+                            <div class="file-row">
+                                <input type="file" id="input-pump-audio" style="display:none;" onchange="handleFileLoad('PUMP_AUDIO')">
+                                <input type="file" id="input-pump-current" style="display:none;" onchange="handleFileLoad('PUMP_CURRENT')">
+                                <div id="btn-pump-audio" class="file-btn" onclick="document.getElementById('input-pump-audio').click()">📂 ЗВУК ДВИГАТЕЛЯ</div>
+                                <div id="btn-pump-current" class="file-btn" onclick="document.getElementById('input-pump-current').click()">⚡️ ТОК СТАТАТОРА</div>
+                            </div>
+                        </div>
+                        <button id="main-calc-btn-pump" class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
+                    </div>
+
+                    <!-- БЛОК 3: НЕФТЬ КИИ -->
+                    <div id="section-oil" class="calc-section" style="display:none;">
+                        <div class="calc-title">🧮 МОНИТОРИНГ ВЫСОКОГОРНОГО ТОННЕЛЯ</div>
+                        <div class="form-group">
+                            <label>1. БАЗОВОЕ ДАВЛЕНИЕ В МАГИСТРАЛИ (МПа):</label>
+                            <input type="number" id="oil-pressure" value="6.4" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>2. СОРТ И ВЯЗКОСТЬ НЕФТИ (SST):</label>
+                            <select id="oil-grade"><option value="1150">Urals (V_гидро ≈ 1150 м/с)</option><option value="1250">Siberian Light (V ≈ 1250 м/с)</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>3. ДИАМЕТР ТРУБЫ И ТОЛЩИНА СТЕНКИ (мм):</label>
+                            <select id="oil-geometry"><option value="1020">Ø 1020 мм / Стенка 14 мм</option><option value="720">Ø 720 мм / Стенка 12 мм</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>4. ПЕРЕПАД ВЫСОТЫ ТОННЕЛЯ ГРУШОВАЯ-ШЕСХАРИС (М):</label>
+                            <input type="number" id="oil-height" value="340">
+                        </div>
+                        <div class="form-group">
+                            <label>5. ТЕЛЕМЕТРИЯ ВОЛН ДАВЛЕНИЯ (dP/dt):</label>
+                            <div class="file-row">
+                                <input type="file" id="input-oil-kz11" style="display:none;" onchange="handleFileLoad('OIL_KZ11')">
+                                <input type="file" id="input-oil-kz12" style="display:none;" onchange="handleFileLoad('OIL_KZ12')">
+                                <div id="btn-oil-kz11" class="file-btn" onclick="document.getElementById('input-oil-kz11').click()">🔒 ЛОГ КЗ-11</div>
+                                <div id="btn-oil-kz12" class="file-btn" onclick="document.getElementById('input-oil-kz12').click()">🔒 ЛОГ КЗ-12</div>
+                            </div>
+                        </div>
+                        <button id="main-calc-btn-oil" class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ТОННЕЛЬ</button>
+                    </div>
+                </div> <!-- КОНЕЦ SCROLL-CONTENT -->
+                
+                <div id="log-terminal">[ МОНИТОРИНГ АКТИВЕН. КОНТУР КИИ ИНИЦИАЛИЗИРОВАН. ]<br></div>
+                
+                <div style="padding-top:5px; margin-top:5px; border-top:1px solid #ddd; font-size:10px; text-align:center;">
+                    📬 <b>НИЛ Предиктивного Анализа и Криптозащиты КИИ</b><br><a href="mailto:ceo@glavcifra.ru" style="color:#ff4a4a; text-decoration:none; font-weight:bold;">ceo@glavcifra.ru</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
         // ИНИЦИАЛИЗАЦИЯ И ИНТЕЛЛЕКТУАЛЬНЫЙ ТРЕКИНГ ГИС-КАРТЫ
         var canvas = document.getElementById('gi-canvas');
@@ -29,6 +191,7 @@
             var dx = x - xx; var dy = y - yy;
             return Math.sqrt(dx * dx + dy * dy) < tolerance;
         }
+
         function drawGisMap() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             var colorGrid = "rgba(0, 150, 255, 0.08)", colorLine = "#0096ff";
@@ -53,6 +216,7 @@
             for (var y = 0; y < canvas.height; y += step) {
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
             }
+            
             hoveredElement = null;
             if (Math.sqrt((mouseX - startX)*(mouseX - startX) + (mouseY - startY)*(mouseY - startY)) < 15) { hoveredElement = 'valve1'; }
             else if (Math.sqrt((mouseX - endX)*(mouseX - endX) + (mouseY - endY)*(mouseY - endY)) < 15) { hoveredElement = 'valve2'; }
@@ -66,7 +230,6 @@
             
             ctx.font = "bold 12px Arial"; ctx.fillStyle = colorLine; ctx.textAlign = "center";
             ctx.fillText(sectorName, (startX + endX)/2, startY - 20);
-            
             function drawValve(cx, cy, isHovered) {
                 ctx.fillStyle = isHovered ? "#ffffff" : "#ff4a4a";
                 ctx.strokeStyle = isHovered ? "#ffffff" : "#ff4a4a"; ctx.lineWidth = 2;
@@ -77,6 +240,7 @@
             }
             drawValve(startX, startY, (hoveredElement === 'valve1'));
             drawValve(endX, endY, (hoveredElement === 'valve2'));
+            
             ctx.font = "bold 11px Arial"; ctx.fillStyle = "#ffffff";
             ctx.textAlign = "left"; ctx.fillText(labelA, startX - 10, startY + 30);
             ctx.textAlign = "right"; ctx.fillText(labelB, endX + 10, startY + 30);
@@ -101,8 +265,7 @@
                     ctx.fillText("• СТАТУС ЗАТВОРА: 100% ОТКРЫТО", boxX + 12, boxY + 40);
                     ctx.fillText("• ТОК ПРИВОДА АКТУАТОРA: НОРМА", boxX + 12, boxY + 55);
                     ctx.fillText("• ТЕЛЕМЕТРИЯ dP/dt: СИНХРОННО", boxX + 12, boxY + 70);
-                }
-                else if (hoveredElement === 'pipe') {
+                } else if (hoveredElement === 'pipe') {
                     if (currentMode === 'oil') {
                         ctx.fillText("🛢️ ДИАГНОСТИКА УЧАСТКА LINE-02:", boxX + 12, boxY + 20);
                         ctx.font = "11px monospace"; ctx.fillStyle = "#00ff00";
@@ -170,12 +333,13 @@
                 terminal.scrollTop = terminal.scrollHeight;
             }
         }
+
         function runPipeCalculator() {
             var len = parseFloat(document.getElementById('pipe-length').value);
             var fileInputA = document.getElementById('input-shum-a'); var fileInputB = document.getElementById('input-shum-b');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            if (!fileInputA.files || fileInputA.files.length === 0 || !fileInputB.files || fileInputB.files.length === 0) {
+            if (fileInputA.files.length === 0 || fileInputB.files.length === 0) {
                 terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска БПФ-анализа выберите файлы сигналов Точки А и Точки Б!</span><br>'; return;
             }
             var nameA = fileInputA.files[0].name.toUpperCase(); var nameB = fileInputB.files[0].name.toUpperCase();
@@ -193,13 +357,44 @@
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 1800);
         }
+        function switchTab(type) {
+            currentMode = type;
+            document.getElementById('tab-pipe').classList.remove('active'); document.getElementById('tab-pump').classList.remove('active'); document.getElementById('tab-oil').classList.remove('active');
+            document.getElementById('section-pipe').style.display = 'none'; document.getElementById('section-pump').style.display = 'none'; document.getElementById('section-oil').style.display = 'none';
+            
+            if(type === 'pipe') {
+                document.getElementById('tab-pipe').classList.add('active'); document.getElementById('section-pipe').style.display = 'block';
+                document.getElementById('live-sector').innerText = "Городские сети (Москва)";
+                document.getElementById('live-geo-text').innerHTML = "📍 СЕКТОР ГИС ЖКХ: МОСКВА, ИЛЬИНКА<br><span style='font-size:11px; color:#aaa; font-weight:normal;'>[Сетка ХВС/ГВС развернута]</span>";
+            } else if(type === 'pump') {
+                document.getElementById('tab-pump').classList.add('active'); document.getElementById('section-pump').style.display = 'block';
+                document.getElementById('live-sector').innerText = "ГНС Суходольная (Энергоузел)";
+                document.getElementById('live-geo-text').innerHTML = "⚡️ СЕКТОР КИИ: ГНС СУХОДОЛЬНАЯ<br><span style='font-size:11px; color:#00ff00; font-weight:normal;'>[Мониторинг МНА по методу ESA активен]</span>";
+            } else if(type === 'oil') {
+                document.getElementById('tab-oil').classList.add('active'); document.getElementById('section-oil').style.display = 'block';
+                document.getElementById('live-sector').innerText = "ПБ «Шесхарис» (Новороссийск)";
+                document.getElementById('live-geo-text').innerHTML = "🛢 СЕКТОР ТРАНСНЕФТЬ: ПБ «ШЕСХАРИС»<br><span style='font-size:11px; color:#ffcc00; font-weight:normal;'>[Контур dP/dt магистрали давления]</span>";
+            }
+            drawGisMap();
+        }
 
+        function handleFileLoad(point) {
+            var fileInput = document.getElementById('input-' + point.toLowerCase().replace('_', '-'));
+            var button = document.getElementById('btn-' + point.toLowerCase().replace('_', '-'));
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                var fileName = fileInput.files[0].name.toUpperCase();
+                button.style.background = "#00ff00"; button.style.color = "#000"; button.innerText = "📄 " + fileName;
+                var terminal = document.getElementById('log-terminal');
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Файл ' + fileName + ' импортирован в ИИ-ядро.</span><br>';
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        }
         function runPumpCalculator() {
             var rpm = parseInt(document.getElementById('pump-rpm').value); var slots = parseInt(document.getElementById('pump-slots').value);
             var fileAudio = document.getElementById('input-pump-audio'); var fileCurrent = document.getElementById('input-pump-current');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            if (!fileAudio.files || fileAudio.files.length === 0 || !fileCurrent.files || fileCurrent.files.length === 0) {
+            if (fileAudio.files.length === 0 || fileCurrent.files.length === 0) {
                 terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска ESA-анализа импортируйте Звук двигателя и Ток статора!</span><br>'; return;
             }
             var hz = (rpm / 60).toFixed(1); var fault = (hz * slots).toFixed(1);
@@ -211,22 +406,23 @@
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 1000);
         }
+
         function runOilCalculator() {
             var p = parseFloat(document.getElementById('oil-pressure').value); var h = parseFloat(document.getElementById('oil-height').value);
             var fileKz11 = document.getElementById('input-oil-kz11'); var fileKz12 = document.getElementById('input-oil-kz12');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            if (!fileKz11.files || fileKz11.files.length === 0 || !fileKz12.files || fileKz12.files.length === 0) {
+            if (fileKz11.files.length === 0 || fileKz12.files.length === 0) {
                 terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для БПФ-анализа тоннеля импортируйте Лог КЗ-11 и Лог КЗ-12!</span><br>'; return;
             }
             var p_grav = (890 * 9.81 * h / 1000000).toFixed(2); var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
             var calc_energy = (p * h * 1.38 + (p_total * 4.2)).toFixed(1); var calc_freq = (28.4 + (h % 12) + (p * 0.85)).toFixed(1);
             
-            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ТОННЕЛЬ H=' + h + 'м] Избыточное гравитационное давление столба: +' + p_grav + ' МПа.</span><br>';
+            terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ТОННЕЛЬ H=' + h + 'м] Избыточное гравитационное давление падающего столба: +' + p_grav + ' МПа.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия: ' + calc_energy + ' | Частота: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия шума: ' + calc_energy + ' | Частота кавитации: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 500);
             setTimeout(function() {
                 terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ВРУЧНУЮ АКТИВИРУЙ СБРОС ДАВЛЕНИЯ ЧЕРЕЗ КЛАПАНЫ СППК У ПРИЧАЛА!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
@@ -245,3 +441,5 @@
     </script>
 </body>
 </html>
+
+        
