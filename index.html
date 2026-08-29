@@ -314,18 +314,15 @@
             drawGisMap();
         }
 
-                function handleFileLoad(point) {
+                f        function handleFileLoad(point) {
             var fileInput = document.getElementById('input-' + point.toLowerCase().replace('_', '-'));
             var button = document.getElementById('btn-' + point.toLowerCase().replace('_', '-'));
             
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
                 var fileName = fileInput.files[0].name.toUpperCase();
-                button.style.background = "#00ff00";
-                button.style.color = "#000";
-                button.innerText = "📄 " + fileName;
-                
+                button.style.background = "#00ff00"; button.style.color = "#000"; button.innerText = "📄 " + fileName;
                 var terminal = document.getElementById('log-terminal');
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Полевой файл ' + fileName + ' успешно верифицирован и принят в буфер КИИ.</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Файл ' + fileName + ' успешно импортирован в буфер ИИ-ядра.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }
         }
@@ -336,7 +333,7 @@
             var fileInputB = document.getElementById('input-shum-b');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            if (fileInputA.files.length === 0 || fileInputB.files.length === 0) {
+            if (!fileInputA.files || fileInputA.files.length === 0 || !fileInputB.files || fileInputB.files.length === 0) {
                 terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска БПФ-анализа выберите файлы сигналов Точки А и Точки Б!</span><br>';
                 return;
             }
@@ -362,7 +359,7 @@
             var fileAudio = document.getElementById('input-pump-audio'); var fileCurrent = document.getElementById('input-pump-current');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            if (fileAudio.files.length === 0 || fileCurrent.files.length === 0) {
+            if (!fileAudio.files || fileAudio.files.length === 0 || !fileCurrent.files || fileCurrent.files.length === 0) {
                 terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска ESA-анализа импортируйте Звук двигателя и Ток статора!</span><br>';
                 return;
             }
@@ -382,7 +379,7 @@
             var fileKz11 = document.getElementById('input-oil-kz11'); var fileKz12 = document.getElementById('input-oil-kz12');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
-            if (fileKz11.files.length === 0 || fileKz12.files.length === 0) {
+            if (!fileKz11.files || fileKz11.files.length === 0 || !fileKz12.files || fileKz12.files.length === 0) {
                 terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для БПФ-анализа тоннеля импортируйте Лог КЗ-11 и Лог КЗ-12!</span><br>';
                 return;
             }
@@ -410,6 +407,7 @@
             }, 2500);
         }
         setTimeout(resizeCanvas, 200);
+
 
     </script>
 </body>
