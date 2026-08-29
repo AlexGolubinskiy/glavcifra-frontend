@@ -291,16 +291,17 @@
             ctx.fillText("ГИС МАСШТАБ: 1 КЛЕТКА = 100 МЕТРОВ | СКАНЕР ХОВЕР-ТЕЛЕМЕТРИИ ПОДКЛЮЧЕН", 20, canvas.height - 20);
         }
 
-        canvas.addEventListener('mousemove', function(e) {
+                canvas.addEventListener('mousemove', function(e) {
             var rect = canvas.getBoundingClientRect(); mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top; drawGisMap();
         });
         canvas.addEventListener('touchmove', function(e) {
-            var rect = canvas.getBoundingClientRect(); if(e.touches.length > 0) { mouseX = e.touches.slice[0].clientX - rect.left; mouseY = e.touches.slice[0].clientY - rect.top; drawGisMap(); }
+            var rect = canvas.getBoundingClientRect(); if(e.touches && e.touches.length > 0) { mouseX = e.touches[0].clientX - rect.left; mouseY = e.touches[0].clientY - rect.top; drawGisMap(); }
         });
         canvas.addEventListener('mouseleave', function() { mouseX = -100; mouseY = -100; drawGisMap(); });
         canvas.addEventListener('touchend', function() { mouseX = -100; mouseY = -100; drawGisMap(); });
 
         window.addEventListener('resize', resizeCanvas);
+
 
         function switchTab(type) {
             currentMode = type;
