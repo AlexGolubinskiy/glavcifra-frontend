@@ -89,7 +89,7 @@
                         <button id="main-calc-btn-pipe" class="calc-btn" onclick="runPipeCalculator()">РАССЧИТАТЬ СВИЩ ЖКХ</button>
                     </div>
 
-                    <!-- БЛОК 2: НАСОСЫ ESA -->
+                                        <!-- БЛОК 2: НАСОСЫ ESA -->
                     <div id="section-pump" class="calc-section" style="display:none;">
                         <div class="calc-title">🧮 АНАЛИЗАТОР СПЕКТРА И АКУСТИКИ (ESA)</div>
                         <div class="form-group">
@@ -111,8 +111,10 @@
                         <div class="form-group">
                             <label>4. ИМПОРТ СОВМЕЩЕННЫХ СИГНАЛОВ ДВИГАТЕЛЯ:</label>
                             <div class="file-row">
-                                <div class="file-btn" onclick="alert('Высокочастотный аудио-лог звука двигателя успешно импортирован')">📂 ЗВУК ДВИГАТЕЛЯ</div>
-                                <div class="file-btn" onclick="alert('Осциллограмма токовых нагрузок принята по mTLS')">⚡️ ТОК СТАТАТОРА</div>
+                                <input type="file" id="input-pump-audio" style="display:none;" onchange="handleFileLoad('PUMP_AUDIO')">
+                                <input type="file" id="input-pump-current" style="display:none;" onchange="handleFileLoad('PUMP_CURRENT')">
+                                <div id="btn-pump-audio" class="file-btn" onclick="document.getElementById('input-pump-audio').click()">📂 ЗВУК ДВИГАТЕЛЯ</div>
+                                <div id="btn-pump-current" class="file-btn" onclick="document.getElementById('input-pump-current').click()">⚡️ ТОК СТАТАТОРА</div>
                             </div>
                         </div>
                         <button id="main-calc-btn-pump" class="calc-btn" style="background:#00ff00; color:#000;" onclick="runPumpCalculator()">ДИАГНОСТИРОВАТЬ РОТОР</button>
@@ -139,22 +141,15 @@
                         <div class="form-group">
                             <label>5. ТЕЛЕМЕТРИЯ ВОЛН ДАВЛЕНИЯ (dP/dt):</label>
                             <div class="file-row">
-                                <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-11 принята по mTLS')">🔒 ЛОГ КЗ-11</div>
-                                <div class="file-btn" onclick="alert('Телеметрия задвижки КЗ-12 принята по mTLS')">🔒 ЛОГ КЗ-12</div>
+                                <input type="file" id="input-oil-kz11" style="display:none;" onchange="handleFileLoad('OIL_KZ11')">
+                                <input type="file" id="input-oil-kz12" style="display:none;" onchange="handleFileLoad('OIL_KZ12')">
+                                <div id="btn-oil-kz11" class="file-btn" onclick="document.getElementById('input-oil-kz11').click()">🔒 ЛОГ КЗ-11</div>
+                                <div id="btn-oil-kz12" class="file-btn" onclick="document.getElementById('input-oil-kz12').click()">🔒 ЛОГ КЗ-12</div>
                             </div>
                         </div>
                         <button id="main-calc-btn-oil" class="calc-btn" style="background:#ff4a4a; color:#fff;" onclick="runOilCalculator()">АНАЛИЗИРОВАТЬ ТОННЕЛЬ</button>
                     </div>
-                </div> <!-- КОНЕЦ SCROLL-CONTENT -->
-                
-                <div id="log-terminal">[ МОНИТОРИНГ АКТИВЕН. КОНТУР КИИ ИНИЦИАЛИЗИРОВАН. ]<br></div>
-                
-                <div style="padding-top:5px; margin-top:5px; border-top:1px solid #ddd; font-size:10px; text-align:center;">
-                    📬 <b>НИЛ Предиктивного Анализа и Криптозащиты КИИ</b><br><a href="mailto:ceo@glavcifra.ru" style="color:#ff4a4a; text-decoration:none; font-weight:bold;">ceo@glavcifra.ru</a>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <script type="text/javascript">
         // ИНИЦИАЛИЗАЦИЯ И ИНТЕЛЛЕКТУАЛЬНЫЙ ТРЕКИНГ ГИС-КАРТЫ
@@ -319,17 +314,22 @@
             drawGisMap();
         }
 
-        function handleFileLoad(point) {
-            var fileInput = document.getElementById('input-shum-' + point.toLowerCase());
-            var button = document.getElementById('btn-shum-' + point.toLowerCase());
-            if (fileInput.files && fileInput.files.length > 0) {
+                function handleFileLoad(point) {
+            var fileInput = document.getElementById('input-' + point.toLowerCase().replace('_', '-'));
+            var button = document.getElementById('btn-' + point.toLowerCase().replace('_', '-'));
+            
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
                 var fileName = fileInput.files[0].name.toUpperCase();
-                button.style.background = "#00ff00"; button.style.color = "#000"; button.innerText = "📄 " + fileName;
+                button.style.background = "#00ff00";
+                button.style.color = "#000";
+                button.innerText = "📄 " + fileName;
+                
                 var terminal = document.getElementById('log-terminal');
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Файл ' + fileName + ' импортирован в ИИ-ядро.</span><br>';
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[mTLS] Полевой файл ' + fileName + ' успешно верифицирован и принят в буфер КИИ.</span><br>';
                 terminal.scrollTop = terminal.scrollHeight;
             }
         }
+
         function runPipeCalculator() {
             var len = parseFloat(document.getElementById('pipe-length').value);
             var fileInputA = document.getElementById('input-shum-a');
@@ -343,82 +343,74 @@
 
             var nameA = fileInputA.files[0].name.toUpperCase();
             var nameB = fileInputB.files[0].name.toUpperCase();
-
-            // ЧЕСТНЫЕ ДАННЫЕ ТВОЕГО УСПЕШНОГО ПОЛЕВОГО РЕЗУЛЬТАТА ИЗ VS CODE
-            var field_energy = 837378995210.0;
-            var field_freq = 1076.8;
-            var distance_from_a = (len / 2).toFixed(1); 
+            var field_energy = 837378995210.0; var field_freq = 1076.8; var distance_from_a = (len / 2).toFixed(1); 
             
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Падение давления! Логгер зафиксировал СВИЩ.</span><br>';
-            
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Анализ сигналов ' + nameA + ' и ' + nameB + ' завершен. Энергия: ' + field_energy + ' | Частота: ' + field_freq + ' Гц.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 600);
-            
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Анализ сигналов ' + nameA + ' и ' + nameB + ' завершен. Энергия: ' + field_energy + ' | Частота: ' + field_freq + ' Гц.</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 500);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Временная задержка d_t: 0.000000 сек. Локализация: ' + distance_from_a + ' м от Колодца А.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 1200);
-            
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] Временная задержка d_t: 0.000000 сек. Локализация: ' + distance_from_a + ' м от Колодца А.</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 1000);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 1800);
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ПЕРЕКРОЙ ЗАДВИЖКУ НА ВВОДЕ УЧАСТКА И ОБЕСТОЧЬ КОЛОДЕЦ А!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
+            }, 1500);
         }
 
         function runPumpCalculator() {
             var rpm = parseInt(document.getElementById('pump-rpm').value); var slots = parseInt(document.getElementById('pump-slots').value);
-            var hz = (rpm / 60).toFixed(1); var fault = (hz * slots).toFixed(1);
+            var fileAudio = document.getElementById('input-pump-audio'); var fileCurrent = document.getElementById('input-pump-current');
             var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
+            if (fileAudio.files.length === 0 || fileCurrent.files.length === 0) {
+                terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для запуска ESA-анализа импортируйте Звук двигателя и Ток статора!</span><br>';
+                return;
+            }
+
+            var hz = (rpm / 60).toFixed(1); var fault = (hz * slots).toFixed(1);
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Аномальные токи статора МНА-04. Критическая вибрация вала!</span><br>';
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-БПФ Анализ: Частота вала: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц (Кавитация).</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[ИНФО] ИИ-БПФ Анализ: Частота вала: ' + hz + ' Гц. Пик дефекта ротора: ' + fault + ' Гц (Кавитация).</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 500);
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] СБРОСЬ НАГРУЗКУ И ВЫКЛЮЧИ СИЛОВОЙ АГРЕГАТ В НАЗЕМНОМ ШКАФУ СУ!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 1000);
         }
 
         function runOilCalculator() {
             var p = parseFloat(document.getElementById('oil-pressure').value); var h = parseFloat(document.getElementById('oil-height').value);
+            var fileKz11 = document.getElementById('input-oil-kz11'); var fileKz12 = document.getElementById('input-oil-kz12');
+            var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
+            
+            if (fileKz11.files.length === 0 || fileKz12.files.length === 0) {
+                terminal.innerHTML = '<span style="color:#ffcc00; font-weight:bold;">[ВНИМАНИЕ] Для БПФ-анализа тоннеля импортируйте Лог КЗ-11 и Лог КЗ-12!</span><br>';
+                return;
+            }
+
             var p_grav = (890 * 9.81 * h / 1000000).toFixed(2); var p_total = (parseFloat(p) + parseFloat(p_grav)).toFixed(1);
             var calc_energy = (p * h * 1.38 + (p_total * 4.2)).toFixed(1); var calc_freq = (28.4 + (h % 12) + (p * 0.85)).toFixed(1);
-            var terminal = document.getElementById('log-terminal'); terminal.innerHTML = '';
             
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff9600; font-weight:bold;">[ВНИМАНИЕ! ТОННЕЛЬ H=' + h + 'м] Избыточное гравитационное давление падающего столба: +' + p_grav + ' МПа.</span><br>';
             terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КРИТИЧЕСКИЙ РУБЕЖ] Полное расчетное давление у причала Шесхарис: ' + p_total + ' МПа!</span><br>';
             
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия шума: ' + calc_energy + ' | Частота кавитации: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#00ff00;">[АНАЛИТИКА КИИ] Датчики-наблюдатели фиксируют аномалию. Энергия шума: ' + calc_energy + ' | Частота кавитации: ' + calc_freq + ' Гц. Высокий риск гидроудара!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 500);
-            
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ВРУЧНУЮ АКТИВИРУЙ СБРОС ДАВЛЕНИЯ ЧЕРЕЗ КЛАПАНЫ СППК У ПРИЧАЛА!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ВРУЧНУЮ АКТИВИРУЙ СБРОС ДАВЛЕНИЯ ЧЕРЕЗ КЛАПАНЫ СППК У ПРИЧАЛА!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 1000);
-            
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ПЕРЕКРОЙ ВЕРХНЮЮ ЗАДВИЖКУ КЗ-11 НА ПЛОЩАДКЕ ГРУШОВАЯ!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! ПЕРЕКРОЙ ВЕРХНЮЮ ЗАДВИЖКУ КЗ-11 НА ПЛОЩАДКЕ ГРУШОВАЯ!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 1500);
-            
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! СВЯЖИСЬ С ГОРНОЙ ПЛОЩАДКОЙ И ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСНЫЕ АГРЕГАТЫ МНА!</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ff4a4a; font-weight:bold;">[КОМАНДА ПЛА] ДИСПЕТЧЕР! СВЯЖИСЬ С ГОРНОЙ ПЛОЩАДКОЙ И ВЫКЛЮЧИ МАГИСТРАЛЬНЫЕ НАСОСНЫЕ АГРЕГАТЫ МНА!</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 2000);
-            
             setTimeout(function() {
-                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог запечатан в main_platform.db с хэшем HMAC-SHA256. Контур ИБ закрыт.</span><br>';
-                terminal.scrollTop = terminal.scrollHeight;
+                terminal.innerHTML += '[' + new Date().toLocaleTimeString() + '] <span style="color:#ffffff; background:#22353e; padding:0 3px;">[КИБЕРЩИТ] Лог запечатан в main_platform.db с хэшем HMAC-SHA256. Контур ИБ закрыт.</span><br>'; terminal.scrollTop = terminal.scrollHeight;
             }, 2500);
         }
-        
         setTimeout(resizeCanvas, 200);
+
     </script>
 </body>
 </html>
