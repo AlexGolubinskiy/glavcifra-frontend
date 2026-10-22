@@ -63,6 +63,13 @@ h1{font-size:clamp(31px,3.22vw,55px);line-height:1.15;letter-spacing:-1px;margin
 /* Strong botanical and engineering detail, behind the slogan. */
 .autumn-leaf.leaf-c{filter:contrast(1.35) saturate(1.15);opacity:.66}
 @media(max-width:760px){.autumn-leaf.leaf-c{opacity:.48}}
+/* Ink on softly lit paper keeps the slogan readable over the leaf. */
+.hero-copy{position:relative;color:#222b20}
+.hero-copy:before{content:"";position:absolute;inset:-28px -18px;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 43% 48%,rgba(249,245,233,.94) 0%,rgba(249,245,233,.86) 48%,rgba(249,245,233,.38) 72%,transparent 100%);filter:blur(12px)}
+.hero-copy h1{color:#202b21;text-shadow:0 1px 0 #fff9}
+.hero-copy h1 em,.hero-copy h1 .accent{color:#77371e}
+.hero-copy p,.hero-copy .eyebrow{color:#303a2c}
+@media(max-width:760px){.hero-copy:before{inset:-15px -8px;filter:blur(8px)}}
 </style>
 </head>
 <body>
