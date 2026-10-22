@@ -70,6 +70,11 @@ h1{font-size:clamp(31px,3.22vw,55px);line-height:1.15;letter-spacing:-1px;margin
 .hero-copy h1 em,.hero-copy h1 .accent{color:#77371e}
 .hero-copy p,.hero-copy .eyebrow{color:#303a2c}
 @media(max-width:760px){.hero-copy:before{inset:-15px -8px;filter:blur(8px)}}
+/* Preserve every leaf detail: contrast belongs to the lettering only. */
+.hero-copy:before{display:none;background:none;filter:none}
+.hero-copy h1{color:#102c3a;text-shadow:1px 1px 0 #fff6df,-1px -1px 0 #fff6df,1px -1px 0 #fff6df,-1px 1px 0 #fff6df}
+.hero-copy h1 em{color:#fff7df;text-shadow:1px 1px 0 #253a42,-1px -1px 0 #253a42,1px -1px 0 #253a42,-1px 1px 0 #253a42,0 2px 3px #253a4266}
+.hero-copy .lead,.hero-copy .small,.hero-copy .eyebrow,.hero-copy .text-link{color:#102c3a;text-shadow:1px 1px 0 #fff6df,-1px -1px 0 #fff6df,1px -1px 0 #fff6df,-1px 1px 0 #fff6df}
 </style>
 </head>
 <body>
