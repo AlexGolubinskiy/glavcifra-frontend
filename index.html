@@ -7,7 +7,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20261024">
 <meta name="theme-color" content="#080808">
 
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-OBlV0gOVqKzGZWor5TqmRBRMAYyOfvjKzM+P0RPvNA8=' 'sha256-5YilvJIRX3VrwfQKaLilc9Xj/kLTanf1hMVlwhjw5Gc='; style-src 'unsafe-inline'; img-src 'self' data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action https://dnevnik.glavcifra.ru; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-OBlV0gOVqKzGZWor5TqmRBRMAYyOfvjKzM+P0RPvNA8=' 'sha256-5YilvJIRX3VrwfQKaLilc9Xj/kLTanf1hMVlwhjw5Gc=' 'sha256-guVjTsS5bRRGyFYY+6790lHs0AwsRADnw53M2/Z8+Qc='; style-src 'unsafe-inline'; img-src 'self' data:; font-src data:; connect-src 'none'; frame-src https://dnevnik.glavcifra.ru; object-src 'none'; base-uri 'none'; form-action https://dnevnik.glavcifra.ru; upgrade-insecure-requests">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Дневник для репетиторов — расписание и учёт оплат | Главцифра</title>
 <meta name="description" content="Занятия, оплаты и остаток аванса — в одном месте. Дневник для репетиторов: посещаемость, частичные оплаты, группы, оценки и домашние задания. Работает в браузере.">
@@ -146,5 +146,22 @@ for(const button of document.querySelectorAll('[data-calc]')) button.addEventLis
  const debt=document.getElementById('calc-debt');debt.textContent=step.debt;debt.classList.toggle('has-debt',index===1||index===2);
  document.getElementById('calc-note').textContent=step.note;
 });
+</script>
+<script>
+(()=>{
+ if(location.pathname.startsWith('/support')||document.getElementById('dnevnik-support-widget'))return;
+ const endpoint=['glavcifra.ru','www.glavcifra.ru'].includes(location.hostname)?'https://dnevnik.glavcifra.ru/support/embed':location.origin+'/support/embed';
+ const root=document.createElement('div');root.id='dnevnik-support-widget';
+ const style=document.createElement('style');style.textContent='#dnevnik-support-widget .support-trigger{position:fixed;right:16px;bottom:16px;z-index:10010;border:1px solid #f3e7cf;border-radius:24px;padding:12px 18px;background:#30472f;color:white;box-shadow:0 3px 15px #0003;font:600 14px system-ui;cursor:pointer}#dnevnik-support-widget .support-panel{position:fixed;right:12px;bottom:76px;z-index:10011;width:min(420px,calc(100vw - 24px));height:min(650px,calc(100dvh - 100px));background:#f7f2e8;border:1px solid #b7aa8e;border-radius:12px;box-shadow:0 8px 40px #0004;overflow:hidden}#dnevnik-support-widget .support-panel[hidden]{display:none}#dnevnik-support-widget iframe{width:100%;height:100%;border:0;display:block}#dnevnik-support-widget .support-close{position:absolute;right:8px;top:6px;z-index:1;border:1px solid #d4d9c9;border-radius:50%;width:32px;height:32px;padding:0;background:#f7f2e8;color:#263b2e;font:22px system-ui;cursor:pointer}#dnevnik-support-widget button:focus-visible{outline:3px solid #bd822c;outline-offset:3px}';
+ const trigger=document.createElement('button');trigger.type='button';trigger.className='support-trigger';trigger.textContent='Чат поддержки';trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-controls','dnevnik-support-panel');
+ const panel=document.createElement('section');panel.id='dnevnik-support-panel';panel.className='support-panel';panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Чат поддержки Дневника');
+ const close=document.createElement('button');close.type='button';close.className='support-close';close.textContent='×';close.setAttribute('aria-label','Закрыть чат поддержки');
+ let frame=null;
+ function hide(){panel.hidden=true;frame?.remove();frame=null;trigger.setAttribute('aria-expanded','false');trigger.focus();}
+ trigger.onclick=()=>{if(!panel.hidden){hide();return;}frame=document.createElement('iframe');frame.title='Поддержка Дневника';frame.src=endpoint;frame.referrerPolicy='strict-origin-when-cross-origin';panel.append(frame);panel.hidden=false;trigger.setAttribute('aria-expanded','true');close.focus();};close.onclick=hide;
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)hide();});
+ window.addEventListener('message',e=>{if(frame&&e.source===frame.contentWindow&&e.origin===new URL(endpoint).origin&&e.data?.type==='dnevnik-support-close')hide();});
+ panel.append(close);root.append(style,trigger,panel);document.body.append(root);
+})();
 </script>
 </body></html>
