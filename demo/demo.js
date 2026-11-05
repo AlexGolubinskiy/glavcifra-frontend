@@ -914,7 +914,7 @@ offline.mount({getState:()=>state,saved:()=>{blockedStorage=false;$('storageAler
 $('helpBtn').onclick=()=>toast('Нажмите на занятие: измените посещение, оплату или оценку. Откройте «Ученики и отчёты», чтобы посмотреть карточки.');
 $('startTraining').onclick=()=>close('onboardingWelcome');
 $('skipTraining').onclick=()=>close('onboardingWelcome');
-$('exportData').onclick=$('importData').onclick=()=>location.assign('https://dnevnik.glavcifra.ru/register');
+$('exportData').onclick=$('importData').onclick=()=>toast('Чтобы сохранять свои данные, нажмите «Создать свой дневник» вверху страницы.');
 const demoGoals=new Set();
 function demoGoal(name){if(demoGoals.has(name))return;demoGoals.add(name);if(typeof window.ym==='function')window.ym(114078796,'reachGoal',name);}
 document.addEventListener('click',e=>{
